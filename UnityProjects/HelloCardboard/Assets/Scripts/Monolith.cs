@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Mesh : MonoBehaviour
+public class Monolith : MonoBehaviour
 {
     float rotationX;
 

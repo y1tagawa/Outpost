@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Monolith : MonoBehaviour
+public class Projectile : MonoBehaviour
 {
     const int lifeCycle = 60 * 5;
     public Vector3 delta;
@@ -24,10 +24,10 @@ public class Monolith : MonoBehaviour
 
     private void Reset() 
     {
-        var player = GameObject.Find("/Player");
+        //var player = GameObject.Find("/Player");
         age = 0;
-        var forward = player.transform.forward.normalized;
+        var forward = Camera.main.transform.forward.normalized;
         delta = forward * -0.5f;
-        gameObject.transform.position = player.transform.position - delta * (lifeCycle / 2);   
+        gameObject.transform.position = Camera.main.transform.position - delta * (lifeCycle / 2);   
     }
 }

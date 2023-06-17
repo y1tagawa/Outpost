@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    // Start is called before the first frame update
+    const int maxCount = 10;
+    const int interval = 60 * 1;
+
+    public GameObject projectile;
+
+    private List<GameObject> instances = new();
+    private int countDown = 0;
+
     void Start()
     {
-        
+        //
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (instances.Count < maxCount)
+        {
+            if (countDown <= 0)
+            {
+                instances.Add(Instantiate(projectile));
+                countDown = interval;
+            } 
+            else
+            {
+                --countDown;
+            }
+        }
     }
 }
