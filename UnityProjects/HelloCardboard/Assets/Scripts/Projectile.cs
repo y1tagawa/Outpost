@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    const int lifeCycle = 60 * 5;
-    public Vector3 delta;
-    public int age;
+    const int lapse = 60 * 5;
+
+    private Vector3 delta;
+    private int age;
 
     void Start()
     {
@@ -13,7 +14,7 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        if (++age >= lifeCycle) {
+        if (++age >= lapse) {
             Reset();
         }
         else
@@ -24,10 +25,10 @@ public class Projectile : MonoBehaviour
 
     private void Reset() 
     {
-        //var player = GameObject.Find("/Player");
+        var player = GameObject.Find("/Player");
         age = 0;
         var forward = Camera.main.transform.forward.normalized;
         delta = forward * -0.5f;
-        gameObject.transform.position = Camera.main.transform.position - delta * (lifeCycle / 2);   
+        gameObject.transform.position = player.transform.position - delta * (lapse / 2);   
     }
 }
