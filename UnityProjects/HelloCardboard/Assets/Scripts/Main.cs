@@ -5,7 +5,7 @@ using UnityEngine;
 public class Main : MonoBehaviour
 {
     const int maxCount = 10;
-    const int interval = 60 * 1;
+    const int interval = 60 / 5;
 
     public GameObject projectile;
 
