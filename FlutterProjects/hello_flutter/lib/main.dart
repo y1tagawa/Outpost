@@ -1,13 +1,20 @@
-import 'dart:developer';
+// Copyright 2023 Yoshinori Tagawa. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:developer' as developer;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:hello_flutter/analog_clock.dart';
+import 'package:hello_flutter/timer_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
 void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
+    developer.log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
   });
 
   runApp(const ProviderScope(child: MyApp()));
@@ -24,23 +31,16 @@ class MyApp extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return MaterialApp(
-      title: 'OK Clock',
+      title: 'The OK Clock',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'OK Clock'),
+      home: const MyHomePage(title: 'The OK Clock'),
     );
   }
 }
+
+final _dateTimeNotifier = ValueNotifier(DateTime.now());
 
 class MyHomePage extends ConsumerWidget {
   const MyHomePage({super.key, required this.title});
@@ -49,41 +49,51 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mediaQuery = MediaQuery.of(context);
+    final clockDimension = math.min(mediaQuery.size.width, mediaQuery.size.height) * 0.9;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-          ],
+      body: TimerController.periodic(
+        duration: const Duration(milliseconds: 200),
+        onPeriodic: (_) {
+          final now = DateTime.now();
+          final value = _dateTimeNotifier.value;
+          if (now.second != value.second ||
+              now.minute != value.minute ||
+              now.hour != value.hour ||
+              now.day != value.day ||
+              now.month != value.month ||
+              now.year != value.year) {
+            _dateTimeNotifier.value = now;
+            //_logger.fine('update');
+          }
+        },
+        child: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Image.asset(
+                'assets/images/okcat.png',
+                width: clockDimension * 0.7,
+                height: clockDimension * 0.7,
+              ),
+              AnalogClock(
+                size: Size(clockDimension, clockDimension),
+                faceColor: const Color(0x00000000),
+                dateTimeNotifier: _dateTimeNotifier,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
