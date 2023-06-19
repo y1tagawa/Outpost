@@ -7,9 +7,12 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/analog_clock.dart';
+import 'package:hello_flutter/scope_functions.dart';
 import 'package:hello_flutter/timer_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
+
+final _okEnabledProvider = StateProvider((ref) => true);
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -21,7 +24,7 @@ void main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  static final _logger = Logger((MyApp).toString());
+  static final _logger = Logger('MyApp');
 
   const MyApp({super.key});
 
@@ -36,19 +39,27 @@ class MyApp extends ConsumerWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'The OK Clock'),
-    );
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
   }
 }
 
 final _dateTimeNotifier = ValueNotifier(DateTime.now());
 
 class MyHomePage extends ConsumerWidget {
+  static final _logger = Logger('MyHomePage');
+
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final okEnabled = ref.watch(_okEnabledProvider);
+
     final mediaQuery = MediaQuery.of(context);
     final clockDimension = math.min(mediaQuery.size.width, mediaQuery.size.height) * 0.9;
 
@@ -90,10 +101,27 @@ class MyHomePage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        backgroundColor: okEnabled ? null : Theme.of(context).disabledColor,
+        onPressed: okEnabled
+            ? () {
+                ref.read(_okEnabledProvider.notifier).state = false;
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(
+                      const SnackBar(content: Text('OK')),
+                    )
+                    .closed
+                    .then(
+                  (_) {
+                    ref.read(_okEnabledProvider.notifier).state = true;
+                  },
+                );
+              }
+            : null,
+        tooltip: 'OK',
+        child: const Icon(Icons.check),
       ),
-    );
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
   }
 }

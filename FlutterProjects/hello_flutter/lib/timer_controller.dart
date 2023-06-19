@@ -13,7 +13,7 @@ import 'package:logging/logging.dart';
 
 class TimerController extends StatefulWidget {
   // ignore: unused_field
-  static final _logger = Logger((TimerController).toString());
+  static final _logger = Logger('TimerController');
 
   final Duration duration;
   final VoidCallback? onTimer;
