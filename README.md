@@ -4,6 +4,12 @@
 
 サンプルアプリ置き場です。
 
-- Unity
+- UnityProjecsts
     - HelloCardboard
         - Google Cardboard for Unityを使用したサンプルアプリです。
+
+- FlutterProjects
+    - hello_flutter
+        - Flutterを使用したサンプルアプリです。
+
+ライセンスは各プロジェクトのLICENSEファイルを参照してください。
