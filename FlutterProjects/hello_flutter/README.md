@@ -6,7 +6,7 @@ Flutterで作成したサンプルアプリです。
 アナログ時計を表示します。
 チェックボタンをタップするとOKしてくれます。
 
-![スクリーンショット](https://github.com/y1tagawa/Outpost/assets/46841556/21148c28-38af-4b05-92c0-9a874a2e2ce1)
+![スクリーンショット](https://github.com/y1tagawa/Outpost/assets/46841556/21148c28-38af-4b05-92c0-9a874a2e2ce1 | width=100))
 
 https://github.com/y1tagawa/Outpost/assets/46841556/c121b54b-43c5-4d6c-b3f0-e9e5e7d9f6df
 
