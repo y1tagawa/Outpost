@@ -12,6 +12,10 @@ import 'package:hello_flutter/timer_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
+// 表示時刻
+final _dateTimeNotifier = ValueNotifier(DateTime.now());
+
+// OKボタン有効状態（連打対策）
 final _okEnabledProvider = StateProvider((ref) => true);
 
 void main() async {
@@ -45,8 +49,6 @@ class MyApp extends ConsumerWidget {
   }
 }
 
-final _dateTimeNotifier = ValueNotifier(DateTime.now());
-
 class MyHomePage extends ConsumerWidget {
   static final _logger = Logger('MyHomePage');
 
@@ -68,6 +70,7 @@ class MyHomePage extends ConsumerWidget {
         title: Text(title),
       ),
       body: TimerController.periodic(
+        // 0.2秒ごとに表示時刻と現在時刻を比較、秒以上が変わっていたら更新する。
         duration: const Duration(milliseconds: 200),
         onPeriodic: (_) {
           final now = DateTime.now();
@@ -94,6 +97,7 @@ class MyHomePage extends ConsumerWidget {
               AnalogClock(
                 size: Size(clockDimension, clockDimension),
                 faceColor: const Color(0x00000000),
+                // 表示時刻を監視し、更新されたら時計を再描画する。
                 dateTimeNotifier: _dateTimeNotifier,
               ),
             ],
