@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path/path.dart' as path;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
+import 'asset_database_helper.dart';
 
 //
 
@@ -75,22 +75,10 @@ class PoisDao {
   }
 }
 
-/// asset直下のデータベースファイルを開く。
-///
-Future<Database> openAssetDatabase(String dbName, {bool readOnly = true}) async {
-  final dbPath = path.join(await getDatabasesPath(), dbName);
-  final exists = await databaseExists(dbPath);
-  if (!exists) {
-    await Directory(path.dirname(dbPath)).create(recursive: true);
-    final data = await rootBundle.load(path.url.join('assets', dbName));
-    final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    await File(dbPath).writeAsBytes(bytes, flush: true);
-  }
-  return await openDatabase(dbPath, readOnly: true);
-}
+//
 
 final dbProvider = FutureProvider<Database>((ref) async {
-  return await openAssetDatabase('pois.sqlite3', readOnly: true);
+  return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
 
 final namesProvider = FutureProvider<Map<String, Name>>((ref) async {
