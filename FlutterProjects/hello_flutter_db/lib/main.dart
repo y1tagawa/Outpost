@@ -59,11 +59,11 @@ class NamesDao {
     List<Map> list = await database.rawQuery('SELECT * FROM names');
     var buffer = <String, Name>{};
     for (final row in list) {
-      final name = row['name'].toString();
+      final name = row['name']!.toString();
       buffer[name] = Name(
         name: name,
-        nameHira: row['name_hira'].toString(),
-        nameEn: row['name_en'].toString(),
+        nameHira: row['name_hira']!.toString(),
+        nameEn: row['name_en']!.toString(),
       );
     }
     return buffer;
@@ -79,12 +79,12 @@ class PoisDao {
     List<Map> list = await database.rawQuery('SELECT * FROM pois');
     var buffer = <String, Poi>{};
     for (final row in list) {
-      final name = row['name'].toString();
+      final name = row['name']!.toString();
       buffer[name] = Poi(
         name: name,
-        latitude: double.parse(row['latitude'].toString()),
-        longitude: double.parse(row['longitude'].toString()),
-        prefecture: row['prefecture'].toString(),
+        latitude: double.parse(row['latitude']!.toString()),
+        longitude: double.parse(row['longitude']!.toString()),
+        prefecture: row['prefecture']!.toString(),
       );
     }
     return buffer;
@@ -100,15 +100,15 @@ class LinksDao {
     List<Map> list = await database.rawQuery('SELECT * FROM links');
     var buffer = <String, Map<String, Link>>{};
     for (final row in list) {
-      final name = row['name'].toString();
-      final type = row['type_'].toString();
+      final name = row['name']!.toString();
+      final type = row['type_']!.toString();
       if (!buffer.containsKey(name)) {
         buffer[name] = <String, Link>{};
       }
       buffer[name]![type] = Link(
         name: name,
         type: type,
-        url: row['url'].toString(),
+        url: row['url']!.toString(),
       );
     }
     return buffer;
@@ -187,7 +187,7 @@ class PoiListView extends ConsumerWidget {
           subtitle: Text(name.nameHira), // todo: english
           trailing: PopupMenuButton(
             itemBuilder: (BuildContext context) {
-              final links_ = links[poi.name];
+              final linkList = links[poi.name];
               return [
                 PopupMenuItem(
                   child: const Text('Open Street Map'),
@@ -202,12 +202,12 @@ class PoiListView extends ConsumerWidget {
                     );
                   },
                 ),
-                if (links_ != null)
-                  for (final type in links_.keys)
+                if (linkList != null)
+                  for (final type in linkList.keys)
                     PopupMenuItem(
                       child: Text(type),
                       onTap: () async {
-                        await launchUrlString(links_[type]!.url);
+                        await launchUrlString(linkList[type]!.url);
                       },
                     ),
               ];
