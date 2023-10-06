@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'asset_database_helper.dart';
 
-//
+// DTOs
 
 class Name {
   final String name;
@@ -20,6 +21,34 @@ class Name {
     required this.nameEn,
   });
 }
+
+class Poi {
+  final String name;
+  final double latitude;
+  final double longitude;
+  final String prefecture;
+
+  Poi({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+    required this.prefecture,
+  });
+}
+
+class Link {
+  final String name;
+  final String type;
+  final String url;
+
+  Link({
+    required this.name,
+    required this.type,
+    required this.url,
+  });
+}
+
+// DAOs
 
 class NamesDao {
   static final NamesDao instance = NamesDao._internal();
@@ -39,20 +68,6 @@ class NamesDao {
     }
     return buffer;
   }
-}
-
-class Poi {
-  final String name;
-  final double latitude;
-  final double longitude;
-  final String prefecture;
-
-  Poi({
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-    required this.prefecture,
-  });
 }
 
 class PoisDao {
@@ -76,6 +91,32 @@ class PoisDao {
   }
 }
 
+class LinksDao {
+  static final LinksDao instance = LinksDao._internal();
+  LinksDao._internal();
+  factory LinksDao() => instance;
+
+  Future<Map<String /*name*/, Map<String /*type*/, Link>>> getAll(Database database) async {
+    List<Map> list = await database.rawQuery('SELECT * FROM links');
+    var buffer = <String, Map<String, Link>>{};
+    for (final row in list) {
+      final name = row['name'].toString();
+      final type = row['type_'].toString();
+      if (!buffer.containsKey(name)) {
+        buffer[name] = <String, Link>{};
+      }
+      buffer[name]![type] = Link(
+        name: name,
+        type: type,
+        url: row['url'].toString(),
+      );
+    }
+    return buffer;
+  }
+}
+
+// providers
+
 final dbProvider = FutureProvider<Database>((ref) async {
   return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
@@ -83,10 +124,12 @@ final dbProvider = FutureProvider<Database>((ref) async {
 class MainData {
   final Map<String, Poi> pois;
   final Map<String, Name> names;
+  final Map<String, Map<String, Link>> links;
   // todo: prefecture
   const MainData({
     required this.pois,
     required this.names,
+    required this.links,
   });
 }
 
@@ -95,8 +138,11 @@ final mainDataProvider = FutureProvider<MainData>((ref) async {
   return MainData(
     pois: await PoisDao.instance.getAll(db),
     names: await NamesDao.instance.getAll(db),
+    links: await LinksDao.instance.getAll(db),
   );
 });
+
+// main
 
 void main() {
   if (Platform.isWindows || Platform.isLinux) {
@@ -117,12 +163,14 @@ void main() {
 class PoiListView extends ConsumerWidget {
   final Map<String /*name*/, Poi> pois;
   final Map<String /*name*/, Name> names;
+  final Map<String /*name*/, Map<String /*type*/, Link>> links;
 
   // todo: sort order, filters
   const PoiListView({
     super.key,
     required this.pois,
     required this.names,
+    required this.links,
   });
 
   @override
@@ -139,20 +187,29 @@ class PoiListView extends ConsumerWidget {
           subtitle: Text(name.nameHira), // todo: english
           trailing: PopupMenuButton(
             itemBuilder: (BuildContext context) {
+              final links_ = links[poi.name];
               return [
                 PopupMenuItem(
-                    child: const Text('Open Street Map'),
-                    onTap: () async {
-                      await launchUrl(
-                        Uri(scheme: 'https', host: 'www.openstreetmap.org', queryParameters: {
-                          'mlat': '${poi.latitude}',
-                          'mlon': '${poi.longitude}',
-                          'zoom': '12',
-                          'layers': 'M',
-                        }),
-                        mode: LaunchMode.externalApplication,
-                      );
-                    }),
+                  child: const Text('Open Street Map'),
+                  onTap: () async {
+                    await launchUrl(
+                      Uri(scheme: 'https', host: 'www.openstreetmap.org', queryParameters: {
+                        'mlat': '${poi.latitude}',
+                        'mlon': '${poi.longitude}',
+                        'zoom': '12',
+                        'layers': 'M',
+                      }),
+                    );
+                  },
+                ),
+                if (links_ != null)
+                  for (final type in links_.keys)
+                    PopupMenuItem(
+                      child: Text(type),
+                      onTap: () async {
+                        await launchUrlString(links_[type]!.url);
+                      },
+                    ),
               ];
             },
             child: const Icon(Icons.more_vert),
@@ -186,6 +243,7 @@ class MyApp extends ConsumerWidget {
           data: (data) => PoiListView(
             pois: data.pois,
             names: data.names,
+            links: data.links,
           ),
           error: (error, _) => Center(child: Text(error.toString())),
           loading: () => const Center(child: CircularProgressIndicator()),

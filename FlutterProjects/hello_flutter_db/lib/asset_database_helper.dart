@@ -13,13 +13,14 @@ class AssetDatabaseHelper {
   ///
   static Future<Database> openAssetDatabase(String dbName, {bool readOnly = true}) async {
     final dbPath = join(await getDatabasesPath(), dbName);
-    final exists = await databaseExists(dbPath);
-    if (!exists) {
-      await Directory(dirname(dbPath)).create(recursive: true);
-      final data = await rootBundle.load(url.join('assets', dbName));
-      final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      await File(dbPath).writeAsBytes(bytes, flush: true);
-    }
+
+    await deleteDatabase(dbPath);
+
+    await Directory(dirname(dbPath)).create(recursive: true);
+    final data = await rootBundle.load(url.join('assets', dbName));
+    final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    await File(dbPath).writeAsBytes(bytes, flush: true);
+
     return await openDatabase(dbPath, readOnly: true);
   }
 }
