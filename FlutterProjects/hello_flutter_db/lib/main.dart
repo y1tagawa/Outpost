@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'asset_database_helper.dart';
 
@@ -136,6 +137,26 @@ class PoiListView extends ConsumerWidget {
         return ListTile(
           title: Text(poi.name),
           subtitle: Text(name.nameHira), // todo: english
+          trailing: PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                    child: const Text('Open Street Map'),
+                    onTap: () async {
+                      await launchUrl(
+                        Uri(scheme: 'https', host: 'www.openstreetmap.org', queryParameters: {
+                          'mlat': '${poi.latitude}',
+                          'mlon': '${poi.longitude}',
+                          'zoom': '12',
+                          'layers': 'M',
+                        }),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }),
+              ];
+            },
+            child: const Icon(Icons.more_vert),
+          ),
         );
       },
       itemCount: poiList.length,
