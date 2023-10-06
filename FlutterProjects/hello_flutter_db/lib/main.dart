@@ -75,20 +75,26 @@ class PoisDao {
   }
 }
 
-//
-
 final dbProvider = FutureProvider<Database>((ref) async {
   return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
 
-final namesProvider = FutureProvider<Map<String, Name>>((ref) async {
-  final db = await ref.watch(dbProvider.future);
-  return NamesDao.instance.getAll(db);
-});
+class MainData {
+  final Map<String, Poi> pois;
+  final Map<String, Name> names;
+  // todo: prefecture
+  const MainData({
+    required this.pois,
+    required this.names,
+  });
+}
 
-final poisProvider = FutureProvider<Map<String, Poi>>((ref) async {
+final mainDataProvider = FutureProvider<MainData>((ref) async {
   final db = await ref.watch(dbProvider.future);
-  return PoisDao.instance.getAll(db);
+  return MainData(
+    pois: await PoisDao.instance.getAll(db),
+    names: await NamesDao.instance.getAll(db),
+  );
 });
 
 void main() {
@@ -105,13 +111,47 @@ void main() {
   );
 }
 
+/// POIリストビュー
+///
+class PoiListView extends ConsumerWidget {
+  final Map<String /*name*/, Poi> pois;
+  final Map<String /*name*/, Name> names;
+
+  // todo: sort order, filters
+  const PoiListView({
+    super.key,
+    required this.pois,
+    required this.names,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // todo: sort, filter
+    final poiList = pois.values.toList(growable: false);
+
+    return ListView.builder(
+      itemBuilder: (BuildContext context_, int index) {
+        final poi = poiList[index];
+        final name = names[poi.name]!;
+        return ListTile(
+          title: Text(poi.name),
+          subtitle: Text(name.nameHira), // todo: english
+        );
+      },
+      itemCount: poiList.length,
+      itemExtent: 54,
+    );
+  }
+}
+
+///
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pois = ref.watch(poisProvider);
+    final mainData = ref.watch(mainDataProvider);
 
     return MaterialApp(
       title: 'POIs',
@@ -121,8 +161,11 @@ class MyApp extends ConsumerWidget {
       ),
       home: Scaffold(
         appBar: AppBar(title: const Text('POIs')),
-        body: pois.when(
-          data: (data) => Center(child: Text(data.keys.join(','))),
+        body: mainData.when(
+          data: (data) => PoiListView(
+            pois: data.pois,
+            names: data.names,
+          ),
           error: (error, _) => Center(child: Text(error.toString())),
           loading: () => const Center(child: CircularProgressIndicator()),
         ),
