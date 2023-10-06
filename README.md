@@ -11,5 +11,10 @@
 - FlutterProjects
     - hello_flutter
         - Flutterを使用したサンプルアプリです。
+        - CustomPainterを使用してアニメーションを描画しています。
+
+    - hello_flutter_db
+        - Flutterを使用したサンプルアプリです。
+        - アプリにバンドルしたデータベースを使用しています。
 
 ライセンスは各プロジェクトのLICENSEファイルを参照してください。
