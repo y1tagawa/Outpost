@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:hello_flutter/analog_clock.dart';
 import 'package:hello_flutter/scope_functions.dart';
-import 'package:hello_flutter/timer_controller.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -32,17 +32,15 @@ class MyApp extends ConsumerWidget {
 
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
     return MaterialApp(
-      title: 'The OK Clock',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'The OK Clock'),
+      home: MyHomePage(),
     ).also((_) {
       _logger.fine('[o] build');
     });
@@ -52,9 +50,25 @@ class MyApp extends ConsumerWidget {
 class MyHomePage extends ConsumerWidget {
   static final _logger = Logger('MyHomePage');
 
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  MyHomePage({super.key}) {
+    // 0.2秒ごとに表示時刻と現在時刻を比較、秒以上が変わっていたら表示時刻を更新する。
+    Timer.periodic(
+      const Duration(milliseconds: 200),
+      (_) {
+        final now = DateTime.now();
+        final value = _dateTimeNotifier.value;
+        if (now.second != value.second ||
+            now.minute != value.minute ||
+            now.hour != value.hour ||
+            now.day != value.day ||
+            now.month != value.month ||
+            now.year != value.year) {
+          _dateTimeNotifier.value = now;
+          //_logger.fine('update');
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -67,41 +81,24 @@ class MyHomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: const Text('The OK Clock'),
       ),
-      body: TimerController.periodic(
-        // 0.2秒ごとに表示時刻と現在時刻を比較、秒以上が変わっていたら更新する。
-        duration: const Duration(milliseconds: 200),
-        onPeriodic: (_) {
-          final now = DateTime.now();
-          final value = _dateTimeNotifier.value;
-          if (now.second != value.second ||
-              now.minute != value.minute ||
-              now.hour != value.hour ||
-              now.day != value.day ||
-              now.month != value.month ||
-              now.year != value.year) {
-            _dateTimeNotifier.value = now;
-            //_logger.fine('update');
-          }
-        },
-        child: Center(
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Image.asset(
-                'assets/images/okcat.png',
-                width: clockDimension * 0.7,
-                height: clockDimension * 0.7,
-              ),
-              AnalogClock(
-                size: Size(clockDimension, clockDimension),
-                faceColor: const Color(0x00000000),
-                // 表示時刻を監視し、更新されたら時計を再描画する。
-                dateTimeNotifier: _dateTimeNotifier,
-              ),
-            ],
-          ),
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Image.asset(
+              'assets/images/okcat.png',
+              width: clockDimension * 0.7,
+              height: clockDimension * 0.7,
+            ),
+            AnalogClock(
+              size: Size(clockDimension, clockDimension),
+              faceColor: const Color(0x00000000),
+              // 表示時刻を監視し、更新されたら時計を再描画する。
+              dateTimeNotifier: _dateTimeNotifier,
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
