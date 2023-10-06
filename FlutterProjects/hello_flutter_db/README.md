@@ -1,16 +1,13 @@
 # hello_flutter_db
 
-A new Flutter project.
+## 概要
 
-## Getting Started
+アプリにバンドルしたデータベースを使用しています。
 
-This project is a starting point for a Flutter application.
+<img width="231" alt="pois_1" src="https://github.com/y1tagawa/Outpost/assets/46841556/3b9bf045-3f96-43d9-a07f-8988f0165719">
 
-A few resources to get you started if this is your first Flutter project:
+各POIをOpen Street Mapや、関連リンクをブラウザで開いたりします。
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="231" alt="pois_2" src="https://github.com/y1tagawa/Outpost/assets/46841556/48351520-be9a-4d95-b26d-b2748dcc13c1">
+
