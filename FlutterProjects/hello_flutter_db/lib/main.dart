@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hello_flutter_db/prefecture_checkbox.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -43,9 +44,12 @@ final mainDataProvider = FutureProvider<MainData>((ref) async {
 
 final languageProvider = StateProvider<int>((ref) => 0);
 
+final prefectureFilterProvider = StateProvider<List<bool>>(
+  (ref) => List<bool>.filled(PrefectureCheckbox.prefectureNames.length, true),
+);
+
 void main() {
   if (Platform.isWindows || Platform.isLinux) {
-    // Initialize FFI
     sqfliteFfiInit();
   }
   databaseFactory = databaseFactoryFfi;
@@ -99,6 +103,33 @@ class MyApp extends ConsumerWidget {
       );
     }
 
+    void showPrefectureFilterDialog(BuildContext context) async {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Column(
+              children: [
+                Expanded(
+                  child: PrefectureCheckbox(
+                    value: ref.watch(prefectureFilterProvider),
+                    onChanged: (value) {
+                      assert(value.length == PrefectureCheckbox.prefectureNames.length);
+                      ref.watch(prefectureFilterProvider.notifier).state = value;
+                    },
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                )
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     return MaterialApp(
       title: 'POIs',
       theme: ThemeData(
@@ -124,6 +155,14 @@ class MyApp extends ConsumerWidget {
                         );
                       },
                     ),
+                    Builder(
+                      builder: (BuildContext context) {
+                        return IconButton(
+                          onPressed: () => showPrefectureFilterDialog(context),
+                          icon: const Icon(Icons.public),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -132,6 +171,7 @@ class MyApp extends ConsumerWidget {
                   pois: data.pois,
                   names: data.names,
                   links: data.links,
+                  prefectureFilter: ref.watch(prefectureFilterProvider),
                   language: language,
                 ),
               ),

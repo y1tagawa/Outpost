@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:hello_flutter_db/prefecture_checkbox.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -17,6 +18,7 @@ class PoiListView extends ConsumerWidget {
   final Map<String /*name*/, Poi> pois;
   final Map<String /*name*/, Name> names;
   final Map<String /*name*/, Map<String /*type*/, Link>> links;
+  final List<bool> prefectureFilter;
   final int language;
 
   // todo: sort order, filters
@@ -25,13 +27,16 @@ class PoiListView extends ConsumerWidget {
     required this.pois,
     required this.names,
     required this.links,
+    required this.prefectureFilter,
     required this.language,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // todo: sort, filter
-    final poiList = pois.values.toList(growable: false);
+    final poiList = pois.values
+        .where((it) => prefectureFilter[PrefectureCheckbox.prefectureNames.indexOf(it.prefecture)])
+        .toList(growable: false);
 
     return ListView.builder(
       itemBuilder: (BuildContext context_, int index) {
