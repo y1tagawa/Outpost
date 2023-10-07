@@ -42,12 +42,14 @@ class PrefectureCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 全国チェック値
     final allValue = value.every((it) => it)
         ? true
         : value.every((it) => !it)
             ? false
             : null;
 
+    // 各地方チェック値
     final areaValue = [
       for (final area in areas)
         area.value.every((it) => value[it])
@@ -57,10 +59,12 @@ class PrefectureCheckbox extends StatelessWidget {
                 : null,
     ];
 
+    // 全国チェックボックス
     CheckboxListTile allListTile() {
       return CheckboxListTile(
         value: allValue,
         tristate: true,
+        contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
         title: const Text('全国'),
         onChanged: (_) {
           onChanged?.call(List<bool>.filled(value.length, allValue != true));
@@ -68,11 +72,13 @@ class PrefectureCheckbox extends StatelessWidget {
       );
     }
 
+    // 各地方チェックボックス
     CheckboxListTile areaListTile(int index) {
       return CheckboxListTile(
         value: areaValue[index],
         tristate: true,
-        title: Text('  ${areas[index].key}'),
+        contentPadding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
+        title: Text(areas[index].key),
         onChanged: (_) {
           final newValue = [...value];
           final f = areaValue[index] != true;
@@ -84,11 +90,13 @@ class PrefectureCheckbox extends StatelessWidget {
       );
     }
 
+    // 各都道府県チェックボックス
     CheckboxListTile prefectureListTile(int index) {
       return CheckboxListTile(
         value: value[index],
         tristate: false,
-        title: Text('    ${prefectureNames[index]}'),
+        contentPadding: const EdgeInsetsDirectional.fromSTEB(28, 0, 0, 0),
+        title: Text(prefectureNames[index]),
         onChanged: (_) {
           final newValue = [...value];
           newValue[index] = !value[index];
