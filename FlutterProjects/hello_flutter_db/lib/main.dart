@@ -126,24 +126,30 @@ class MyHomePage extends ConsumerWidget {
       return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return Dialog(
-            child: Column(
-              children: [
-                Expanded(
-                  child: PrefectureCheckbox(
-                    value: ref.watch(prefectureFilterProvider),
-                    onChanged: (value) {
-                      assert(value.length == PrefectureCheckbox.prefectureNames.length);
-                      ref.watch(prefectureFilterProvider.notifier).state = value;
-                    },
-                  ),
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Dialog(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: PrefectureCheckbox(
+                        value: ref.watch(prefectureFilterProvider),
+                        onChanged: (value) {
+                          assert(value.length == PrefectureCheckbox.prefectureNames.length);
+                          setState(
+                            () => ref.watch(prefectureFilterProvider.notifier).state = value,
+                          );
+                        },
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    )
+                  ],
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                )
-              ],
-            ),
+              );
+            },
           );
         },
       );
