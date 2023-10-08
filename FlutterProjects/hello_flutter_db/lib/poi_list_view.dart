@@ -1,10 +1,7 @@
 // Copyright 2023 Yoshinori Tagawa. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:hello_flutter_db/prefecture_checkbox.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -12,6 +9,8 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'daos/links_dao.dart';
 import 'daos/names_dao.dart';
 import 'daos/pois_dao.dart';
+import 'prefecture_checkbox.dart';
+import 'tts_helper.dart';
 
 /// POIリストビュー
 ///
@@ -51,8 +50,7 @@ class PoiListView extends ConsumerWidget {
             language == 1 ? name.nameEn : name.nameHira,
           ),
           onLongPress: () async {
-            await tts.setLanguage(language == 1 ? 'en-US' : 'ja-JP');
-            await tts.speak(language == 1 ? name.nameEn : name.nameHira);
+            await tts.speakName(name, language);
           },
           trailing: PopupMenuButton(
             itemBuilder: (BuildContext context) {

@@ -1,11 +1,10 @@
 // Copyright 2023 Yoshinori Tagawa. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 import 'daos/names_dao.dart';
+import 'tts_helper.dart';
 
 class PrefectureCheckbox extends StatelessWidget {
   static const prefectureNames = [
@@ -73,9 +72,7 @@ class PrefectureCheckbox extends StatelessWidget {
     Widget allListTile() {
       const name = '全国';
       return GestureDetector(
-        onLongPress: () async => await tts.speak(
-          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
-        ),
+        onLongPress: () async => await tts.speakName(names[name]!, language),
         child: CheckboxListTile(
           value: allValue,
           tristate: true,
@@ -92,9 +89,7 @@ class PrefectureCheckbox extends StatelessWidget {
     Widget regionListTile(int index) {
       final name = regions_[index].key;
       return GestureDetector(
-        onLongPress: () async => await tts.speak(
-          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
-        ),
+        onLongPress: () async => await tts.speakName(names[name]!, language),
         child: CheckboxListTile(
           value: regionValue[index],
           tristate: true,
@@ -116,9 +111,7 @@ class PrefectureCheckbox extends StatelessWidget {
     Widget prefectureListTile(int index) {
       final name = prefectureNames[index];
       return GestureDetector(
-        onLongPress: () async => await tts.speak(
-          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
-        ),
+        onLongPress: () async => await tts.speakName(names[name]!, language),
         child: CheckboxListTile(
           value: value[index],
           tristate: false,
