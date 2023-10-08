@@ -5,7 +5,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hello_flutter_db/prefecture_checkbox.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -14,9 +14,10 @@ import 'daos/links_dao.dart';
 import 'daos/names_dao.dart';
 import 'daos/pois_dao.dart';
 import 'poi_list_view.dart';
+import 'prefecture_checkbox.dart';
 
 // データベース
-final dbProvider = FutureProvider<Database>((ref) async {
+final dbProvider_ = FutureProvider<Database>((ref) async {
   return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
 
@@ -25,30 +26,33 @@ class MainData {
   final Map<String, Poi> pois;
   final Map<String, Name> names;
   final Map<String, Map<String, Link>> links;
+  final FlutterTts tts;
   // todo: prefecture
   const MainData({
     required this.pois,
     required this.names,
     required this.links,
+    required this.tts,
   });
 }
 
-final mainDataProvider = FutureProvider<MainData>((ref) async {
-  final db = await ref.watch(dbProvider.future);
+final mainDataProvider_ = FutureProvider<MainData>((ref) async {
+  final db = await ref.watch(dbProvider_.future);
   return MainData(
     pois: await PoisDao.instance.getAll(db),
     names: await NamesDao.instance.getAll(db),
     links: await LinksDao.instance.getAll(db),
+    tts: FlutterTts(), // todo: Android support
   );
 });
 
 // 都道府県フィルタ
-final prefectureFilterProvider = StateProvider<List<bool>>(
+final prefectureFilterProvider_ = StateProvider<List<bool>>(
   (ref) => List<bool>.filled(PrefectureCheckbox.prefectureNames.length, true),
 );
 
 // サブタイトル言語
-final languageProvider = StateProvider<int>((ref) => 0);
+final languageProvider_ = StateProvider<int>((ref) => 0);
 
 // メイン
 void main() {
@@ -83,8 +87,8 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mainData = ref.watch(mainDataProvider);
-    final language = ref.watch(languageProvider);
+    final mainData = ref.watch(mainDataProvider_);
+    final language = ref.watch(languageProvider_);
 
     // サブタイトル言語設定ダイアログ
     void showLanguageDialog(BuildContext context) async {
@@ -101,7 +105,7 @@ class MyHomePage extends ConsumerWidget {
                   groupValue: language,
                   title: const Text('日本語'),
                   onChanged: (_) {
-                    ref.watch(languageProvider.notifier).state = 0;
+                    ref.watch(languageProvider_.notifier).state = 0;
                     Navigator.pop(context);
                   },
                 ),
@@ -110,7 +114,7 @@ class MyHomePage extends ConsumerWidget {
                   groupValue: language,
                   title: const Text('English'),
                   onChanged: (_) {
-                    ref.watch(languageProvider.notifier).state = 1;
+                    ref.watch(languageProvider_.notifier).state = 1;
                     Navigator.pop(context);
                   },
                 ),
@@ -122,7 +126,12 @@ class MyHomePage extends ConsumerWidget {
     }
 
     // 都道府県フィルタ設定ダイアログ
-    void showPrefectureFilterDialog(BuildContext context) async {
+    void showPrefectureFilterDialog(
+      BuildContext context,
+      Map<String, Name> names,
+      int language,
+      FlutterTts tts,
+    ) async {
       return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
@@ -133,11 +142,14 @@ class MyHomePage extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: PrefectureCheckbox(
-                        value: ref.watch(prefectureFilterProvider),
+                        names: names,
+                        language: language,
+                        tts: tts,
+                        value: ref.watch(prefectureFilterProvider_),
                         onChanged: (value) {
                           assert(value.length == PrefectureCheckbox.prefectureNames.length);
                           setState(
-                            () => ref.watch(prefectureFilterProvider.notifier).state = value,
+                            () => ref.watch(prefectureFilterProvider_.notifier).state = value,
                           );
                         },
                       ),
@@ -172,7 +184,12 @@ class MyHomePage extends ConsumerWidget {
                     icon: const Icon(Icons.language),
                   ),
                   IconButton(
-                    onPressed: () => showPrefectureFilterDialog(context),
+                    onPressed: () => showPrefectureFilterDialog(
+                      context,
+                      data.names,
+                      language,
+                      data.tts,
+                    ),
                     icon: const Icon(Icons.public),
                   ),
                 ],
@@ -184,8 +201,9 @@ class MyHomePage extends ConsumerWidget {
                 pois: data.pois,
                 names: data.names,
                 links: data.links,
-                prefectureFilter: ref.watch(prefectureFilterProvider),
+                prefectureFilter: ref.watch(prefectureFilterProvider_),
                 language: language,
+                tts: data.tts,
               ),
             ),
           ],

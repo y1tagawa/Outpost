@@ -21,17 +21,17 @@ class PoiListView extends ConsumerWidget {
   final Map<String /*name*/, Map<String /*type*/, Link>> links;
   final List<bool> prefectureFilter;
   final int language;
-
-  final FlutterTts tts = FlutterTts();
+  final FlutterTts tts;
 
   // todo: sort order, filters
-  PoiListView({
+  const PoiListView({
     super.key,
     required this.pois,
     required this.names,
     required this.links,
     required this.prefectureFilter,
     required this.language,
+    required this.tts,
   });
 
   @override
@@ -51,7 +51,6 @@ class PoiListView extends ConsumerWidget {
             language == 1 ? name.nameEn : name.nameHira,
           ),
           onLongPress: () async {
-            await tts.stop();
             await tts.setLanguage(language == 1 ? 'en_US' : 'ja_JP');
             await tts.speak(language == 1 ? name.nameEn : name.nameHira);
           },

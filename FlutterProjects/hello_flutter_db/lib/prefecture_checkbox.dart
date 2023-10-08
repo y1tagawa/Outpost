@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
+import 'daos/names_dao.dart';
 
 class PrefectureCheckbox extends StatelessWidget {
   static const prefectureNames = [
@@ -17,25 +20,32 @@ class PrefectureCheckbox extends StatelessWidget {
     '徳島県', '香川県', '愛媛県', '高知県', // 四国
     '福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', // 九州
     '沖縄県',
+    '伊豆・小笠原諸島'
   ];
 
-  static final areas = {
-    '東北': [1, 2, 3, 4, 5, 6],
-    '関東': [7, 8, 9, 10, 11, 12, 13],
-    '北陸': [14, 15, 16, 17],
-    '甲信': [18, 19],
-    '東海': [20, 21, 22, 23],
-    '近畿': [24, 25, 26, 27, 28, 29],
-    '中国': [30, 31, 32, 33, 34],
-    '四国': [35, 36, 37, 38],
-    '九州': [39, 40, 41, 42, 43, 44, 45],
+  static final regions_ = {
+    '東北地方': [1, 2, 3, 4, 5, 6],
+    '関東地方': [7, 8, 9, 10, 11, 12, 47, 13],
+    '北陸地方': [14, 15, 16, 17],
+    '甲信地方': [18, 19],
+    '東海地方': [20, 21, 22, 23],
+    '近畿地方': [24, 25, 26, 27, 28, 29],
+    '中国地方': [30, 31, 32, 33, 34],
+    '四国地方': [35, 36, 37, 38],
+    '九州地方': [39, 40, 41, 42, 43, 44, 45],
   }.entries.toList();
 
+  final Map<String, Name> names;
+  final int language;
+  final FlutterTts tts;
   final List<bool> value;
   final void Function(List<bool>)? onChanged;
 
   const PrefectureCheckbox({
     super.key,
+    required this.names,
+    required this.language,
+    required this.tts,
     required this.value,
     this.onChanged,
   }) : assert(value.length == prefectureNames.length);
@@ -50,58 +60,76 @@ class PrefectureCheckbox extends StatelessWidget {
             : null;
 
     // 各地方チェック値
-    final areaValue = [
-      for (final area in areas)
-        area.value.every((it) => value[it])
+    final regionValue = [
+      for (final region in regions_)
+        region.value.every((it) => value[it])
             ? true
-            : area.value.every((it) => !value[it])
+            : region.value.every((it) => !value[it])
                 ? false
                 : null,
     ];
 
     // 全国チェックボックス
-    CheckboxListTile allListTile() {
-      return CheckboxListTile(
-        value: allValue,
-        tristate: true,
-        contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
-        title: const Text('全国'),
-        onChanged: (_) {
-          onChanged?.call(List<bool>.filled(value.length, allValue != true));
-        },
+    Widget allListTile() {
+      const name = '全国';
+      return GestureDetector(
+        onLongPress: () async => await tts.speak(
+          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
+        ),
+        child: CheckboxListTile(
+          value: allValue,
+          tristate: true,
+          contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
+          title: const Text(name),
+          onChanged: (_) {
+            onChanged?.call(List<bool>.filled(value.length, allValue != true));
+          },
+        ),
       );
     }
 
     // 各地方チェックボックス
-    CheckboxListTile areaListTile(int index) {
-      return CheckboxListTile(
-        value: areaValue[index],
-        tristate: true,
-        contentPadding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-        title: Text(areas[index].key),
-        onChanged: (_) {
-          final newValue = [...value];
-          final f = areaValue[index] != true;
-          for (final i in areas[index].value) {
-            newValue[i] = f;
-          }
-          onChanged?.call(newValue);
-        },
+    Widget regionListTile(int index) {
+      final name = regions_[index].key;
+      return GestureDetector(
+        onLongPress: () async => await tts.speak(
+          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
+        ),
+        child: CheckboxListTile(
+          value: regionValue[index],
+          tristate: true,
+          contentPadding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
+          title: Text(name),
+          onChanged: (_) {
+            final newValue = [...value];
+            final f = regionValue[index] != true;
+            for (final i in regions_[index].value) {
+              newValue[i] = f;
+            }
+            onChanged?.call(newValue);
+          },
+        ),
       );
     }
 
     // 各都道府県チェックボックス
-    CheckboxListTile prefectureListTile(int index) {
-      return CheckboxListTile(
-        value: value[index],
-        tristate: false,
-        contentPadding: const EdgeInsetsDirectional.fromSTEB(28, 0, 0, 0),
-        title: Text(prefectureNames[index]),
-        onChanged: (_) {
-          final newValue = [...value];
-          newValue[index] = !value[index];
-          onChanged?.call(newValue);
-        },
+    Widget prefectureListTile(int index) {
+      final name = prefectureNames[index];
+      return GestureDetector(
+        onLongPress: () async => await tts.speak(
+          language == 1 ? names[name]!.nameEn : names[name]!.nameHira,
+        ),
+        child: CheckboxListTile(
+          value: value[index],
+          tristate: false,
+          contentPadding: const EdgeInsetsDirectional.fromSTEB(28, 0, 0, 0),
+          title: Text(name),
+          onChanged: (_) {
+            final newValue = [...value];
+            newValue[index] = !value[index];
+            onChanged?.call(newValue);
+          },
+        ),
       );
     }
 
@@ -113,10 +141,10 @@ class PrefectureCheckbox extends StatelessWidget {
         // 北海道
         prefectureListTile(0),
         // 各地方
-        for (int i = 0; i < areas.length; ++i) ...[
-          areaListTile(i),
+        for (int i = 0; i < regions_.length; ++i) ...[
+          regionListTile(i),
           // 各都府県
-          for (final j in areas[i].value) prefectureListTile(j),
+          for (final j in regions_[i].value) prefectureListTile(j),
         ],
         // 沖縄
         prefectureListTile(46),
