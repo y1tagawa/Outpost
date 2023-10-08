@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hello_flutter_db/prefecture_checkbox.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -14,12 +15,12 @@ import 'daos/names_dao.dart';
 import 'daos/pois_dao.dart';
 import 'poi_list_view.dart';
 
-// providers
-
+// データベース
 final dbProvider = FutureProvider<Database>((ref) async {
   return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
 
+// 起動時ロードデータ
 class MainData {
   final Map<String, Poi> pois;
   final Map<String, Name> names;
@@ -41,11 +42,17 @@ final mainDataProvider = FutureProvider<MainData>((ref) async {
   );
 });
 
+// 都道府県フィルタ
+final prefectureFilterProvider = StateProvider<List<bool>>(
+  (ref) => List<bool>.filled(PrefectureCheckbox.prefectureNames.length, true),
+);
+
+// サブタイトル言語
 final languageProvider = StateProvider<int>((ref) => 0);
 
+// メイン
 void main() {
   if (Platform.isWindows || Platform.isLinux) {
-    // Initialize FFI
     sqfliteFfiInit();
   }
   databaseFactory = databaseFactoryFfi;
@@ -62,9 +69,24 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final mainData = ref.watch(mainDataProvider);
     final language = ref.watch(languageProvider);
 
+    // サブタイトル言語設定ダイアログ
     void showLanguageDialog(BuildContext context) async {
       return showDialog<void>(
         context: context,
@@ -99,47 +121,77 @@ class MyApp extends ConsumerWidget {
       );
     }
 
-    return MaterialApp(
-      title: 'POIs',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: false,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('POIs'),
-        ),
-        body: mainData.when(
-          data: (data) => Column(
-            children: [
-              SizedBox(
-                height: 48,
-                child: Row(
+    // 都道府県フィルタ設定ダイアログ
+    void showPrefectureFilterDialog(BuildContext context) async {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Dialog(
+                child: Column(
                   children: [
-                    Builder(
-                      builder: (BuildContext context) {
-                        return IconButton(
-                          onPressed: () => showLanguageDialog(context),
-                          icon: const Icon(Icons.language),
-                        );
-                      },
+                    Expanded(
+                      child: PrefectureCheckbox(
+                        value: ref.watch(prefectureFilterProvider),
+                        onChanged: (value) {
+                          assert(value.length == PrefectureCheckbox.prefectureNames.length);
+                          setState(
+                            () => ref.watch(prefectureFilterProvider.notifier).state = value,
+                          );
+                        },
+                      ),
                     ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('OK'),
+                    )
                   ],
                 ),
+              );
+            },
+          );
+        },
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('POIs'),
+      ),
+      body: mainData.when(
+        data: (data) => Column(
+          children: [
+            // 設定パネル
+            SizedBox(
+              height: 48,
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => showLanguageDialog(context),
+                    icon: const Icon(Icons.language),
+                  ),
+                  IconButton(
+                    onPressed: () => showPrefectureFilterDialog(context),
+                    icon: const Icon(Icons.public),
+                  ),
+                ],
               ),
-              Expanded(
-                child: PoiListView(
-                  pois: data.pois,
-                  names: data.names,
-                  links: data.links,
-                  language: language,
-                ),
+            ),
+            // POIリスト
+            Expanded(
+              child: PoiListView(
+                pois: data.pois,
+                names: data.names,
+                links: data.links,
+                prefectureFilter: ref.watch(prefectureFilterProvider),
+                language: language,
               ),
-            ],
-          ),
-          error: (error, _) => Center(child: Text(error.toString())),
-          loading: () => const Center(child: CircularProgressIndicator()),
+            ),
+          ],
         ),
+        error: (error, _) => Center(child: Text(error.toString())),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
