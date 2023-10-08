@@ -80,7 +80,7 @@ class PrefectureCheckbox extends StatelessWidget {
           value: allValue,
           tristate: true,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
-          title: const Text(name),
+          title: Text(language == 1 ? names[name]!.nameEn : name),
           onChanged: (_) {
             onChanged?.call(List<bool>.filled(value.length, allValue != true));
           },
@@ -99,7 +99,7 @@ class PrefectureCheckbox extends StatelessWidget {
           value: regionValue[index],
           tristate: true,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-          title: Text(name),
+          title: Text(language == 1 ? names[name]!.nameEn : name),
           onChanged: (_) {
             final newValue = [...value];
             final f = regionValue[index] != true;
@@ -123,7 +123,7 @@ class PrefectureCheckbox extends StatelessWidget {
           value: value[index],
           tristate: false,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(28, 0, 0, 0),
-          title: Text(name),
+          title: Text(language == 1 ? names[name]!.nameEn : name),
           onChanged: (_) {
             final newValue = [...value];
             newValue[index] = !value[index];

@@ -91,7 +91,10 @@ class MyHomePage extends ConsumerWidget {
     final language = ref.watch(languageProvider_);
 
     // サブタイトル言語設定ダイアログ
-    void showLanguageDialog(BuildContext context) async {
+    void showLanguageDialog(
+      BuildContext context,
+      FlutterTts tts,
+    ) async {
       return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
@@ -100,23 +103,35 @@ class MyHomePage extends ConsumerWidget {
               itemExtent: 48,
               shrinkWrap: true,
               children: [
-                RadioListTile(
-                  value: 0,
-                  groupValue: language,
-                  title: const Text('日本語'),
-                  onChanged: (_) {
-                    ref.watch(languageProvider_.notifier).state = 0;
-                    Navigator.pop(context);
+                GestureDetector(
+                  onLongPress: () async {
+                    await tts.setLanguage('ja-JP');
+                    await tts.speak('日本語');
                   },
+                  child: RadioListTile(
+                    value: 0,
+                    groupValue: language,
+                    title: const Text('日本語'),
+                    onChanged: (_) {
+                      ref.watch(languageProvider_.notifier).state = 0;
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                RadioListTile(
-                  value: 1,
-                  groupValue: language,
-                  title: const Text('English'),
-                  onChanged: (_) {
-                    ref.watch(languageProvider_.notifier).state = 1;
-                    Navigator.pop(context);
+                GestureDetector(
+                  onLongPress: () async {
+                    await tts.setLanguage('en-US');
+                    await tts.speak('English');
                   },
+                  child: RadioListTile(
+                    value: 1,
+                    groupValue: language,
+                    title: const Text('English'),
+                    onChanged: (_) {
+                      ref.watch(languageProvider_.notifier).state = 1;
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -156,7 +171,16 @@ class MyHomePage extends ConsumerWidget {
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
+                      onLongPress: () async {
+                        if (language == 1) {
+                          await tts.setLanguage('en-US');
+                          await tts.speak('CLOSE');
+                        } else {
+                          await tts.setLanguage('ja-JP');
+                          await tts.speak('閉じる');
+                        }
+                      },
+                      child: const Text('CLOSE'),
                     )
                   ],
                 ),
@@ -180,7 +204,7 @@ class MyHomePage extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => showLanguageDialog(context),
+                    onPressed: () => showLanguageDialog(context, data.tts),
                     icon: const Icon(Icons.language),
                   ),
                   IconButton(

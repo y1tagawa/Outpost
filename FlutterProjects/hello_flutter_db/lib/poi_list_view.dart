@@ -51,7 +51,7 @@ class PoiListView extends ConsumerWidget {
             language == 1 ? name.nameEn : name.nameHira,
           ),
           onLongPress: () async {
-            await tts.setLanguage(language == 1 ? 'en_US' : 'ja_JP');
+            await tts.setLanguage(language == 1 ? 'en-US' : 'ja-JP');
             await tts.speak(language == 1 ? name.nameEn : name.nameHira);
           },
           trailing: PopupMenuButton(
