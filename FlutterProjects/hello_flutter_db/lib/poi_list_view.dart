@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hello_flutter_db/prefecture_checkbox.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,8 +22,10 @@ class PoiListView extends ConsumerWidget {
   final List<bool> prefectureFilter;
   final int language;
 
+  final FlutterTts tts = FlutterTts();
+
   // todo: sort order, filters
-  const PoiListView({
+  PoiListView({
     super.key,
     required this.pois,
     required this.names,
@@ -45,8 +48,13 @@ class PoiListView extends ConsumerWidget {
         return ListTile(
           title: Text(poi.name),
           subtitle: Text(
-            language == 0 ? name.nameHira : name.nameEn,
+            language == 1 ? name.nameEn : name.nameHira,
           ),
+          onLongPress: () async {
+            await tts.stop();
+            await tts.setLanguage(language == 1 ? 'en_US' : 'ja_JP');
+            await tts.speak(language == 1 ? name.nameEn : name.nameHira);
+          },
           trailing: PopupMenuButton(
             itemBuilder: (BuildContext context) {
               final linkList = links[poi.name];
