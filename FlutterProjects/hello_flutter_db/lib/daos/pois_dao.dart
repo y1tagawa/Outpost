@@ -2,19 +2,9 @@
 
 import 'package:sqflite/sqflite.dart';
 
-class Poi {
-  final String name;
-  final double latitude;
-  final double longitude;
-  final String prefecture;
+import '../dtos/poi.dart';
 
-  Poi({
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-    required this.prefecture,
-  });
-}
+export '../dtos/poi.dart';
 
 class PoisDao {
   static final PoisDao instance = PoisDao._internal();

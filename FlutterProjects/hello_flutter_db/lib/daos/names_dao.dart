@@ -2,20 +2,9 @@
 
 import 'package:sqflite/sqflite.dart';
 
-class Name {
-  final String name;
-  final String nameHira;
-  final String nameEn;
+import '../dtos/name.dart';
 
-  Name({
-    required this.name,
-    required this.nameHira,
-    required this.nameEn,
-  });
-
-  String canonicalName(int language) => language == 1 ? nameEn : name;
-  String readableName(int language) => language == 1 ? nameEn : nameHira;
-}
+export '../dtos/name.dart';
 
 class NamesDao {
   static final NamesDao instance = NamesDao._internal();

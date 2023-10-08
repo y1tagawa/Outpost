@@ -7,8 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'daos/links_dao.dart';
-import 'daos/names_dao.dart';
 import 'daos/pois_dao.dart';
+import 'dtos/name.dart';
 import 'prefecture_checkbox.dart';
 import 'tts_helper.dart';
 

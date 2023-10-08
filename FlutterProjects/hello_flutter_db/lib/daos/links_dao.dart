@@ -2,17 +2,9 @@
 
 import 'package:sqflite/sqflite.dart';
 
-class Link {
-  final String name;
-  final String type;
-  final String url;
+import '../dtos/link.dart';
 
-  Link({
-    required this.name,
-    required this.type,
-    required this.url,
-  });
-}
+export '../dtos/link.dart';
 
 class LinksDao {
   static final LinksDao instance = LinksDao._internal();

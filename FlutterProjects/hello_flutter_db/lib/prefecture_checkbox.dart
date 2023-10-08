@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-import 'daos/names_dao.dart';
+import 'dtos/name.dart';
 import 'tts_helper.dart';
 
 class PrefectureCheckbox extends StatelessWidget {

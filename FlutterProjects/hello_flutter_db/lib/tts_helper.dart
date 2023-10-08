@@ -2,7 +2,7 @@
 
 import 'package:flutter_tts/flutter_tts.dart';
 
-import 'daos/names_dao.dart';
+import 'dtos/name.dart';
 
 extension TtsHelper on FlutterTts {
   Future<dynamic> speakName(Name name, int language) async {
