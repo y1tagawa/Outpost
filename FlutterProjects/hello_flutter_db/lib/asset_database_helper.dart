@@ -14,6 +14,7 @@ class AssetDatabaseHelper {
   static Future<Database> openAssetDatabase(String dbName, {bool readOnly = true}) async {
     final dbPath = join(await getDatabasesPath(), dbName);
 
+    // 毎回新規
     await deleteDatabase(dbPath);
 
     await Directory(dirname(dbPath)).create(recursive: true);

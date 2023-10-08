@@ -46,9 +46,7 @@ class PoiListView extends ConsumerWidget {
         final name = names[poi.name]!;
         return ListTile(
           title: Text(poi.name),
-          subtitle: Text(
-            language == 1 ? name.nameEn : name.nameHira,
-          ),
+          subtitle: Text(name.readableName(language)),
           onLongPress: () async {
             await tts.speakName(name, language);
           },

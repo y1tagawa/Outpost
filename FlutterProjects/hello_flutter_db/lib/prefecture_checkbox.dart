@@ -22,7 +22,7 @@ class PrefectureCheckbox extends StatelessWidget {
     '伊豆・小笠原諸島'
   ];
 
-  static final regions_ = {
+  static final _regions = {
     '東北地方': [1, 2, 3, 4, 5, 6],
     '関東地方': [7, 8, 9, 10, 11, 12, 47, 13],
     '北陸地方': [14, 15, 16, 17],
@@ -60,7 +60,7 @@ class PrefectureCheckbox extends StatelessWidget {
 
     // 各地方チェック値
     final regionValue = [
-      for (final region in regions_)
+      for (final region in _regions)
         region.value.every((it) => value[it])
             ? true
             : region.value.every((it) => !value[it])
@@ -77,7 +77,7 @@ class PrefectureCheckbox extends StatelessWidget {
           value: allValue,
           tristate: true,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
-          title: Text(language == 1 ? names[name]!.nameEn : name),
+          title: Text(names[name]!.canonicalName(language)),
           onChanged: (_) {
             onChanged?.call(List<bool>.filled(value.length, allValue != true));
           },
@@ -87,18 +87,18 @@ class PrefectureCheckbox extends StatelessWidget {
 
     // 各地方チェックボックス
     Widget regionListTile(int index) {
-      final name = regions_[index].key;
+      final name = _regions[index].key;
       return GestureDetector(
         onLongPress: () async => await tts.speakName(names[name]!, language),
         child: CheckboxListTile(
           value: regionValue[index],
           tristate: true,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-          title: Text(language == 1 ? names[name]!.nameEn : name),
+          title: Text(names[name]!.canonicalName(language)),
           onChanged: (_) {
             final newValue = [...value];
             final f = regionValue[index] != true;
-            for (final i in regions_[index].value) {
+            for (final i in _regions[index].value) {
               newValue[i] = f;
             }
             onChanged?.call(newValue);
@@ -116,7 +116,7 @@ class PrefectureCheckbox extends StatelessWidget {
           value: value[index],
           tristate: false,
           contentPadding: const EdgeInsetsDirectional.fromSTEB(28, 0, 0, 0),
-          title: Text(language == 1 ? names[name]!.nameEn : name),
+          title: Text(names[name]!.canonicalName(language)),
           onChanged: (_) {
             final newValue = [...value];
             newValue[index] = !value[index];
@@ -134,10 +134,10 @@ class PrefectureCheckbox extends StatelessWidget {
         // 北海道
         prefectureListTile(0),
         // 各地方
-        for (int i = 0; i < regions_.length; ++i) ...[
+        for (int i = 0; i < _regions.length; ++i) ...[
           regionListTile(i),
           // 各都府県
-          for (final j in regions_[i].value) prefectureListTile(j),
+          for (final j in _regions[i].value) prefectureListTile(j),
         ],
         // 沖縄
         prefectureListTile(46),
