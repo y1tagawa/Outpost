@@ -21,19 +21,19 @@ BEGIN
   SELECT RAISE(FAIL, '未登録の都道府県名');
 END;
 
-INSERT INTO names VALUES ('全国','ぜんこく','All prefectures');
-INSERT INTO names VALUES ('東北地方','とうほく ちほう','Tohoku region');
-INSERT INTO names VALUES ('関東地方','かんとう ちほう','Kanto region');
+INSERT INTO names VALUES ('全国','ぜんこく','All regions');
+INSERT INTO names VALUES ('東北地方','とうほく ちほう','Tōhoku region');
+INSERT INTO names VALUES ('関東地方','かんとう ちほう','Kantō region');
 INSERT INTO names VALUES ('北陸地方','ほくりく ちほう','Hokuriku region');
-INSERT INTO names VALUES ('甲信地方','こうしん ちほう','Koshin region');
-INSERT INTO names VALUES ('東海地方','とうかい ちほう','Tokai region');
+INSERT INTO names VALUES ('甲信地方','こうしん ちほう','Kōshin region');
+INSERT INTO names VALUES ('東海地方','とうかい ちほう','Tōkai region');
 INSERT INTO names VALUES ('近畿地方','きんき ちほう','Kinki region');
-INSERT INTO names VALUES ('中国地方','ちゅうごく ちほう','Chugoku region');
+INSERT INTO names VALUES ('中国地方','ちゅうごく ちほう','Chūgoku region');
 INSERT INTO names VALUES ('四国地方','しこく ちほう','Shikoku region');
-INSERT INTO names VALUES ('九州地方','きゅうしゅう ちほう','Kyushu region');
-INSERT INTO names VALUES ('伊豆・小笠原諸島','いず・おがさわら しょとう','Izu Islands');
+INSERT INTO names VALUES ('九州地方','きゅうしゅう ちほう','Kyūshū region');
+INSERT INTO names VALUES ('伊豆・小笠原諸島','いず おがさわら しょとう','Izu Ogasawara Islands');
 
-INSERT INTO names VALUES ('北海道','ほっかいどう','Hokkaido');
+INSERT INTO names VALUES ('北海道','ほっかいどう','Hokkaidō');
 INSERT INTO names VALUES ('青森県','あおもり けん','Aomori Prefecture');
 INSERT INTO names VALUES ('岩手県','いわて けん','Iwate Prefecture');
 INSERT INTO names VALUES ('宮城県','みやぎ けん','Miyagi Prefecture');
