@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hello_http">
+    package="com.example.hello_flutter_http">
    <application
-        android:label="hello_http"
+        android:label="hello_flutter_http"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

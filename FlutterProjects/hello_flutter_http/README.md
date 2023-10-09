@@ -1,4 +1,4 @@
-# hello_http
+# hello_flutter_http
 
 A new Flutter project.
 
