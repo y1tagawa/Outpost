@@ -11,8 +11,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  html: 0.15.4
   http: 1.0.0
   hooks_riverpod: 2.3.6
+  logger: 2.0.2
 
 dev_dependencies:
   flutter_test:
