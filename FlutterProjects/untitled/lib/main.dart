@@ -32,14 +32,12 @@ final colorsProvider = FutureProvider<List<_JisColor>>(
     }
     final value = map['value']! as List<dynamic>;
     final result = <_JisColor>[];
-    for (final r1 in value) {
-      final row = r1 as Map<String, dynamic>;
+    for (final Map<String, dynamic> row in value) {
       final rgb = row['rgb']! as String;
       final name = row['name']! as String;
       Logger().d('$rgb $name ${int.parse('0xFF$rgb')}');
       result.add(_JisColor(name: name, color: Color(int.parse('0xFF$rgb'))));
     }
-    Logger().d('${result.length}');
     return result;
   },
 );
@@ -54,12 +52,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter web app trial',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter web app trial'),
     );
   }
 }
@@ -81,11 +79,27 @@ class MyHomePage extends ConsumerWidget {
       body: Center(
         child: colors.when(
           data: (data) {
-            Column(
+            return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(data.length.toString()),
-                Text('here!'),
+                const Text('JIS慣用色名'),
+                Expanded(
+                    child: ListView(
+                  itemExtent: 48,
+                  children: [
+                    for (final item in data)
+                      ListTile(
+                        leading: SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: ColoredBox(
+                            color: item.color,
+                          ),
+                        ),
+                        title: Text(item.name),
+                      ),
+                  ],
+                )),
               ],
             );
           },
