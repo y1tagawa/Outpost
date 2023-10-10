@@ -6,9 +6,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 
 import 'api_url.dart';
+
+// サーバAPIを使用して、JIS慣用色名データを取得する。
 
 class _JisColor {
   final String name;
@@ -36,12 +37,13 @@ final colorsProvider = FutureProvider<List<_JisColor>>(
     for (final Map<String, dynamic> row in value) {
       final rgb = row['rgb']! as String;
       final name = row['name']! as String;
-      Logger().d('$rgb $name ${int.parse('0xFF$rgb')}');
       result.add(_JisColor(name: name, color: Color(int.parse('0xFF$rgb'))));
     }
     return result;
   },
 );
+
+// メイン
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -62,6 +64,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// APIで取得したデータを表示する。
 
 class MyHomePage extends ConsumerWidget {
   const MyHomePage({super.key, required this.title});
