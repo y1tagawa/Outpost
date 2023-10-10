@@ -1,16 +1,8 @@
 # hello_flutter_webapp
 
-A new Flutter project.
+## 概要
 
-## Getting Started
+ウェブアプリのサンプルプログラムです。
+HTTPサーバのAPIによって取得したデータを画面に表示します。（通信量の最適化までは考慮していません）
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img width="216" alt="a1" src="https://github.com/y1tagawa/Outpost/assets/46841556/60439950-705c-4893-80f2-c38450320e75">
