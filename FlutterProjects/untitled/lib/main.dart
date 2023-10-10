@@ -8,6 +8,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+import 'api_url.dart';
+
 class _JisColor {
   final String name;
   final Color color;
@@ -20,8 +22,7 @@ class _JisColor {
 
 final colorsProvider = FutureProvider<List<_JisColor>>(
   (ref) async {
-    // todo:隠す
-    final url = Uri.parse('http://cf588074.cloudfree.jp/api.php?jiscolor=all');
+    final url = Uri.parse(apiUrl);
     final response = await http.get(url);
     if (response.statusCode != 200) {
       throw HttpException('http status error: ${response.statusCode}');
