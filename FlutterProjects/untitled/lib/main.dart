@@ -84,22 +84,23 @@ class MyHomePage extends ConsumerWidget {
               children: <Widget>[
                 const Text('JIS慣用色名'),
                 Expanded(
-                    child: ListView(
-                  itemExtent: 48,
-                  children: [
-                    for (final item in data)
-                      ListTile(
-                        leading: SizedBox(
-                          width: 32,
-                          height: 32,
-                          child: ColoredBox(
-                            color: item.color,
+                  child: ListView(
+                    itemExtent: 48,
+                    children: [
+                      for (final item in data)
+                        ListTile(
+                          leading: SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: ColoredBox(
+                              color: item.color,
+                            ),
                           ),
+                          title: Text(item.name),
                         ),
-                        title: Text(item.name),
-                      ),
-                  ],
-                )),
+                    ],
+                  ),
+                ),
               ],
             );
           },
