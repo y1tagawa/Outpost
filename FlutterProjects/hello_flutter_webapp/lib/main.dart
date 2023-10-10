@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 import 'api_url.dart';
 
+// サーバAPIを使用して、JIS慣用色名データを取得する。
+
 class _JisColor {
   final String name;
   final Color color;
@@ -41,6 +43,8 @@ final colorsProvider = FutureProvider<List<_JisColor>>(
   },
 );
 
+// メイン
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -60,6 +64,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// APIで取得したデータを表示する。
 
 class MyHomePage extends ConsumerWidget {
   const MyHomePage({super.key, required this.title});
