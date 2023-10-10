@@ -9,7 +9,7 @@
         - Google Cardboard for Unityを使用したサンプルアプリです。
 
 - FlutterProjects
-    - Flutterを使用したサンプルアプリです。
+  Flutterを使用したサンプルアプリです。
     - hello_flutter
         - CustomPainterを使用してアニメーションを描画しています。
 
