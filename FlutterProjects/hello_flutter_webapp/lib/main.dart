@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
 
 import 'api_url.dart';
 
@@ -36,7 +35,6 @@ final colorsProvider = FutureProvider<List<_JisColor>>(
     for (final Map<String, dynamic> row in value) {
       final rgb = row['rgb']! as String;
       final name = row['name']! as String;
-      Logger().d('$rgb $name ${int.parse('0xFF$rgb')}');
       result.add(_JisColor(name: name, color: Color(int.parse('0xFF$rgb'))));
     }
     return result;
