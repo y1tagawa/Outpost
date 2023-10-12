@@ -5,8 +5,10 @@
 サンプルアプリ置き場です。
 
 - UnityProjecsts
+
+  Unityを使用したサンプルアプリです。
     - HelloCardboard
-        - Google Cardboard for Unityを使用したサンプルアプリです。
+        - Google Cardboard for Unityを使用しています。
 
 - FlutterProjects
 
@@ -22,5 +24,8 @@
     
     - hello_flutter_webapp
         - ウェブアプリクライアントのサンプルプログラムです。 簡単なPHPアプリを作成しておき、APIによって取得したデータを画面に表示します。
+
+    - hello_flutter_cube
+        - 簡単な力学シミュレーションを行い、途中結果を3Dアニメーションで表示します。
 
 ライセンスは各プロジェクトのLICENSEファイルを参照してください。
