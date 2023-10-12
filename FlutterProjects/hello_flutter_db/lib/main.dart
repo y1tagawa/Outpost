@@ -15,7 +15,7 @@ import 'poi_list_view.dart';
 import 'prefecture_checkbox.dart';
 
 // データベース
-final dbProvider_ = FutureProvider<Database>((ref) async {
+final _dbProvider = FutureProvider<Database>((ref) async {
   return await AssetDatabaseHelper.openAssetDatabase('pois.sqlite3', readOnly: true);
 });
 
@@ -35,7 +35,7 @@ class _MainData {
 }
 
 final _mainDataProvider = FutureProvider<_MainData>((ref) async {
-  final db = await ref.watch(dbProvider_.future);
+  final db = await ref.watch(_dbProvider.future);
   return _MainData(
     pois: await PoisDao.instance.getAll(db),
     names: await NamesDao.instance.getAll(db),
@@ -72,9 +72,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
+      theme: ThemeData.dark(),
       home: const MyHomePage(),
     );
   }
@@ -191,7 +189,7 @@ class MyHomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('POIs'),
+        title: const Text('Hello Flutter DB'),
       ),
       body: mainData.when(
         data: (data) => Column(
