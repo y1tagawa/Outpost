@@ -44,10 +44,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: false,
-      ),
+      theme: ThemeData.dark(),
       home: const MyHomePage(title: 'Hello Flutter Cube'),
     );
   }

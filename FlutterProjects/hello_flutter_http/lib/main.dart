@@ -27,11 +27,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Http trial',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: const MyHomePage(title: 'Http trial'),
+      title: 'Flutter Demo',
+      theme: ThemeData.dark(),
+      home: const MyHomePage(title: 'Hello Flutter HTTP'),
     );
   }
 }
@@ -116,8 +114,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: refreshEnabled ? null : Theme.of(context).disabledColor,
         onPressed: refreshEnabled ? _fetch : null,
-        tooltip: 'Refresh',
-        child: const Icon(Icons.refresh),
+        tooltip: 'Update',
+        child: Icon(refreshEnabled ? Icons.update : Icons.update_disabled),
       ),
     );
   }

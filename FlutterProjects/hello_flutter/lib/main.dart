@@ -1,6 +1,4 @@
 // Copyright 2023 Yoshinori Tagawa. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:developer' as developer;
@@ -34,16 +32,12 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-
     return MaterialApp(
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(),
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
+    );
   }
 }
 
@@ -64,7 +58,6 @@ class MyHomePage extends ConsumerWidget {
             now.month != value.month ||
             now.year != value.year) {
           _dateTimeNotifier.value = now;
-          //_logger.fine('update');
         }
       },
     );

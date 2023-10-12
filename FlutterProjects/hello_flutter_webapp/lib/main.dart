@@ -55,12 +55,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter web app trial',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter web app trial'),
+      title: 'Flutter Demo',
+      theme: ThemeData.dark(),
+      home: const MyHomePage(title: 'Hello Flutter Web App'),
     );
   }
 }
@@ -78,7 +75,6 @@ class MyHomePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
       body: Center(
