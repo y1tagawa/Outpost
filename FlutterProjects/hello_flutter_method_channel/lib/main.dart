@@ -33,7 +33,7 @@ class MyHomePage extends ConsumerWidget {
 
   final String title;
 
-  static const methodChannel = MethodChannel('method/ping');
+  static const methodChannel = MethodChannel('github.com/y1tagawa/outpost');
 
   Future<Map<Object?, Object?>> _ping() async {
     return await methodChannel.invokeMethod('ping', {});

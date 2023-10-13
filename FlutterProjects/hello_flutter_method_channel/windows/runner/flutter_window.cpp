@@ -33,7 +33,7 @@ bool FlutterWindow::OnCreate() {
   // method channel
   flutter::MethodChannel<> channel(
     flutter_controller_->engine()->messenger(),
-    "method/ping",
+    "github.com/y1tagawa/outpost",
     &flutter::StandardMethodCodec::GetInstance()
   );
   channel.SetMethodCallHandler(

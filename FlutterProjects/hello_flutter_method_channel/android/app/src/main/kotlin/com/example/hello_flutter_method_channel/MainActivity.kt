@@ -13,7 +13,7 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "method/ping")
+        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "github.com/y1tagawa/outpost")
         channel.setMethodCallHandler { methodCall: MethodCall, result: MethodChannel.Result ->
 
             if (methodCall.method == "ping") {
