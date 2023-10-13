@@ -26,7 +26,10 @@
     
     - hello_flutter_http
         - HTTPSによりサーバと通信を行います。
-    
+
+    - hello_flutter_method_channel
+        - MethodChannelを使用してネイティブAPIを呼び出すサンプルアプリです。（WindowsおよびAndroid）
+
     - hello_flutter_webapp
         - ウェブアプリクライアントのサンプルプログラムです。 簡単なPHPアプリを作成しておき、APIによって取得したデータを画面に表示します。
 
