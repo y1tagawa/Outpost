@@ -29,9 +29,7 @@ class MyHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     void onSceneCreated(Scene scene) {
-      scene.camera.position.x = 3;
-      scene.camera.position.y = 2;
-      scene.camera.position.z = 3;
+      scene.camera.position.setValues(3, 2, 3);
       scene.camera.fov = 45;
 
       final cube = Object(
@@ -49,11 +47,6 @@ class MyHomePage extends ConsumerWidget {
       body: Cube(
         onSceneCreated: onSceneCreated,
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 }

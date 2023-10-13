@@ -79,6 +79,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         position: Vector3.zero(),
       );
       _scene.world.add(_center);
+
+      for (int i = 0; i < _pointCount; ++i) {
+        final marker = Object(
+          position: points[i],
+          scale: Vector3(0.05, 0.05, 0.05),
+          backfaceCulling: true,
+          fileName: 'assets/marker.obj',
+        );
+        _center.add(marker);
+      }
+    }
+
+    // シミュレーション画面更新
+    void updateScene() {
+      for (int i = 0; i < _pointCount; ++i) {
+        _center.children[i].position.setFrom(points[i]);
+        _center.children[i].updateTransform();
+      }
     }
 
     // 質点位置更新
@@ -117,6 +135,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       ref.watch(_pointsProvider.notifier).state = t;
       ++_generation;
 
+      // 途中結果をログ出力
       if (_generation == 100) {
         final t = StringBuffer();
         for (int i = 0; i < _pointCount; ++i) {
@@ -127,23 +146,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         }
         Logger().i(t.toString());
       }
-    }
-
-    // シミュレーション画面更新
-    void updateScene() {
-      for (int i = _center.children.length - 1; i >= 0; --i) {
-        _center.remove(_center.children[i]);
-      }
-      for (int i = 0; i < _pointCount; ++i) {
-        final marker = Object(
-          position: points[i],
-          scale: Vector3(0.05, 0.05, 0.05),
-          backfaceCulling: true,
-          fileName: 'assets/marker.obj',
-        );
-        _center.add(marker);
-      }
-      _scene.update();
     }
 
     if (!paused) {
