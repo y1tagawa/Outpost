@@ -27,4 +27,5 @@ flutter:
   assets:
     - assets/cube/cube.obj
     - assets/cube/cube.mtl
+    - assets/cube/cube.png
 
