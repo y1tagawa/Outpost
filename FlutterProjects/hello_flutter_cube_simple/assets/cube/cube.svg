@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="10.738983"
-     inkscape:cx="47.638889"
-     inkscape:cy="25.105039"
+     inkscape:zoom="10.296943"
+     inkscape:cx="48.77673"
+     inkscape:cy="28.989687"
      inkscape:document-units="mm"
      inkscape:current-layer="layer2"
      inkscape:document-rotation="0"
@@ -52,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -82,36 +82,56 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="レイヤー 2"
-     style="display:inline;opacity:1"
-     sodipodi:insensitive="true">
+     style="display:inline;opacity:1">
     <rect
-       style="opacity:0.997;fill:#000000;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
-       id="rect874"
-       width="16.933332"
-       height="16.933332"
-       x="0"
-       y="0" />
-    <rect
-       style="opacity:0.997;fill:#8033cc;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       style="opacity:1;fill:#333333;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
        id="rect913"
        width="4.2333331"
        height="4.2333331"
        x="10.583333"
        y="4.2333336" />
     <rect
-       style="opacity:0.997;fill:#3333cc;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       style="opacity:1;fill:#334ccc;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
        id="rect915"
        width="4.2333331"
        height="4.2333331"
        x="6.3500009"
        y="0" />
     <rect
-       style="opacity:0.997;fill:#cccc33;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       style="opacity:1;fill:#999999;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
        id="rect917"
        width="4.2333331"
        height="4.2333331"
-       x="2.1166668"
-       y="8.4666672" />
+       x="2.1166666"
+       y="4.2333331" />
+    <rect
+       style="opacity:1;fill:#cc3399;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect853"
+       width="4.2333331"
+       height="4.2333331"
+       x="6.3500004"
+       y="4.2333336" />
+    <rect
+       style="opacity:1;fill:#d99d26;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect855"
+       width="4.2333331"
+       height="4.2333331"
+       x="6.3499999"
+       y="8.4666662" />
+    <rect
+       style="opacity:1;fill:#33cc66;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect857"
+       width="4.2333331"
+       height="4.2333331"
+       x="6.3500004"
+       y="12.7" />
+    <rect
+       style="opacity:1;fill:#d65c5c;fill-opacity:1;stroke:#808080;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stop-color:#000000"
+       id="rect863"
+       width="4.2333331"
+       height="4.2333331"
+       x="1.0583338"
+       y="9.5250006" />
   </g>
   <g
      inkscape:groupmode="layer"
