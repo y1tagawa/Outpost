@@ -1,3 +1,5 @@
+// Copyright 2023 Yoshinori Tagawa. All rights reserved.
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
