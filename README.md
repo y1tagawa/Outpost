@@ -19,7 +19,7 @@
         - CustomPainterを使用してアニメーションを描画しています。
 
     - hello_flutter_camera
-        - Flutter cameraプラグインを使用したサンプルアプリです。
+        - Flutter cameraプラグインを使用したサンプルアプリです。（Windows、Web、Android）
 
     - hello_flutter_cube
         - 簡単な力学シミュレーションを行い、途中結果を3Dアニメーションで表示します。
@@ -31,7 +31,7 @@
         - HTTPSによりサーバと通信を行います。
 
     - hello_flutter_method_channel
-        - MethodChannelを使用してネイティブAPIを呼び出すサンプルアプリです。（WindowsおよびAndroid）
+        - MethodChannelを使用してネイティブAPIを呼び出すサンプルアプリです。（Windows、Android）
 
     - hello_flutter_webapp
         - ウェブアプリクライアントのサンプルプログラムです。 簡単なPHPアプリを作成しておき、APIによって取得したデータを画面に表示します。
