@@ -18,6 +18,9 @@
     - hello_flutter
         - CustomPainterを使用してアニメーションを描画しています。
 
+    - hello_flutter_camera
+        - Flutter cameraプラグインを使用したサンプルアプリです。
+
     - hello_flutter_cube
         - 簡単な力学シミュレーションを行い、途中結果を3Dアニメーションで表示します。
 
