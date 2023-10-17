@@ -19,15 +19,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // void cprint(String name, int c) {
-    //   print(name);
-    //   print(((c & 0xFF0000) >> 16) / 256.0);
-    //   print(((c & 0x00FF00) >> 8) / 256.0);
-    //   print((c & 0x0000FF) / 256.0);
-    // }
-    //
-    // cprint('LtGrey', 0xcccccc);
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
