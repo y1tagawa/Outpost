@@ -15,7 +15,7 @@
 
   Flutterを使用したサンプルアプリです。Riverpodを使用し、不変プログラミングで作成しています。
   
-    - hello_flutter
+    - [hello_flutter](https://github.com/y1tagawa/Outpost/tree/main/FlutterProjects/hello_flutter)
         - CustomPainterを使用してアニメーションを描画しています。
 
     - hello_flutter_camera
