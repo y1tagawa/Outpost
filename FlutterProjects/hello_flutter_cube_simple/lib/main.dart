@@ -26,12 +26,7 @@ class MyApp extends StatelessWidget {
     //   print((c & 0x0000FF) / 256.0);
     // }
     //
-    // cprint('Blue', 0x334ccc);
-    // cprint('Purple', 0xcc3399);
-    // cprint('Orange', 0xd99d26);
-    // cprint('Green', 0x33cc66);
-    // cprint('LtGrey', 0x999999);
-    // cprint('DkGrey', 0x333333);
+    // cprint('LtGrey', 0xcccccc);
 
     return MaterialApp(
       title: 'Flutter Demo',

@@ -31,13 +31,13 @@ vn 0.0000 -1.0000 0.0000
 vn 1.0000 0.0000 0.0000
 vn 0.0000 0.0000 -1.0000
 s off
-usemtl DkGrey # 6
+usemtl Black # 6
 f 1/1/1 5/2/1 7/3/1 3/4/1
 usemtl Blue # 1
 f 4/5/2 3/4/2 7/6/2 8/7/2
 usemtl Green # 4
 f 8/8/3 7/9/3 5/10/3 6/11/3
-usemtl LtGrey # 5
+usemtl White # 5
 f 6/12/4 2/13/4 4/5/4 8/14/4
 usemtl Purple # 2
 f 2/13/5 1/1/5 3/4/5 4/5/5
