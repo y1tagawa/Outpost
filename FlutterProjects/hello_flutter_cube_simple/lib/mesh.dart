@@ -1,5 +1,9 @@
 import 'package:vector_math/vector_math_64.dart';
 
+//
+// メッシュ
+//
+
 class FaceVertex {
   final int vertexIndex;
   final int textureVertexIndex;
@@ -18,18 +22,18 @@ class FaceVertex {
       (other is FaceVertex &&
           runtimeType == other.runtimeType &&
           vertexIndex == other.vertexIndex &&
-          normalIndex == other.normalIndex &&
-          textureVertexIndex == other.textureVertexIndex);
+          textureVertexIndex == other.textureVertexIndex &&
+          normalIndex == other.normalIndex);
 
   @override
-  int get hashCode => vertexIndex.hashCode ^ normalIndex.hashCode ^ textureVertexIndex.hashCode;
+  int get hashCode => vertexIndex.hashCode ^ textureVertexIndex.hashCode ^ normalIndex.hashCode;
 
   @override
   String toString() {
     return 'FaceVertex{'
         ' vertexIndex: $vertexIndex,'
-        ' normalIndex: $normalIndex,'
         ' materialIndex: $textureVertexIndex,'
+        ' normalIndex: $normalIndex,'
         '}';
   }
 
@@ -97,6 +101,8 @@ class MeshObject {
 //</editor-fold>
 }
 
+/// メッシュ
+///
 class Mesh {
   final List<Vector3> vertices;
   final List<Vector3> textureVertices;
