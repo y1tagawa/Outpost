@@ -10,11 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  camera: ^0.10.5+5
-  camera_web: ^0.3.2+3
-  camera_windows: ^0.2.1+8
+  camera: 0.10.5+5
+  camera_web: 0.3.2+3
+  camera_windows: 0.2.1+8
   hooks_riverpod: 2.4.3
   logger: 2.0.2+1
+  path_provider: 2.1.1
+  screenshot: 2.1.0
 
 dev_dependencies:
   flutter_test:

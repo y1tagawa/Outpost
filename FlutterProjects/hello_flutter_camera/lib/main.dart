@@ -3,6 +3,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
   (ref) async {
@@ -12,6 +15,8 @@ final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
     return controller;
   },
 );
+
+ScreenshotController screenshotController = ScreenshotController();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,19 +54,31 @@ class MyHomePage extends ConsumerWidget {
         title: Text(title),
       ),
       body: controller.when(
-        data: (data) => Stack(
-          children: [
-            Center(
-              child: CameraPreview(data),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Image.asset('assets/my_dash/my_dash.png', scale: 0.25),
-            ),
-          ],
+        data: (data) => Screenshot(
+          controller: screenshotController,
+          child: Stack(
+            children: [
+              Center(
+                child: CameraPreview(data),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Image.asset('assets/my_dash/my_dash.png', scale: 0.25),
+              ),
+            ],
+          ),
         ),
         error: (error, _) => Text(error.toString()),
         loading: () => const CircularProgressIndicator(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final directory = (await getApplicationDocumentsDirectory()).path;
+          final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
+          Logger().i('$directory/$fileName');
+          screenshotController.captureAndSave(directory, fileName: fileName);
+        },
+        child: const Icon(Icons.camera_alt_outlined),
       ),
     );
   }
