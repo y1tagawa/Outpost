@@ -1,6 +1,7 @@
 // Copyright 2023 Yoshinori Tagawa. All rights reserved.
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logger/logger.dart';
@@ -69,17 +70,19 @@ class MyHomePage extends ConsumerWidget {
           ),
         ),
         error: (error, _) => Text(error.toString()),
-        loading: () => const CircularProgressIndicator(),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final directory = (await getApplicationDocumentsDirectory()).path;
-          final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
-          Logger().i('$directory/$fileName');
-          screenshotController.captureAndSave(directory, fileName: fileName);
-        },
-        child: const Icon(Icons.camera_alt_outlined),
-      ),
+      floatingActionButton: kIsWeb
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                final directory = (await getApplicationDocumentsDirectory()).path;
+                final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
+                Logger().i('$directory/$fileName');
+                screenshotController.captureAndSave(directory, fileName: fileName);
+              },
+              child: const Icon(Icons.camera_alt_outlined),
+            ),
     );
   }
 }
