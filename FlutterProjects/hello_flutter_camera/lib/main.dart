@@ -11,7 +11,7 @@ import 'package:screenshot/screenshot.dart';
 final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
   (ref) async {
     final cameras = await availableCameras();
-    final controller = CameraController(cameras[0], ResolutionPreset.max);
+    final controller = CameraController(cameras[0], ResolutionPreset.max, enableAudio: false);
     await controller.initialize();
     return controller;
   },
@@ -55,18 +55,32 @@ class MyHomePage extends ConsumerWidget {
         title: Text(title),
       ),
       body: controller.when(
-        data: (data) => Screenshot(
-          controller: screenshotController,
-          child: Stack(
-            children: [
-              Center(
-                child: CameraPreview(data),
-              ),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Image.asset('assets/my_dash/my_dash.png', scale: 0.25),
-              ),
-            ],
+        data: (data) => Center(
+          child: Screenshot(
+            controller: screenshotController,
+            child: CameraPreview(data, child: LayoutBuilder(
+              builder: (context, constraints) {
+                double? height;
+                double? width;
+                if (constraints.biggest.width > constraints.biggest.height) {
+                  if (constraints.hasBoundedHeight) {
+                    height = constraints.biggest.height * 0.8;
+                  }
+                } else {
+                  if (constraints.hasBoundedWidth) {
+                    width = constraints.biggest.width * 0.8;
+                  }
+                }
+                return Align(
+                  alignment: Alignment.bottomRight,
+                  child: Image.asset(
+                    'assets/my_dash/my_dash.png',
+                    width: width,
+                    height: height,
+                  ),
+                );
+              },
+            )),
           ),
         ),
         error: (error, _) => Text(error.toString()),
@@ -79,7 +93,9 @@ class MyHomePage extends ConsumerWidget {
                 final directory = (await getApplicationDocumentsDirectory()).path;
                 final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
                 Logger().i('$directory/$fileName');
-                screenshotController.captureAndSave(directory, fileName: fileName);
+                final result =
+                    await screenshotController.captureAndSave(directory, fileName: fileName);
+                Logger().i('result: $result');
               },
               child: const Icon(Icons.camera_alt_outlined),
             ),
