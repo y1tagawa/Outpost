@@ -1,3 +1,5 @@
+// Copyright 2023 Yoshinori Tagawa. All rights reserved.
+
 import 'package:vector_math/vector_math_64.dart';
 
 //
