@@ -19,6 +19,8 @@ final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
 
 ScreenshotController screenshotController = ScreenshotController();
 
+final screenshotEnabledProvider = StateProvider<bool>((ref) => true);
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -49,6 +51,7 @@ class MyHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(cameraControllerProvider);
+    final screenshotEnabled = ref.watch(screenshotEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -89,14 +92,21 @@ class MyHomePage extends ConsumerWidget {
       floatingActionButton: kIsWeb
           ? null
           : FloatingActionButton(
-              onPressed: () async {
-                final directory = (await getApplicationDocumentsDirectory()).path;
-                final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
-                Logger().i('$directory/$fileName');
-                final result =
-                    await screenshotController.captureAndSave(directory, fileName: fileName);
-                Logger().i('result: $result');
-              },
+              backgroundColor: screenshotEnabled ? null : Theme.of(context).disabledColor,
+              onPressed: screenshotEnabled
+                  ? () {
+                      ref.read(screenshotEnabledProvider.notifier).state = false;
+                      Future.delayed(Duration.zero, () async {
+                        final directory = (await getApplicationDocumentsDirectory()).path;
+                        final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
+                        Logger().i('$directory/$fileName');
+                        final result = await screenshotController.captureAndSave(directory,
+                            fileName: fileName);
+                        Logger().i('result: $result');
+                        ref.read(screenshotEnabledProvider.notifier).state = true;
+                      });
+                    }
+                  : null,
               child: const Icon(Icons.camera_alt_outlined),
             ),
     );
