@@ -1,12 +1,17 @@
 // Copyright 2023 Yoshinori Tagawa. All rights reserved.
 
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
+
+final _logger = Logger('hello_flutter_camera');
 
 final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
   (ref) async {
@@ -22,6 +27,11 @@ ScreenshotController screenshotController = ScreenshotController();
 final screenshotEnabledProvider = StateProvider<bool>((ref) => true);
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const ProviderScope(child: MyApp()));
@@ -99,10 +109,19 @@ class MyHomePage extends ConsumerWidget {
                       Future.delayed(Duration.zero, () async {
                         final directory = (await getApplicationDocumentsDirectory()).path;
                         final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
-                        Logger().i('$directory/$fileName');
-                        final result = await screenshotController.captureAndSave(directory,
+                        _logger.info('directory: $directory filename: $fileName');
+                        final path = await screenshotController.captureAndSave(directory,
                             fileName: fileName);
-                        Logger().i('result: $result');
+                        _logger.info('path: $path');
+
+                        if (Platform.isAndroid) {
+                          _logger.info('the platform is Android.');
+                          final result = await ImageGallerySaver.saveFile(path!);
+                          if (result is! Map<Object?, Object?> || result['isSuccess'] != true) {
+                            throw Exception('ImageGallerySaver.saveFile failed. $result');
+                          }
+                          _logger.info('ImageGallerySaver.saveFile ok.');
+                        }
                         ref.read(screenshotEnabledProvider.notifier).state = true;
                       });
                     }
