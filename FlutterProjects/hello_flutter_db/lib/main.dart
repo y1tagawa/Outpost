@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'asset_database_helper.dart';
@@ -13,6 +14,8 @@ import 'daos/names_dao.dart';
 import 'daos/pois_dao.dart';
 import 'poi_list_view.dart';
 import 'prefecture_checkbox.dart';
+
+final logger = Logger('hello_flutter_db');
 
 // データベース
 final _dbProvider = FutureProvider<Database>((ref) async {
@@ -54,6 +57,11 @@ final _languageProvider = StateProvider<int>((ref) => 0);
 
 // メイン
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   if (Platform.isWindows || Platform.isLinux) {
     sqfliteFfiInit();
   }

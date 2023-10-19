@@ -11,7 +11,7 @@ import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 
-final _logger = Logger('hello_flutter_camera');
+final logger = Logger('hello_flutter_camera');
 
 final cameraControllerProvider = FutureProvider.autoDispose<CameraController>(
   (ref) async {
@@ -109,18 +109,18 @@ class MyHomePage extends ConsumerWidget {
                       Future.delayed(Duration.zero, () async {
                         final directory = (await getApplicationDocumentsDirectory()).path;
                         final fileName = '${DateTime.now().microsecondsSinceEpoch}.png';
-                        _logger.info('directory: $directory filename: $fileName');
+                        logger.info('directory: $directory filename: $fileName');
                         final path = await screenshotController.captureAndSave(directory,
                             fileName: fileName);
-                        _logger.info('path: $path');
+                        logger.info('path: $path');
 
                         if (Platform.isAndroid) {
-                          _logger.info('the platform is Android.');
+                          logger.info('the platform is Android.');
                           final result = await ImageGallerySaver.saveFile(path!);
                           if (result is! Map<Object?, Object?> || result['isSuccess'] != true) {
                             throw Exception('ImageGallerySaver.saveFile failed. $result');
                           }
-                          _logger.info('ImageGallerySaver.saveFile ok.');
+                          logger.info('ImageGallerySaver.saveFile ok.');
                         }
                         ref.read(screenshotEnabledProvider.notifier).state = true;
                       });

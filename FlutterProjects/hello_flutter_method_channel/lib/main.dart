@@ -3,12 +3,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('hello_flutter_method_channel');
 
 final _pingEnabledProvider = StateProvider<bool>((ref) => true);
 final _resultProvider = StateProvider<String>((ref) => '');
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -62,7 +69,7 @@ class MyHomePage extends ConsumerWidget {
             ? () async {
                 ref.read(_pingEnabledProvider.notifier).state = false;
                 final result = await _ping();
-                Logger().d(result);
+                logger.fine(result);
                 ref.read(_resultProvider.notifier).state =
                     'device=${result['device']} message=${result['message']}';
                 ref.read(_pingEnabledProvider.notifier).state = true;

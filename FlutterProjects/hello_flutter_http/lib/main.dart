@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
-import 'package:logger/logger.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('hello_flutter_http');
 
 // サーバレスポンスを非同期に受け付けるキュー
 final _queue = StreamController<http.Response>();
@@ -51,24 +53,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     try {
       // 一度リクエストしたら一分後までディセーブルする。
       ref.watch(_refreshEnabledProvider.notifier).state = false;
-      Logger().i('disable refreshing');
+      logger.info('disable refreshing');
       Future.delayed(const Duration(seconds: 60), () {
-        Logger().i('enable refreshing');
+        logger.info('enable refreshing');
         ref.watch(_refreshEnabledProvider.notifier).state = true;
       });
       // ゲットしてキューに送るとプロバイダがリビルドしてくれる。
       final response = await http.get(url);
-      Logger().i('response status: ${response.statusCode}');
+      logger.info('response status: ${response.statusCode}');
       _queue.add(response);
     } catch (e) {
-      Logger().e(e.toString());
+      logger.severe(e.toString());
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Logger().i('initial fetch');
+    logger.info('initial fetch');
     // 起動直後に一回ゲット。
     _fetch();
   }

@@ -5,7 +5,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logger/logger.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('hello_flutter_cube');
 
 final _random = Random();
 
@@ -34,6 +36,11 @@ final _pointsProvider = StateProvider<List<Vector3>>(
 final _pausedProvider = StateProvider<bool>((ref) => false);
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -144,7 +151,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               '${p.y.toStringAsFixed(4)}, '
               '${p.z.toStringAsFixed(4)})\n');
         }
-        Logger().i(t.toString());
+        _logger.info(t.toString());
       }
     }
 

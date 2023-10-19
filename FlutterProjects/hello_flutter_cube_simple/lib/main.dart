@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('hello_flutter_cube_simple');
 
 final sceneProvider = StateProvider<Scene?>((ref) => null);
 final textureOnProvider = StateProvider<bool>((ref) => true);
@@ -11,6 +14,11 @@ Object? _cube;
 Object? _cube2;
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -20,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Hello Flutter \'Cube\'',
       theme: ThemeData.dark(),
       home: const MyHomePage(title: 'Hello Flutter \'Cube\''),
     );

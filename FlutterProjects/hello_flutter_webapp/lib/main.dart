@@ -6,8 +6,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart';
 
 import 'api_url.dart';
+
+final logger = Logger('hello_flutter_webapp');
 
 // サーバAPIを使用して、JIS慣用色名データを取得する。
 
@@ -46,6 +49,11 @@ final colorsProvider = FutureProvider<List<_JisColor>>(
 // メイン
 
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
