@@ -6,8 +6,9 @@ import 'package:logging/logging.dart';
 
 final logger = Logger('hello_flutter_isolate');
 
-late final ReceivePort clientReceivePort;
-late final StreamIterator<Object?> clientReceiveIterator;
+late final ReceivePort receiveFromServerPort;
+late final StreamIterator<Object?> receiveFromServerIterator;
+late final SendPort sendToServerPort;
 
 void main() async {
   Logger.root.level = Level.ALL;
@@ -15,25 +16,40 @@ void main() async {
     debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
   });
 
-  clientReceivePort = ReceivePort("clientReceivePort");
-  clientReceiveIterator = StreamIterator(clientReceivePort);
+  receiveFromServerPort = ReceivePort("clientReceivePort");
+  receiveFromServerIterator = StreamIterator(receiveFromServerPort);
 
-  await Isolate.spawn(_server, clientReceivePort.sendPort);
+  await Isolate.spawn(_server, receiveFromServerPort.sendPort);
+
+  await receiveFromServerIterator.moveNext();
+  sendToServerPort = receiveFromServerIterator.current as SendPort;
 
   runApp(const MyApp());
 }
 
 void _server(SendPort sendPort) async {
-  final serverLogger = Logger('serverLogger');
+  final isolateLogger = Logger('isolateLogger');
 
-  serverLogger.fine('[i] _server');
-  //await for (;;) {
-  serverLogger.fine('_server 1');
-  sendPort.send(1);
-  serverLogger.fine('_server 2');
-  sendPort.send(2);
-  //}
-  serverLogger.fine('[o] _server');
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  //debugPrint('[i] _server');
+  isolateLogger.fine('[i] _server');
+
+  final receiveFromClientPort = ReceivePort('receiveFromClientPort');
+  sendPort.send(receiveFromClientPort.sendPort);
+  final receiveFromClientIterator = StreamIterator(receiveFromClientPort);
+
+  for (;;) {
+    isolateLogger.fine('_server awaits');
+    await receiveFromClientIterator.moveNext();
+    final input = receiveFromClientIterator.current;
+    isolateLogger.fine('_server received input=[$input] and sending ${input + 1}');
+    sendPort.send(input + 1);
+  }
+  //isolateLogger.fine('[o] _server');
 }
 
 class MyApp extends StatelessWidget {
@@ -87,11 +103,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await clientReceiveIterator.moveNext();
+          logger.fine('sending to server $_digit');
+          sendToServerPort.send(_digit);
+
+          logger.fine('client awaits');
+          await receiveFromServerIterator.moveNext();
           setState(() {
-            if (clientReceiveIterator.current is int) {
-              _digit = clientReceiveIterator.current as int;
-              logger.fine('client received from port: $_digit');
+            if (receiveFromServerIterator.current is int) {
+              _digit = receiveFromServerIterator.current as int;
+              logger.fine('client received $_digit');
             }
           });
         },
