@@ -1,10 +1,20 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
 final logger = Logger('hello_flutter_ui');
+
+final _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const MyHomePage(),
+    ),
+  ],
+);
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -20,21 +30,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Hello Flutter UI',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Hello Flutter UI'),
+      routerConfig: _router,
     );
   }
 }
 
 class MyHomePage extends ConsumerWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
+  final String title = 'Hello Flutter UI';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,10 +59,11 @@ class MyHomePage extends ConsumerWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text('Drawer Header'),
+              child: Text(title),
             ),
             ListTile(
-              title: const Text('Item 1'),
+              title: const Text('Home'),
+              onTap: () => context.go('/'),
             ),
           ],
         ),
