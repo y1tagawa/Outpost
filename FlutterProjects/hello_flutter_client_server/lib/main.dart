@@ -1,3 +1,7 @@
+/// クライアント・サーバ・フレームワークのサンプル
+///
+/// todo: isolateによるモーダルなセッションのサンプル（JKP, AMHとか）
+
 import 'package:flutter/material.dart';
 
 import 'server_client.dart';
@@ -82,7 +86,7 @@ class CounterClient extends StatefulWidget implements ISessionEventListener {
 }
 
 class _CounterClientState extends State<CounterClient> {
-  // 状態キャッシュ（nullは未初期化を意味する。）
+  // 状態キャッシュ（nullは未初期化を意味する）
   int? _revision;
   String? _state;
 
