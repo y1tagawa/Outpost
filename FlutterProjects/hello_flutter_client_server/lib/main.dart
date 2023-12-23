@@ -1,45 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'server.dart';
+import 'server_client.dart';
 
-///
 void main() {
   runApp(const MyApp());
-}
-
-/// カウンタセッション
-final class CounterSession implements ISession {
-  final ISessionEventListener _listener;
-  int _revision;
-  String _state;
-
-  CounterSession._create(ISessionEventListener listener)
-      : _listener = listener,
-        _revision = 0,
-        _state = '0';
-
-  @override
-  Future<(int, String)> get(String unused) async => (_revision, _state);
-
-  @override
-  Future<(int, String)> post(String unused) async {
-    ++_revision;
-    _state = _revision.toString();
-    return (_revision, _state);
-  }
-
-  @override
-  Future<void> close() async {
-    _listener.close();
-  }
-}
-
-/// カウンタセッションサーバ
-final class CounterServer implements IServer {
-  @override
-  ISession createSession(ISessionEventListener listener) {
-    return CounterSession._create(listener);
-  }
 }
 
 class MyApp extends StatelessWidget {
@@ -53,19 +17,53 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: CounterClient(title: 'Flutter Demo Home Page'),
     );
+  }
+}
+
+//
+//  クライアント・サーバ・フレームワークによるカウンタ
+//
+
+/// カウンタセッション
+final class CounterSession implements ISession {
+  int _revision = 0;
+  String _state = '0';
+
+  CounterSession._create(ISessionEventListener unused);
+
+  @override
+  Future<(int, String)> get(String unused) async => (_revision, _state);
+
+  @override
+  Future<(int, String)> post(String unused) async {
+    // 状態変化
+    ++_revision;
+    _state = _revision.toString();
+    return (_revision, _state);
+  }
+}
+
+/// カウンタセッションサーバ
+final class CounterServer implements IServer {
+  @override
+  ISession createSession(ISessionEventListener listener) {
+    return CounterSession._create(listener);
   }
 }
 
 /// カウンタクライアント
 ///
-class MyHomePage extends StatefulWidget implements ISessionEventListener {
+/// - セッション側の状態をキャッシュし、それに合わせて画面を描画する。
+/// - 「+」ボタン押下に対応してセッションにインクリメントを要求する。
+/// - セッション側の状態変化を検知したらキャッシュを更新、再描画する。
+class CounterClient extends StatefulWidget implements ISessionEventListener {
   final String title;
 
   late final ISession _session;
 
-  MyHomePage({
+  CounterClient({
     super.key,
     required this.title,
   }) {
@@ -75,21 +73,24 @@ class MyHomePage extends StatefulWidget implements ISessionEventListener {
 
   @override
   void close() {
-    // TODO: implement close
+    // 終了要求は使用しない。
+    throw UnimplementedError();
   }
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CounterClient> createState() => _CounterClientState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  late int _revision = -1;
-  late String _state = '';
+class _CounterClientState extends State<CounterClient> {
+  // 状態キャッシュ（nullは未初期化を意味する。）
+  int? _revision;
+  String? _state;
 
   @override
   void initState() {
     super.initState();
 
+    // フレームワークの性質により、状態キャッシュの初期化は非同期に行われる。
     Future(() async {
       final int revision;
       final String state;
@@ -101,11 +102,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // セッションにカウントアップを要求し、レスポンスによって状態キャッシュを更新する。
   void _incrementCounter() async {
     late final int revision;
     late final String state;
     (revision, state) = await widget._session.post('unused');
     if (revision != _revision) {
+      // 状態変化を検知した。
       setState(() {
         _revision = revision;
         _state = state;
@@ -113,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // 状態キャッシュの値により画面の再描画を行う。
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,18 +125,20 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              _state,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        child: _revision == null
+            ? const CircularProgressIndicator()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'You have pushed the button this many times:',
+                  ),
+                  Text(
+                    _state!,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ],
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
