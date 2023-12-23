@@ -90,11 +90,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    // final int revision;
-    // final String state;
-    // (revision, state) = await widget._session.get('unused');
-    // _revision = revision;
-    // _state = state;
+    Future(() async {
+      final int revision;
+      final String state;
+      (revision, state) = await widget._session.get('unused');
+      setState(() {
+        _revision = revision;
+        _state = state;
+      });
+    });
   }
 
   void _incrementCounter() async {
