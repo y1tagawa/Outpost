@@ -50,39 +50,4 @@ abstract class IServer {
   );
 }
 
-/// セッションのサンプル
-final class CounterSession implements ISession {
-  final ISessionEventListener _listener;
-  int _revision;
-  String _state;
-
-  CounterSession._create(ISessionEventListener listener)
-      : _listener = listener,
-        _revision = 0,
-        _state = '0';
-
-  @override
-  Future<(int, String)> get(String unused) async => (_revision, _state);
-
-  @override
-  Future<(int, String)> post(String unused) async {
-    ++_revision;
-    _state = _revision.toString();
-    return (_revision, _state);
-  }
-
-  @override
-  Future<void> close() async {
-    _listener.close();
-  }
-}
-
-/// サーバのサンプル
-final class CounterServer implements IServer {
-  @override
-  ISession createSession(ISessionEventListener listener) {
-    return CounterSession._create(listener);
-  }
-}
-
 /// todo: Isolateによるセッション・サーバのサンプル
