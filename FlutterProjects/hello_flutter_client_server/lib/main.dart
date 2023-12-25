@@ -2,6 +2,8 @@
 ///
 /// todo: isolateによるモーダルなセッションのサンプル（JKP, AMHとか）
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'server_client.dart';
@@ -32,10 +34,12 @@ class MyApp extends StatelessWidget {
 
 /// カウンタセッション
 final class CounterSession implements ISession {
-  int _revision = 0;
-  String _state = '0';
+  int _revision;
+  String _state;
 
-  CounterSession._create(ISessionEventListener unused);
+  CounterSession._create(ISessionEventListener unused)
+      : _revision = 0,
+        _state = '0';
 
   @override
   Future<(int, String)> get(String unused) async => (_revision, _state);
@@ -57,6 +61,65 @@ final class CounterServer implements IServer {
   }
 }
 
+//
+//  クライアント・サーバ・フレームワークによるカウンタ2（非同期関数版）
+//
+
+///
+Stream<(int, String)> _counterLogic(Stream<String> receiveStream) async* {
+  final receiveIterator = StreamIterator(receiveStream);
+
+  int revision = 0;
+  String state = '0';
+
+  for (;;) {
+    await receiveIterator.moveNext();
+    switch (receiveIterator.current) {
+      case 'get':
+        yield (revision, state);
+      case 'post':
+        state = (++revision).toString();
+        yield (revision, state);
+      default:
+        throw UnimplementedError();
+    }
+  }
+}
+
+/// カウンタセッション
+final class CounterSession2 implements ISession {
+  late StreamController<String> _sendStreamController;
+  late StreamIterator<(int, String)> _receiveStreamIterator;
+
+  CounterSession2._create(ISessionEventListener unused) {
+    _sendStreamController = StreamController<String>();
+    final receiveStream = _counterLogic(_sendStreamController.stream);
+    _receiveStreamIterator = StreamIterator(receiveStream);
+  }
+
+  @override
+  Future<(int, String)> get(String unused) async {
+    _sendStreamController.add('get');
+    await _receiveStreamIterator.moveNext();
+    return _receiveStreamIterator.current;
+  }
+
+  @override
+  Future<(int, String)> post(String unused) async {
+    _sendStreamController.add('post');
+    await _receiveStreamIterator.moveNext();
+    return _receiveStreamIterator.current;
+  }
+}
+
+/// カウンタセッションサーバ
+final class CounterServer2 implements IServer {
+  @override
+  ISession createSession(ISessionEventListener listener) {
+    return CounterSession2._create(listener);
+  }
+}
+
 /// カウンタクライアント
 ///
 /// - セッション側の状態をキャッシュし、それに合わせて画面を描画する。
@@ -71,7 +134,8 @@ class CounterClient extends StatefulWidget implements ISessionEventListener {
     super.key,
     required this.title,
   }) {
-    final server = CounterServer();
+    //final server = CounterServer();
+    final server = CounterServer2();
     _session = server.createSession(this);
   }
 
@@ -94,7 +158,7 @@ class _CounterClientState extends State<CounterClient> {
   void initState() {
     super.initState();
 
-    // フレームワークの性質により、状態キャッシュの初期化は非同期に行われる。
+    // 状態キャッシュを非同期的に初期化する。
     Future(() async {
       final int revision;
       final String state;
