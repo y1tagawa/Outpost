@@ -62,7 +62,9 @@ final class CounterServer implements IServer {
 }
 
 //
-//  クライアント・サーバ・フレームワークによるカウンタ2（非同期関数版）
+//  クライアント・サーバ・フレームワークによるカウンタ2
+//
+//  ロジックを非同期関数にできるか実験。できるなら、ロジック中でモード（ループのネスト）とかも使えるはず。
 //
 
 ///
@@ -122,7 +124,7 @@ final class CounterServer2 implements IServer {
 
 /// カウンタクライアント
 ///
-/// - セッション側の状態をキャッシュし、それに合わせて画面を描画する。
+/// - セッション側の状態をキャッシュし、対応して画面を描画する。
 /// - 「+」ボタン押下に対応してセッションにインクリメントを要求する。
 /// - セッション側の状態変化を検知したらキャッシュを更新、再描画する。
 class CounterClient extends StatefulWidget implements ISessionEventListener {
