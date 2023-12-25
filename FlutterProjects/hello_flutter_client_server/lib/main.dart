@@ -5,10 +5,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 import 'server_client.dart';
 
+final logger = Logger('hello_flutter_client_server');
+
 void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   runApp(const MyApp());
 }
 
@@ -42,10 +50,14 @@ final class CounterSession implements ISession {
         _state = '0';
 
   @override
-  Future<(int, String)> get(String unused) async => (_revision, _state);
+  Future<(int, String)> get(String unused) async {
+    logger.fine('CounterSession.get');
+    return (_revision, _state);
+  }
 
   @override
   Future<(int, String)> post(String unused) async {
+    logger.fine('CounterSession.post');
     // 状態変化
     ++_revision;
     _state = _revision.toString();
@@ -67,21 +79,49 @@ final class CounterServer implements IServer {
 //  ロジックを非同期関数にできるか実験。できるなら、ロジック中でモード（ループのネスト）とかも使えるはず。
 //
 
-///
+/// カウンタロジック
 Stream<(int, String)> _counterLogic(Stream<String> receiveStream) async* {
-  final receiveIterator = StreamIterator(receiveStream);
+  logger.fine('[i]_counterLogic');
+
+  final receiveStreamIterator = StreamIterator(receiveStream);
 
   int revision = 0;
   String state = '0';
 
+  Stream<(int, String)> counterLogicInner() async* {
+    for (;;) {
+      await receiveStreamIterator.moveNext();
+      switch (receiveStreamIterator.current) {
+        case 'post':
+          logger.fine('counterLogicInner.post');
+          ++revision;
+          state = '${revision}_A';
+          yield (revision, state);
+          if (revision >= 6) {
+            logger.fine('returning to base');
+            return;
+          }
+        default:
+          throw UnimplementedError();
+      }
+    }
+  }
+
   for (;;) {
-    await receiveIterator.moveNext();
-    switch (receiveIterator.current) {
+    await receiveStreamIterator.moveNext();
+    switch (receiveStreamIterator.current) {
       case 'get':
+        logger.fine('_counterLogic.get');
         yield (revision, state);
       case 'post':
-        state = (++revision).toString();
+        logger.fine('_counterLogic.post');
+        ++revision;
+        state = revision.toString();
         yield (revision, state);
+        if (revision >= 3) {
+          logger.fine('calling inner');
+          yield* counterLogicInner();
+        }
       default:
         throw UnimplementedError();
     }
@@ -101,6 +141,7 @@ final class CounterSession2 implements ISession {
 
   @override
   Future<(int, String)> get(String unused) async {
+    logger.fine('CounterLogic2.get');
     _sendStreamController.add('get');
     await _receiveStreamIterator.moveNext();
     return _receiveStreamIterator.current;
@@ -108,6 +149,7 @@ final class CounterSession2 implements ISession {
 
   @override
   Future<(int, String)> post(String unused) async {
+    logger.fine('CounterLogic2.post');
     _sendStreamController.add('post');
     await _receiveStreamIterator.moveNext();
     return _receiveStreamIterator.current;
