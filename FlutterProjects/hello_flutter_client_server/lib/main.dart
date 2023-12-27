@@ -266,6 +266,7 @@ class _CounterClientState extends State<CounterClient> {
 // JkpAmh
 //
 
+// 画面モード
 enum Mode {
   jkp, // ジャンケンポン
   aks, // あいこでしょ
@@ -326,45 +327,26 @@ class JkpAmh extends LogicWrapper {
         // 人間入力待ち
         iStreamIterator.moveNext();
         final huGcp = Gcp.values.byName(iStreamIterator.current);
-        if (aiGcp == huGcp) {
-          // あいこ
-          //
-        } else if (huGcp == Gcp.g && aiGcp == Gcp.c ||
-            huGcp == Gcp.c && aiGcp == Gcp.p ||
-            huGcp == Gcp.p && aiGcp == Gcp.g) {
-          // 人間の勝ちであっちむいてホイ
-          yield (revision++, '{"mode":"${Mode.amh.name}", "aiWin":false}');
+        if (aiGcp != huGcp) {
+          // あいこでなければ
+          final huWin = (huGcp == Gcp.g && aiGcp == Gcp.c ||
+              huGcp == Gcp.c && aiGcp == Gcp.p ||
+              huGcp == Gcp.p && aiGcp == Gcp.g);
+          // あっちむいてホイ
+          yield (revision++, '{"mode":"${Mode.amh.name}", "huWin":$huWin}');
           // AI方向選択
           final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
           // 人間方向入力待ち
           iStreamIterator.moveNext();
           final huDir = Dir.values.byName(iStreamIterator.current);
           if (aiDir == huDir) {
-            // 人間の勝ち
-            yield (revision++, '{"mode":"${Mode.huWin.name}"}');
+            // 勝敗決定
+            yield (revision++, '{"mode":"${huWin ? Mode.huWin.name : Mode.aiWin.name}"}');
           } else {
             // 引き分け
             yield (revision++, '{"mode":"${Mode.draw.name}"}');
           }
-          // 人間入力待ち
-          iStreamIterator.moveNext();
-          //
-        } else {
-          // AIの勝ちであっちむいてホイ
-          yield (revision++, '{"mode":"${Mode.amh.name}", "aiWin":true}');
-          // AI方向選択
-          final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
-          // 人間方向入力待ち
-          iStreamIterator.moveNext();
-          final huDir = Dir.values.byName(iStreamIterator.current);
-          if (aiDir == huDir) {
-            // AIの勝ち
-            yield (revision++, '{"mode":"${Mode.aiWin.name}"}');
-          } else {
-            // 引き分け
-            yield (revision++, '{"mode":"${Mode.draw.name}"}');
-          }
-          // 人間入力待ち
+          // 次へ
           iStreamIterator.moveNext();
         }
       }
