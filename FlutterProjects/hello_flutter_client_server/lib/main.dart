@@ -3,6 +3,7 @@
 /// todo: isolateによるモーダルなセッションのサンプル（JKP, AMHとか）
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -258,5 +259,143 @@ class _CounterClientState extends State<CounterClient> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+//
+// JkpAmh
+//
+
+enum Mode {
+  jkp, // ジャンケンポン
+  aks, // あいこでしょ
+  amh, // あっちむいてホイ
+  aiWin, // AIの勝ち
+  huWin, // 人間の勝ち
+  draw, // 引き分け
+}
+
+enum Gcp { g, c, p }
+
+enum Dir { up, down, left, right }
+
+abstract class LogicWrapper implements ISession {
+  final _iStreamController = StreamController<String>();
+  StreamIterator<(int, String)>? _oStreamIterator;
+
+  Stream<(int, String)> run(Stream<String> iStream);
+
+  @override
+  Future<(int, String)> get(String unused) async {
+    if (_oStreamIterator == null) {
+      _oStreamIterator = StreamIterator(run(_iStreamController.stream));
+      await _oStreamIterator!.moveNext();
+    }
+    return _oStreamIterator!.current;
+  }
+
+  @override
+  Future<(int, String)> post(String args) async {
+    if (_oStreamIterator == null) {
+      _oStreamIterator = StreamIterator(run(_iStreamController.stream));
+      await _oStreamIterator!.moveNext();
+    }
+    _iStreamController.add(args);
+    await _oStreamIterator!.moveNext();
+    return _oStreamIterator!.current;
+  }
+}
+
+/// ロジック
+class JkpAmh extends LogicWrapper {
+  @override
+  Stream<(int, String)> run(Stream<String> iStream) async* {
+    final iStreamIterator = StreamIterator<String>(iStream);
+
+    const aiGcps = [Gcp.g, Gcp.c, Gcp.p];
+    const aiDirs = [Dir.up, Dir.down, Dir.left, Dir.right];
+
+    int revision = 0;
+    for (;;) {
+      for (bool isJkp = true;; isJkp = false) {
+        // 一回目ならジャンケンポン、二回目以後ならあいこでしょ
+        final mode = isJkp ? Mode.jkp : Mode.aks;
+        yield (revision++, '{"mode":"${mode.name}", "isJkp":$isJkp}');
+        // AI選択
+        final aiGcp = aiGcps[Random().nextInt(aiGcps.length)];
+        // 人間入力待ち
+        iStreamIterator.moveNext();
+        final huGcp = Gcp.values.byName(iStreamIterator.current);
+        if (aiGcp == huGcp) {
+          // あいこ
+          //
+        } else if (huGcp == Gcp.g && aiGcp == Gcp.c ||
+            huGcp == Gcp.c && aiGcp == Gcp.p ||
+            huGcp == Gcp.p && aiGcp == Gcp.g) {
+          // 人間の勝ちであっちむいてホイ
+          yield (revision++, '{"mode":"${Mode.amh.name}", "aiWin":false}');
+          // AI方向選択
+          final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
+          // 人間方向入力待ち
+          iStreamIterator.moveNext();
+          final huDir = Dir.values.byName(iStreamIterator.current);
+          if (aiDir == huDir) {
+            // 人間の勝ち
+            yield (revision++, '{"mode":"${Mode.huWin.name}"}');
+          } else {
+            // 引き分け
+            yield (revision++, '{"mode":"${Mode.draw.name}"}');
+          }
+          // 人間入力待ち
+          iStreamIterator.moveNext();
+          //
+        } else {
+          // AIの勝ちであっちむいてホイ
+          yield (revision++, '{"mode":"${Mode.amh.name}", "aiWin":true}');
+          // AI方向選択
+          final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
+          // 人間方向入力待ち
+          iStreamIterator.moveNext();
+          final huDir = Dir.values.byName(iStreamIterator.current);
+          if (aiDir == huDir) {
+            // AIの勝ち
+            yield (revision++, '{"mode":"${Mode.aiWin.name}"}');
+          } else {
+            // 引き分け
+            yield (revision++, '{"mode":"${Mode.draw.name}"}');
+          }
+          // 人間入力待ち
+          iStreamIterator.moveNext();
+        }
+      }
+    }
+  }
+}
+
+Stream<(int, String)> _jkpAmhLogic(Stream<String> receiveStream) async* {
+  logger.fine('[i]_jkpAmhLogic');
+
+  final receiveStreamIterator = StreamIterator(receiveStream);
+
+  int revision = 0;
+  String state = '{}';
+
+  for (;;) {
+    Mode mode = Mode.jkp;
+    yield (revision, '{"mode":"${mode.name}"}');
+    final huGcp = await receiveStreamIterator.moveNext();
+
+    switch (receiveStreamIterator.current) {
+      case 'get':
+        logger.fine('_counterLogic.get');
+        yield (revision, state);
+      case 'post':
+        logger.fine('_counterLogic.post');
+        ++revision;
+        state = revision.toString();
+        yield (revision, state);
+      default:
+        throw UnimplementedError();
+    }
   }
 }
