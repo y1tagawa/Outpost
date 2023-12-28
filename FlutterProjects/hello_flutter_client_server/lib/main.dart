@@ -311,25 +311,11 @@ abstract class LogicWrapper implements ISession {
     }
   }
 
-  /// ロジックからの出力を、必要に応じ変換する。
-  /// 例えば状態変数が巨大なとき、ロジックの返値やメンバ変数等から一部抽出するなど。
-  @protected
-  String filterState(
-    /// getまたはpostの引数
-    String args,
-
-    /// ロジックの出力
-    String state,
-  ) {
-    // デフォルトではロジックの出力をそのまま返す。
-    return state;
-  }
-
   /// ロジックが起動されていない場合は初回起動し、以後現在状態を返す。
   @override
   Future<(int, String)> get(String args) async {
     await _run();
-    return (_os!.current.$1, filterState(args, _os!.current.$2));
+    return _os!.current;
   }
 
   /// ロジックが起動されていない場合は初回起動し、以後postの結果状態を返す。
@@ -338,7 +324,7 @@ abstract class LogicWrapper implements ISession {
     await _run();
     _is.add(args);
     await _os!.moveNext();
-    return (_os!.current.$1, filterState(args, _os!.current.$2));
+    return (_os!.current);
   }
 }
 
@@ -409,8 +395,8 @@ class JkpAmh extends LogicWrapper {
     }
   }
 
-  @override
-  String filterState(String args, String state) {
+  // 出力の編集を可能にする例として、ロジックの返値でなくメンバの状態変数を使用する。
+  String _makeState() {
     final map = {
       'mode': _mode?.name,
       'isJkp': _isJkp,
@@ -420,5 +406,24 @@ class JkpAmh extends LogicWrapper {
       'huDir': _huDir?.name,
     };
     return jsonEncode(map);
+  }
+
+  @override
+  Future<(int, String)> get(String args) async {
+    final t = await super.get(args);
+    // argsに対応して編集が必要ならここで行う。
+    return (t.$1, _makeState());
+  }
+
+  @override
+  Future<(int, String)> post(String args) async {
+    final map = jsonDecode(args);
+    if (map['revision']! != _revision) {
+      // 入力に対応するリビジョンが現在値と異なる
+      throw ArgumentError();
+    }
+    final t = await super.post(args);
+    // argsに対応して編集が必要ならここで行う。
+    return (t.$1, _makeState());
   }
 }
