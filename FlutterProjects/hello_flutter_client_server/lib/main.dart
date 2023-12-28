@@ -276,7 +276,14 @@ enum Mode {
   draw, // 引き分け
 }
 
-enum Gcp { g, c, p }
+enum Gcp {
+  g,
+  c,
+  p;
+
+  bool wins(Gcp other) =>
+      this == g && other == c || this == c && other == p || this == p && other == g;
+}
 
 enum Dir { up, down, left, right }
 
@@ -329,9 +336,7 @@ class JkpAmh extends LogicWrapper {
         final huGcp = Gcp.values.byName(iStreamIterator.current);
         if (aiGcp != huGcp) {
           // あいこでなければ
-          final huWin = (huGcp == Gcp.g && aiGcp == Gcp.c ||
-              huGcp == Gcp.c && aiGcp == Gcp.p ||
-              huGcp == Gcp.p && aiGcp == Gcp.g);
+          final huWin = huGcp.wins(aiGcp);
           // あっちむいてホイ
           yield (revision++, '{"mode":"${Mode.amh.name}", "huWin":$huWin}');
           // AI方向選択
