@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
+import 'scope_functions.dart';
+
 /*
 main                          client                        session                       server
   |                             |                             |                             |
@@ -25,13 +27,6 @@ main                          client                        session             
   |                                                           |-- disconnect -------------->|
   |                                                           |<-- dispose -----------------|
  */
-
-extension _ScopeFunction<T> on T {
-  T also(void Function(T it) f) {
-    f.call(this);
-    return this;
-  }
-}
 
 /// セッション
 abstract class ISession {
