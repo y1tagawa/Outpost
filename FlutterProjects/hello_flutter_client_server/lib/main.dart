@@ -290,47 +290,8 @@ enum Gcp {
 
 enum Dir { up, down, left, right }
 
-abstract class LogicWrapper implements ISession {
-  /// ロジックへの入力ストリーム（コントローラ）
-  final _is = StreamController<String>();
-
-  /// ロジックからの出力ストリーム（イテレータ）
-  StreamIterator<(int, String)>? _os;
-
-  /// ロジック
-  /// 最初に一回getに対応して呼び出されるので、初回のyieldまでには必ず状態変数の初期化のみを行うこと。
-  Stream<(int, String)> run(
-    ///ロジックへの入力ストリーム
-    Stream<String> iStream,
-  );
-
-  // ロジックが起動されていない場合のみ初回起動する。
-  Future<void> _run() async {
-    if (_os == null) {
-      _os = StreamIterator(run(_is.stream));
-      await _os!.moveNext();
-    }
-  }
-
-  /// ロジックが起動されていない場合は初回起動し、以後現在状態を返す。
-  @override
-  Future<(int, String)> get(String args) async {
-    await _run();
-    return _os!.current;
-  }
-
-  /// ロジックが起動されていない場合は初回起動し、以後postの結果状態を返す。
-  @override
-  Future<(int, String)> post(String args) async {
-    await _run();
-    _is.add(args);
-    await _os!.moveNext();
-    return (_os!.current);
-  }
-}
-
 /// ロジック
-class JkpAmhSession extends LogicWrapper {
+class JkpAmhSession extends AbstractBasicSession {
   @override
   Stream<(int, String)> run(Stream<String> iStream) async* {
     // クライアントからの入力ストリーム（イテレータ）
