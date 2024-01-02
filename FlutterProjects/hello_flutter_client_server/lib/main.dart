@@ -33,7 +33,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: CounterClient(title: 'Flutter Demo Home Page'),
+      //home: CounterClient(title: 'Flutter Demo Home Page'),
+      home: JkpAmhClient(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -329,16 +330,7 @@ abstract class LogicWrapper implements ISession {
 }
 
 /// ロジック
-class JkpAmh extends LogicWrapper {
-  // 状態変数
-  int _revision = 0;
-  Mode? _mode;
-  bool? _isJkp;
-  Gcp? _aiGcp;
-  Gcp? _huGcp;
-  Dir? _aiDir;
-  Dir? _huDir;
-
+class JkpAmhSession extends LogicWrapper {
   @override
   Stream<(int, String)> run(Stream<String> iStream) async* {
     // クライアントからの入力ストリーム（イテレータ）
@@ -347,15 +339,29 @@ class JkpAmh extends LogicWrapper {
     const aiGcps = [Gcp.g, Gcp.c, Gcp.p];
     const aiDirs = [Dir.up, Dir.down, Dir.left, Dir.right];
 
-    int revision = 0;
-    for (;;) {
-      for (_isJkp = true;;) {
+    String makeState({
+      required Mode mode,
+      Gcp? aiGcp,
+      Gcp? huGcp,
+      Dir? aiDir,
+      Dir? huDir,
+    }) {
+      final map = {
+        'mode': mode.name,
+        'aiGcp': aiGcp?.name,
+        'huGcp': huGcp?.name,
+        'aiDir': aiDir?.name,
+        'huDir': huDir?.name,
+      };
+      return jsonEncode(map);
+    }
+
+    for (int revision = 0;;) {
+      for (bool isJkp = true;;) {
         // 一回目ならジャンケンポン、二回目以後ならあいこでしょ
-        _mode = _isJkp! ? Mode.jkp : Mode.aks;
-        // その他の初期値
-        _aiGcp = _huGcp = _aiDir = _aiDir = null;
+        Mode mode = isJkp ? Mode.jkp : Mode.aks;
         // ジャンケン入力画面（初回get）
-        yield (_revision++, '');
+        yield (revision++, makeState(mode: mode));
 
         // AI選択
         final aiGcp = aiGcps[Random().nextInt(aiGcps.length)];
@@ -366,64 +372,243 @@ class JkpAmh extends LogicWrapper {
 
         if (aiGcp == huGcp) {
           // あいこの場合、ジャンケンに戻る
-          _isJkp = false;
+          isJkp = false;
           continue;
         }
 
         // あっちむいて入力画面
-        _mode = aiGcp.wins(huGcp) ? Mode.aiAmh : Mode.huAmh;
-        yield (revision++, '');
+        mode = aiGcp.wins(huGcp) ? Mode.aiAmh : Mode.huAmh;
+        yield (revision++, makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp));
 
         // AI方向選択
-        _aiDir = aiDirs[Random().nextInt(aiDirs.length)];
+        final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
         // 人間方向post待ち
         await is_.moveNext();
         // todo: 入力バリデーション
-        _huDir = Dir.values.byName(is_.current);
+        final huDir = Dir.values.byName(is_.current);
 
-        if (_aiDir == _huDir) {
-          // 勝敗画面
-          _mode = (_mode == Mode.aiAmh) ? Mode.aiWin : Mode.huWin;
+        if (aiDir == huDir) {
+          // 勝ち負け画面
+          mode = (mode == Mode.aiAmh) ? Mode.aiWin : Mode.huWin;
         } else {
           // 引き分け画面
-          _mode = Mode.draw;
+          mode = Mode.draw;
         }
         // OK入力待ち
-        yield (revision++, '');
+        yield (
+          revision++,
+          makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp, aiDir: aiDir, huDir: huDir),
+        );
         is_.moveNext();
+        break;
       }
     }
   }
+}
 
-  // 出力の編集を可能にする例として、ロジックの返値でなくメンバの状態変数を使用する。
-  String _makeState() {
-    final map = {
-      'mode': _mode?.name,
-      'isJkp': _isJkp,
-      'aiGcp': _aiGcp?.name,
-      'huGcp': _huGcp?.name,
-      'aiDir': _aiDir?.name,
-      'huDir': _huDir?.name,
-    };
-    return jsonEncode(map);
+/// JkpAmhセッションサーバ
+final class JkpAmhServer implements IServer {
+  @override
+  ISession createSession(ISessionEventListener listener) {
+    return JkpAmhSession();
+  }
+}
+
+/// JkpAmhクライアント
+///
+/// - セッション側の状態をキャッシュし、対応して画面を描画する。
+/// - 「+」ボタン押下に対応してセッションにインクリメントを要求する。
+/// - セッション側の状態変化を検知したらキャッシュを更新、再描画する。
+class JkpAmhClient extends StatefulWidget implements ISessionEventListener {
+  final String title;
+
+  late final ISession _session;
+
+  JkpAmhClient({
+    super.key,
+    required this.title,
+  }) {
+    final server = JkpAmhServer();
+    _session = server.createSession(this);
   }
 
   @override
-  Future<(int, String)> get(String args) async {
-    final t = await super.get(args);
-    // argsに対応して編集が必要ならここで行う。
-    return (t.$1, _makeState());
+  void close() {
+    // 終了要求は使用しない。
+    throw UnimplementedError();
   }
 
   @override
-  Future<(int, String)> post(String args) async {
-    final map = jsonDecode(args);
-    if (map['revision']! != _revision) {
-      // 入力に対応するリビジョンが現在値と異なる
-      throw ArgumentError();
+  State<JkpAmhClient> createState() => _JkpAmhClientState();
+}
+
+/// ジャンケンポン画面
+class _JkpWidget extends StatelessWidget {
+  final String title;
+  final void Function(Gcp jkp) onJkp;
+
+  const _JkpWidget({super.key, required this.title, required this.onJkp});
+
+  @override
+  Widget build(BuildContext context) {
+    const textStyle = TextStyle(fontSize: 32);
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(onPressed: () => onJkp(Gcp.g), icon: const Text('✊', style: textStyle)),
+              IconButton(onPressed: () => onJkp(Gcp.c), icon: const Text('✌', style: textStyle)),
+              IconButton(onPressed: () => onJkp(Gcp.p), icon: const Text('🖐', style: textStyle)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// あっちむいてホイ画面
+class _AmhWidget extends StatelessWidget {
+  final String title;
+  final void Function(Dir dir) onAmh;
+
+  const _AmhWidget({super.key, required this.title, required this.onAmh});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                  onPressed: () => onAmh(Dir.left), icon: const Icon(Icons.arrow_back_rounded)),
+              IconButton(
+                  onPressed: () => onAmh(Dir.up), icon: const Icon(Icons.arrow_upward_rounded)),
+              IconButton(
+                  onPressed: () => onAmh(Dir.down), icon: const Icon(Icons.arrow_downward_rounded)),
+              IconButton(
+                  onPressed: () => onAmh(Dir.right),
+                  icon: const Icon(Icons.arrow_forward_outlined)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 勝ち負け引き分け画面
+class _OkWidget extends StatelessWidget {
+  final String title;
+  final void Function() onOk;
+
+  const _OkWidget({super.key, required this.title, required this.onOk});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+          ),
+          TextButton(onPressed: onOk, child: const Text('OK')),
+        ],
+      ),
+    );
+  }
+}
+
+class _JkpAmhClientState extends State<JkpAmhClient> {
+  // 状態キャッシュ（nullは未初期化を意味する）
+  int? _revision;
+  String? _state;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 状態キャッシュを非同期的に初期化する。
+    Future(() async {
+      final int revision;
+      final String state;
+      (revision, state) = await widget._session.get('unused');
+      setState(() {
+        _revision = revision;
+        _state = state;
+      });
+    });
+  }
+
+  // セッションにpostし、レスポンスによって状態キャッシュを更新する。
+  void _post(String args) async {
+    late final int revision;
+    late final String state;
+    (revision, state) = await widget._session.post(args);
+    if (revision != _revision) {
+      // 状態変化を検知した。
+      setState(() {
+        _revision = revision;
+        _state = state;
+      });
     }
-    final t = await super.post(args);
-    // argsに対応して編集が必要ならここで行う。
-    return (t.$1, _makeState());
+  }
+
+  // 状態キャッシュの値により画面の再描画を行う。
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: _revision == null
+            ? const CircularProgressIndicator()
+            : () {
+                final map = jsonDecode(_state!);
+                final mode = Mode.values.byName(map['mode']!);
+                switch (mode) {
+                  case Mode.jkp:
+                  case Mode.aks:
+                    return _JkpWidget(
+                      title: mode == Mode.jkp ? 'ジャンケンポン' : 'あいこでしょ',
+                      onJkp: (Gcp gcp) async => _post(gcp.name),
+                    );
+                  case Mode.aiAmh:
+                  case Mode.huAmh:
+                    return _AmhWidget(
+                      title: mode == Mode.aiAmh ? 'AIのあっちむいてホイ' : '人間のあっちむいてホイ',
+                      onAmh: (Dir dir) async => _post(dir.name),
+                    );
+                  case Mode.aiWin:
+                  case Mode.huWin:
+                  case Mode.draw:
+                    final titles = {
+                      Mode.aiWin: 'AIの勝ち',
+                      Mode.huWin: '人間の勝ち',
+                      Mode.draw: '引き分け',
+                    };
+                    return _OkWidget(
+                      title: titles[mode]!,
+                      onOk: () async => _post('ok'),
+                    );
+                }
+              }(),
+      ),
+    );
   }
 }
