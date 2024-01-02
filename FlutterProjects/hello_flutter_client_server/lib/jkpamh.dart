@@ -222,7 +222,7 @@ class _AmhWidget extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text('あなた: ${_gcpIcons[huGcp]!.data!}'),
+          Text('人間: ${_gcpIcons[huGcp]!.data!}'),
           Text('AI: ${_gcpIcons[aiGcp]!.data!}'),
           Text(title, textAlign: TextAlign.center),
           Row(
@@ -262,13 +262,18 @@ class _OkWidget extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text('あなた: ${_dirIcons[huDir]!.data!}'),
+          Text('人間: ${_dirIcons[huDir]!.data!}'),
           Text('AI: ${_dirIcons[aiDir]!.data!}'),
           Text(
             title,
             textAlign: TextAlign.center,
           ),
-          TextButton(onPressed: onOk, child: const Text('OK')),
+          TextButton(
+              onPressed: onOk,
+              child: const Text(
+                'OK',
+                style: _textStyle,
+              )),
         ],
       ),
     );
