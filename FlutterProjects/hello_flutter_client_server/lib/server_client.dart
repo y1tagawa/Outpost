@@ -91,38 +91,44 @@ abstract class AbstractBasicSession implements ISession {
   /// argsは既定では使用しない。
   @override
   Future<(int, String)> get(String args) async {
-    //_logger.fine('[i] get args=\'$args\'');
+    _logger.fine('[i] get args=\'$args\', _os=$_os');
     if (_os == null) {
-      //_logger.fine('get run');
+      _logger.fine('get run');
       _os = StreamIterator(run(_is.stream));
-      //_logger.fine('waiting response');
+      _logger.fine('waiting response');
       await _os!.moveNext();
-      //_logger.fine('received response');
+      _logger.fine('received response');
     }
     return _os!.current.also(
-      (it) {/*_logger.fine('[o] get (revision, state)=$it')*/},
+      (it) {
+        _logger.fine('[o] get (revision, state)=$it');
+      },
     );
   }
 
   /// postし、結果の現在状態を返す。ただしロジックが起動されていない場合はpostの前に初回起動し初期化する。
   @override
   Future<(int, String)> post(String args) async {
-    //_logger.fine('[i] post args=\'$args\'');
+    _logger.fine('[i] post args=\'$args\', _os=$_os');
     if (_os == null) {
-      //_logger.fine('post run');
+      _logger.fine('post run');
       _os = StreamIterator(run(_is.stream));
-      //_logger.fine('waiting response');
+      _logger.fine('waiting response');
       await _os!.moveNext().also(
-        (it) {/* _logger.fine('received response (revision, state)=$it')*/},
+        (it) {
+          _logger.fine('received response (revision, state)=$it');
+        },
       );
     }
-    //_logger.fine('posting args=\'$args\'');
+    _logger.fine('posting args=\'$args\'');
     _is.add(args);
-    //_logger.fine('waiting response');
+    _logger.fine('waiting response');
     await _os!.moveNext();
-    //_logger.fine('received response');
+    _logger.fine('received response');
     return _os!.current.also(
-      (it) {/*_logger.fine('[o] post (revision, state)=$it')*/},
+      (it) {
+        _logger.fine('[o] post (revision, state)=$it');
+      },
     );
   }
 }

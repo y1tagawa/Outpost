@@ -70,7 +70,7 @@ final class JkpAmhSession extends AbstractBasicSession {
         // 一回目ならジャンケンポン、二回目以後ならあいこでしょ
         Mode mode = isJkp ? Mode.jkp : Mode.aks;
         // ジャンケン入力画面（初回get）
-        yield (revision++, makeState(mode: mode));
+        yield (++revision, makeState(mode: mode));
 
         // AI選択
         final aiGcp = aiGcps[Random().nextInt(aiGcps.length)];
@@ -87,7 +87,7 @@ final class JkpAmhSession extends AbstractBasicSession {
 
         // あっち向いて入力画面
         mode = aiGcp.wins(huGcp) ? Mode.aiAmh : Mode.huAmh;
-        yield (revision++, makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp));
+        yield (++revision, makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp));
 
         // AI方向選択
         final aiDir = aiDirs[Random().nextInt(aiDirs.length)];
@@ -105,7 +105,7 @@ final class JkpAmhSession extends AbstractBasicSession {
         }
         // OK入力待ち
         yield (
-          revision++,
+          ++revision,
           makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp, aiDir: aiDir, huDir: huDir),
         );
         is_.moveNext();
