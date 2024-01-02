@@ -442,6 +442,25 @@ class JkpAmhClient extends StatefulWidget implements ISessionEventListener {
   State<JkpAmhClient> createState() => _JkpAmhClientState();
 }
 
+const _textStyle = TextStyle(fontSize: 24);
+const _iconStyle = TextStyle(fontSize: 32);
+
+const _gIcon = Text('\u{270a}', style: _iconStyle);
+const _cIcon = Text('\u{270c}', style: _iconStyle);
+const _pIcon = Text('\u{1f590}', style: _iconStyle);
+const _gcpIcons = {Gcp.g: _gIcon, Gcp.c: _cIcon, Gcp.p: _pIcon};
+
+const _upIcon = Text('\u{1f446}', style: _iconStyle);
+const _downIcon = Text('\u{1f447}', style: _iconStyle);
+const _leftIcon = Text('\u{1f448}', style: _iconStyle);
+const _rightIcon = Text('\u{1f449}', style: _iconStyle);
+const _dirIcons = {
+  Dir.up: _upIcon,
+  Dir.down: _downIcon,
+  Dir.left: _leftIcon,
+  Dir.right: _rightIcon,
+};
+
 /// ジャンケンポン画面
 class _JkpWidget extends StatelessWidget {
   final String title;
@@ -451,7 +470,6 @@ class _JkpWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 32);
     return Center(
       child: Column(
         children: [
@@ -462,9 +480,9 @@ class _JkpWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: () => onJkp(Gcp.g), icon: const Text('✊', style: textStyle)),
-              IconButton(onPressed: () => onJkp(Gcp.c), icon: const Text('✌', style: textStyle)),
-              IconButton(onPressed: () => onJkp(Gcp.p), icon: const Text('🖐', style: textStyle)),
+              IconButton(onPressed: () => onJkp(Gcp.g), icon: _gIcon),
+              IconButton(onPressed: () => onJkp(Gcp.c), icon: _cIcon),
+              IconButton(onPressed: () => onJkp(Gcp.p), icon: _pIcon),
             ],
           ),
         ],
@@ -476,31 +494,33 @@ class _JkpWidget extends StatelessWidget {
 /// あっちむいてホイ画面
 class _AmhWidget extends StatelessWidget {
   final String title;
+  final Gcp aiGcp;
+  final Gcp huGcp;
   final void Function(Dir dir) onAmh;
 
-  const _AmhWidget({super.key, required this.title, required this.onAmh});
+  const _AmhWidget({
+    super.key,
+    required this.title,
+    required this.aiGcp,
+    required this.huGcp,
+    required this.onAmh,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-          ),
+          Text('あなた: ${_gcpIcons[huGcp]!.data!}'),
+          Text('AI: ${_gcpIcons[aiGcp]!.data!}'),
+          Text(title, textAlign: TextAlign.center),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(
-                  onPressed: () => onAmh(Dir.left), icon: const Icon(Icons.arrow_back_rounded)),
-              IconButton(
-                  onPressed: () => onAmh(Dir.up), icon: const Icon(Icons.arrow_upward_rounded)),
-              IconButton(
-                  onPressed: () => onAmh(Dir.down), icon: const Icon(Icons.arrow_downward_rounded)),
-              IconButton(
-                  onPressed: () => onAmh(Dir.right),
-                  icon: const Icon(Icons.arrow_forward_outlined)),
+              IconButton(onPressed: () => onAmh(Dir.left), icon: _leftIcon),
+              IconButton(onPressed: () => onAmh(Dir.up), icon: _upIcon),
+              IconButton(onPressed: () => onAmh(Dir.down), icon: _downIcon),
+              IconButton(onPressed: () => onAmh(Dir.right), icon: _rightIcon),
             ],
           ),
         ],
@@ -512,15 +532,25 @@ class _AmhWidget extends StatelessWidget {
 /// 勝ち負け引き分け画面
 class _OkWidget extends StatelessWidget {
   final String title;
+  final Dir aiDir;
+  final Dir huDir;
   final void Function() onOk;
 
-  const _OkWidget({super.key, required this.title, required this.onOk});
+  const _OkWidget({
+    super.key,
+    required this.title,
+    required this.aiDir,
+    required this.huDir,
+    required this.onOk,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
+          Text('あなた: ${_dirIcons[huDir]!.data!}'),
+          Text('AI: ${_dirIcons[aiDir]!.data!}'),
           Text(
             title,
             textAlign: TextAlign.center,
@@ -575,39 +605,46 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: _revision == null
-            ? const CircularProgressIndicator()
-            : () {
-                final map = jsonDecode(_state!);
-                final mode = Mode.values.byName(map['mode']!);
-                switch (mode) {
-                  case Mode.jkp:
-                  case Mode.aks:
-                    return _JkpWidget(
-                      title: mode == Mode.jkp ? 'ジャンケンポン' : 'あいこでしょ',
-                      onJkp: (Gcp gcp) async => _post(gcp.name),
-                    );
-                  case Mode.aiAmh:
-                  case Mode.huAmh:
-                    return _AmhWidget(
-                      title: mode == Mode.aiAmh ? 'AIのあっちむいてホイ' : '人間のあっちむいてホイ',
-                      onAmh: (Dir dir) async => _post(dir.name),
-                    );
-                  case Mode.aiWin:
-                  case Mode.huWin:
-                  case Mode.draw:
-                    final titles = {
-                      Mode.aiWin: 'AIの勝ち',
-                      Mode.huWin: '人間の勝ち',
-                      Mode.draw: '引き分け',
-                    };
-                    return _OkWidget(
-                      title: titles[mode]!,
-                      onOk: () async => _post('ok'),
-                    );
-                }
-              }(),
+      body: DefaultTextStyle.merge(
+        style: _textStyle,
+        child: Center(
+          child: _revision == null
+              ? const CircularProgressIndicator()
+              : () {
+                  final map = jsonDecode(_state!);
+                  final mode = Mode.values.byName(map['mode']!);
+                  switch (mode) {
+                    case Mode.jkp:
+                    case Mode.aks:
+                      return _JkpWidget(
+                        title: mode == Mode.jkp ? 'ジャンケンポン' : 'あいこでしょ',
+                        onJkp: (Gcp gcp) async => _post(gcp.name),
+                      );
+                    case Mode.aiAmh:
+                    case Mode.huAmh:
+                      return _AmhWidget(
+                        title: mode == Mode.aiAmh ? 'AIのあっちむいてホイ' : '人間のあっちむいてホイ',
+                        aiGcp: Gcp.values.byName(map['aiGcp']!),
+                        huGcp: Gcp.values.byName(map['huGcp']!),
+                        onAmh: (Dir dir) async => _post(dir.name),
+                      );
+                    case Mode.aiWin:
+                    case Mode.huWin:
+                    case Mode.draw:
+                      final titles = {
+                        Mode.aiWin: 'AIの勝ち',
+                        Mode.huWin: '人間の勝ち',
+                        Mode.draw: '引き分け',
+                      };
+                      return _OkWidget(
+                        title: titles[mode]!,
+                        aiDir: Dir.values.byName(map['aiDir']!),
+                        huDir: Dir.values.byName(map['huDir']!),
+                        onOk: () async => _post('ok'),
+                      );
+                  }
+                }(),
+        ),
       ),
     );
   }
