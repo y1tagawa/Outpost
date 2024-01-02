@@ -39,43 +39,6 @@ class MyApp extends StatelessWidget {
 }
 
 //
-//  クライアント・サーバ・フレームワークによるカウンタ
-//
-
-/// カウンタセッション
-final class CounterSession implements ISession {
-  int _revision;
-  String _state;
-
-  CounterSession._create(ISessionEventListener unused)
-      : _revision = 0,
-        _state = '0';
-
-  @override
-  Future<(int, String)> get(String unused) async {
-    logger.fine('CounterSession.get');
-    return (_revision, _state);
-  }
-
-  @override
-  Future<(int, String)> post(String unused) async {
-    logger.fine('CounterSession.post');
-    // 状態変化
-    ++_revision;
-    _state = _revision.toString();
-    return (_revision, _state);
-  }
-}
-
-/// カウンタセッションサーバ
-final class CounterServer implements IServer {
-  @override
-  ISession createSession(ISessionEventListener listener) {
-    return CounterSession._create(listener);
-  }
-}
-
-//
 //  クライアント・サーバ・フレームワークによるカウンタ2
 //
 //  ロジックを非同期関数にできるか実験。できるなら、ロジック中でモード（ループのネスト）とかも使えるはず。
@@ -90,25 +53,6 @@ Stream<(int, String)> _counterLogic(Stream<String> receiveStream) async* {
   int revision = 0;
   String state = '0';
 
-  Stream<(int, String)> counterLogicInner() async* {
-    for (;;) {
-      await receiveStreamIterator.moveNext();
-      switch (receiveStreamIterator.current) {
-        case 'post':
-          logger.fine('counterLogicInner.post');
-          ++revision;
-          state = '${revision}_A';
-          yield (revision, state);
-          if (revision >= 6) {
-            logger.fine('returning to base');
-            return;
-          }
-        default:
-          throw UnimplementedError();
-      }
-    }
-  }
-
   for (;;) {
     await receiveStreamIterator.moveNext();
     switch (receiveStreamIterator.current) {
@@ -120,10 +64,6 @@ Stream<(int, String)> _counterLogic(Stream<String> receiveStream) async* {
         ++revision;
         state = revision.toString();
         yield (revision, state);
-        if (revision >= 3) {
-          logger.fine('calling inner');
-          yield* counterLogicInner();
-        }
       default:
         throw UnimplementedError();
     }
@@ -131,11 +71,11 @@ Stream<(int, String)> _counterLogic(Stream<String> receiveStream) async* {
 }
 
 /// カウンタセッション
-final class CounterSession2 implements ISession {
+final class CounterSession implements ISession {
   late StreamController<String> _sendStreamController;
   late StreamIterator<(int, String)> _receiveStreamIterator;
 
-  CounterSession2._create(ISessionEventListener unused) {
+  CounterSession._create(ISessionEventListener unused) {
     _sendStreamController = StreamController<String>();
     final receiveStream = _counterLogic(_sendStreamController.stream);
     _receiveStreamIterator = StreamIterator(receiveStream);
@@ -143,7 +83,7 @@ final class CounterSession2 implements ISession {
 
   @override
   Future<(int, String)> get(String unused) async {
-    logger.fine('CounterLogic2.get');
+    logger.fine('CounterLogic.get');
     _sendStreamController.add('get');
     await _receiveStreamIterator.moveNext();
     return _receiveStreamIterator.current;
@@ -151,7 +91,7 @@ final class CounterSession2 implements ISession {
 
   @override
   Future<(int, String)> post(String unused) async {
-    logger.fine('CounterLogic2.post');
+    logger.fine('CounterLogic.post');
     _sendStreamController.add('post');
     await _receiveStreamIterator.moveNext();
     return _receiveStreamIterator.current;
@@ -159,10 +99,10 @@ final class CounterSession2 implements ISession {
 }
 
 /// カウンタセッションサーバ
-final class CounterServer2 implements IServer {
+final class CounterServer implements IServer {
   @override
   ISession createSession(ISessionEventListener listener) {
-    return CounterSession2._create(listener);
+    return CounterSession._create(listener);
   }
 }
 
@@ -181,7 +121,7 @@ class CounterClient extends StatefulWidget implements ISessionEventListener {
     required this.title,
   }) {
     //final server = CounterServer();
-    final server = CounterServer2();
+    final server = CounterServer();
     _session = server.createSession(this);
   }
 

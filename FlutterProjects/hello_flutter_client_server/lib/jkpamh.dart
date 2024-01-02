@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'server_client.dart';
 
 // 画面モード
-
 enum Mode {
   jkp, // ジャンケンポン
   aks, // あいこでしょ
@@ -20,6 +19,7 @@ enum Mode {
   draw, // 引き分け
 }
 
+// ジャンケン
 enum Gcp {
   g,
   c,
@@ -29,15 +29,20 @@ enum Gcp {
       this == g && other == c || this == c && other == p || this == p && other == g;
 }
 
+// あっち向いて
 enum Dir { up, down, left, right }
 
 /// あっち向いてホイのロジック
 ///
-///
-class JkpAmhSession extends AbstractBasicSession {
+final class JkpAmhSession extends AbstractBasicSession {
+  /// コンストラクタ
+  /// イベントリスナは使用しない
+  JkpAmhSession._create(ISessionEventListener unused) : super();
+
+  /// ロジック
   @override
   Stream<(int, String)> run(Stream<String> iStream) async* {
-    // クライアントからの入力ストリーム（イテレータ）
+    // クライアントからのpost引数の入力ストリーム（イテレータ）
     final is_ = StreamIterator<String>(iStream);
 
     const aiGcps = [Gcp.g, Gcp.c, Gcp.p];
@@ -114,7 +119,7 @@ class JkpAmhSession extends AbstractBasicSession {
 final class JkpAmhServer implements IServer {
   @override
   ISession createSession(ISessionEventListener listener) {
-    return JkpAmhSession();
+    return JkpAmhSession._create(listener);
   }
 }
 
@@ -281,7 +286,7 @@ class _OkWidget extends StatelessWidget {
 }
 
 class _JkpAmhClientState extends State<JkpAmhClient> {
-// 状態キャッシュ（nullは未初期化を意味する）
+  // 状態キャッシュ（nullは未初期化を意味する）
   int? _revision;
   String? _state;
 
@@ -289,7 +294,7 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
   void initState() {
     super.initState();
 
-// 状態キャッシュを非同期的に初期化する。
+    // 状態キャッシュを非同期的に初期化する。
     Future(() async {
       final int revision;
       final String state;
@@ -301,13 +306,13 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
     });
   }
 
-// セッションにpostし、レスポンスによって状態キャッシュを更新する。
+  // セッションにpostし、レスポンスによって状態キャッシュを更新する。
   void _post(String args) async {
     late final int revision;
     late final String state;
     (revision, state) = await widget._session.post(args);
     if (revision != _revision) {
-// 状態変化を検知した。
+      // 状態変化を検知した。
       setState(() {
         _revision = revision;
         _state = state;
@@ -315,7 +320,7 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
     }
   }
 
-// 状態キャッシュの値により画面の再描画を行う。
+  // 状態キャッシュの値により画面の再描画を行う。
   @override
   Widget build(BuildContext context) {
     return Scaffold(
