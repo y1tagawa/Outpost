@@ -106,9 +106,7 @@ class _CounterClientState extends State<CsCounterClient> {
 
   // セッションにpostし、レスポンスによって状態キャッシュを更新する。
   void _post(String args) async {
-    late final int revision;
-    late final String state;
-    (revision, state) = await widget._session.post(args);
+    final (revision, state) = await widget._session.post(args);
     if (revision != _revision) {
       // 状態変化を検知した。
       setState(() {
@@ -143,6 +141,7 @@ class _CounterClientState extends State<CsCounterClient> {
               ),
       ),
       floatingActionButton: Wrap(
+        direction: Axis.vertical,
         children: [
           FloatingActionButton(
             onPressed: () async => _post('+'),

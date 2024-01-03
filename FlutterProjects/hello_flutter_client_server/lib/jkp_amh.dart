@@ -65,19 +65,22 @@ final class JkpAmhSession extends AbstractBasicSession {
       return jsonEncode(map);
     }
 
+    // ループ
     for (int revision = 0;;) {
+      Gcp? aiGcp;
+      Gcp? huGcp;
       for (bool isJkp = true;;) {
         // 一回目ならジャンケンポン、二回目以後ならあいこでしょ
         Mode mode = isJkp ? Mode.jkp : Mode.aks;
         // ジャンケン入力画面（初回get）
-        yield (++revision, makeState(mode: mode));
+        yield (++revision, makeState(mode: mode, aiGcp: aiGcp, huGcp: huGcp));
 
         // AI選択
-        final aiGcp = aiGcps[Random().nextInt(aiGcps.length)];
+        aiGcp = aiGcps[Random().nextInt(aiGcps.length)];
         // 人間のジャンケンpost待ち
         await is_.moveNext();
         // todo: 入力バリデーション
-        final huGcp = Gcp.values.byName(is_.current);
+        huGcp = Gcp.values.byName(is_.current);
 
         if (aiGcp == huGcp) {
           // あいこの場合、ジャンケンに戻る
@@ -178,15 +181,25 @@ const _dirIcons = {
 /// 人間のジャンケン入力待ち。
 class _JkpWidget extends StatelessWidget {
   final String title;
+  final Gcp? lastAiGcp;
+  final Gcp? lastHuGcp;
   final void Function(Gcp jkp) onJkp;
 
-  const _JkpWidget({super.key, required this.title, required this.onJkp});
+  const _JkpWidget({
+    super.key,
+    required this.title,
+    this.lastAiGcp,
+    this.lastHuGcp,
+    required this.onJkp,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
+          if (lastHuGcp != null) Text('人間: ${_gcpIcons[lastHuGcp!]!.data!}'),
+          if (lastAiGcp != null) Text('AI: ${_gcpIcons[lastAiGcp!]!.data!}'),
           Text(
             title,
             textAlign: TextAlign.center,
@@ -308,9 +321,7 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
 
   // セッションにpostし、レスポンスによって状態キャッシュを更新する。
   void _post(String args) async {
-    late final int revision;
-    late final String state;
-    (revision, state) = await widget._session.post(args);
+    final (revision, state) = await widget._session.post(args);
     if (revision != _revision) {
       // 状態変化を検知した。
       setState(() {
@@ -338,9 +349,15 @@ class _JkpAmhClientState extends State<JkpAmhClient> {
                   final mode = Mode.values.byName(map['mode']!);
                   switch (mode) {
                     case Mode.jkp:
+                      return _JkpWidget(
+                        title: mode == Mode.jkp ? 'ジャンケンポン' : 'あいこでしょ',
+                        onJkp: (Gcp gcp) async => _post(gcp.name),
+                      );
                     case Mode.aks:
                       return _JkpWidget(
                         title: mode == Mode.jkp ? 'ジャンケンポン' : 'あいこでしょ',
+                        lastAiGcp: Gcp.values.byName(map['aiGcp']!),
+                        lastHuGcp: Gcp.values.byName(map['huGcp']!),
                         onJkp: (Gcp gcp) async => _post(gcp.name),
                       );
                     case Mode.aiAmh:

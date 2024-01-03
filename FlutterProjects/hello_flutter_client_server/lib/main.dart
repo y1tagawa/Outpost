@@ -5,8 +5,8 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
-import 'cscounter.dart';
-import 'jkpamh.dart';
+import 'cs_counter.dart';
+import 'jkp_amh.dart';
 
 final logger = Logger('hello_flutter_client_server');
 
