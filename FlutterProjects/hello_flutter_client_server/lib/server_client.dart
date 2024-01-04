@@ -1,4 +1,6 @@
-//  サーバ・クライアントフレームワーク
+// Copyright 2024 Yoshinori Tagawa. All rights reserved.
+
+///  サーバ・クライアントフレームワーク
 
 import 'dart:async';
 

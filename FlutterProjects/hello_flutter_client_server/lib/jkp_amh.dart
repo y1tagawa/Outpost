@@ -1,3 +1,5 @@
+// Copyright 2024 Yoshinori Tagawa. All rights reserved.
+
 /// JkpAmhサーバ・クライアント
 
 import 'dart:async';

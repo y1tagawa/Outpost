@@ -1,3 +1,5 @@
+// Copyright 2024 Yoshinori Tagawa. All rights reserved.
+
 /// スコープ関数
 
 extension ScopeFunctions<T> on T {

@@ -1,3 +1,5 @@
+// Copyright 2024 Yoshinori Tagawa
+
 /// クライアント・サーバ・フレームワークによるカウンタ
 
 import 'dart:async';
