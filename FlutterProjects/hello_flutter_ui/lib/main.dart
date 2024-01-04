@@ -1,3 +1,4 @@
+// Copyright 2024 Yoshinori Tagawa. All rights reserved.
 import 'dart:math';
 
 import 'package:flutter/material.dart';
