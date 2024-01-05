@@ -58,32 +58,30 @@ final _initDataProvider = FutureProvider((ref) async {
     defaultRowCount: defaultRowCount,
     defaultFloorTypeNames: defaultFloorTypeNames,
     defaultWallTypeNames: defaultWallTypeNames,
-  );
+  ).also((it) {
+    debugPrint('here1d');
+  });
 });
 
 final _gridDataStreamController = StreamController<GridData>();
 
-final _gridDataProvider = StreamProvider((ref) async* {
-  final initData = ref.watch(_initDataProvider).when(
-        data: (data) async* {
-          final initGridData = GridData(
-            unitShape: UnitShape.square,
-            columnCount: data.defaultColumnCount,
-            rowCount: data.defaultRowCount,
-            floorTypeNames: data.defaultFloorTypeNames,
-            wallTypeNames: data.defaultWallTypeNames,
-          );
-          _gridDataStreamController.add(initGridData);
-
-          await for (final data in _gridDataStreamController.stream) {
-            yield data;
-          }
-        },
-        loading: () {},
-        error: (error, stack) {
-          _logger.fine(error.toString());
-        },
-      );
+final _gridDataProvider = StreamProvider<GridData>((ref) async* {
+  final initData = await ref.watch(_initDataProvider.future);
+  _logger.fine('here2');
+  debugPrint('here2d');
+  yield GridData(
+    unitShape: UnitShape.square,
+    columnCount: initData.defaultColumnCount,
+    rowCount: initData.defaultRowCount,
+    floorTypeNames: initData.defaultFloorTypeNames,
+    wallTypeNames: initData.defaultWallTypeNames,
+  ).also((it) {
+    _logger.fine('here3');
+    debugPrint('here3d');
+  });
+  await for (final data in _gridDataStreamController.stream) {
+    yield data;
+  }
 });
 
 final _gridDataEditStack = <GridData>[];
