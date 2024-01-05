@@ -5,19 +5,24 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hello_flutter_scroll_view/grid_data.dart';
-import 'package:hello_flutter_scroll_view/scope_functions.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
+import 'grid_data.dart';
+import 'scope_functions.dart';
+
 final _logger = Logger('hello_flutter_two_dimensional');
 
 class _InitData {
+  final int defaultColumnCount;
+  final int defaultRowCount;
   final List<String> defaultFloorTypeNames;
   final List<String> defaultWallTypeNames;
 
   const _InitData({
+    required this.defaultColumnCount,
+    required this.defaultRowCount,
     required this.defaultFloorTypeNames,
     required this.defaultWallTypeNames,
   });
@@ -27,6 +32,16 @@ final _initDataProvider = FutureProvider((ref) async {
   final json = jsonDecode(
     await rootBundle.loadString('assets/init_data.json'),
   ) as Map<String, Object?>;
+
+  final defaultColumnCount = (json['default_column_count']! as int).let((it) {
+    assert(it >= 1);
+    return it;
+  });
+
+  final defaultRowCount = (json['default_row_count']! as int).let((it) {
+    assert(it >= 1);
+    return it;
+  });
 
   final defaultFloorTypeNames = (json['default_floor_type_names']! as List<Object?>).let((it) {
     assert(it.length >= 8);
@@ -39,21 +54,40 @@ final _initDataProvider = FutureProvider((ref) async {
   });
 
   return _InitData(
+    defaultColumnCount: defaultColumnCount,
+    defaultRowCount: defaultRowCount,
     defaultFloorTypeNames: defaultFloorTypeNames,
     defaultWallTypeNames: defaultWallTypeNames,
   );
 });
 
-final _gridDataEditStack = <GridData>[];
-final _gridDataUndoStack = <GridData>[];
-
 final _gridDataStreamController = StreamController<GridData>();
 
 final _gridDataProvider = StreamProvider((ref) async* {
-  await for (final data in _gridDataStreamController.stream) {
-    yield data;
-  }
+  final initData = ref.watch(_initDataProvider).when(
+        data: (data) async* {
+          final initGridData = GridData(
+            unitShape: UnitShape.square,
+            columnCount: data.defaultColumnCount,
+            rowCount: data.defaultRowCount,
+            floorTypeNames: data.defaultFloorTypeNames,
+            wallTypeNames: data.defaultWallTypeNames,
+          );
+          _gridDataStreamController.add(initGridData);
+
+          await for (final data in _gridDataStreamController.stream) {
+            yield data;
+          }
+        },
+        loading: () {},
+        error: (error, stack) {
+          _logger.fine(error.toString());
+        },
+      );
 });
+
+final _gridDataEditStack = <GridData>[];
+final _gridDataUndoStack = <GridData>[];
 
 void main() {
   Logger.root.level = Level.INFO;
@@ -87,17 +121,16 @@ class MyHomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final initData = ref.watch(_initDataProvider);
+    final gridData = ref.watch(_gridDataProvider);
     return Scaffold(
-      body: initData.when(
+      body: gridData.when(
         data: (data) => TableView.builder(
           cellBuilder: (BuildContext context, TableVicinity vicinity) {
-            _logger.fine(initData.value?.defaultFloorTypeNames);
             return Center(
               child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
             );
           },
-          columnCount: 10,
+          columnCount: gridData.value!.columnCount,
           columnBuilder: (int column) {
             return const TableSpan(
               extent: FixedTableSpanExtent(100),
@@ -112,7 +145,7 @@ class MyHomePage extends HookConsumerWidget {
               ),
             );
           },
-          rowCount: 10,
+          rowCount: gridData.value!.rowCount,
           rowBuilder: (int row) {
             return TableSpan(
               extent: const FixedTableSpanExtent(100),
