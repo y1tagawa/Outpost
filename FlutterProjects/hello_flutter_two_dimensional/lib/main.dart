@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -107,13 +108,19 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          ...const MaterialScrollBehavior().dragDevices,
+        },
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends HookConsumerWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -123,6 +130,7 @@ class MyHomePage extends HookConsumerWidget {
     return Scaffold(
       body: gridData.when(
         data: (data) => TableView.builder(
+          diagonalDragBehavior: DiagonalDragBehavior.free,
           cellBuilder: (BuildContext context, TableVicinity vicinity) {
             return Center(
               child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
