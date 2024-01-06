@@ -135,7 +135,7 @@ class MyHomePage extends HookConsumerWidget {
                 onTap: () {
                   _logger.fine('tapped! ${vicinity.column}, ${vicinity.row}');
                 },
-                onTapDown: (details) {
+                onTapUp: (details) {
                   _logger.fine('detail ${details.localPosition} ${details.globalPosition}');
                 },
                 child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
