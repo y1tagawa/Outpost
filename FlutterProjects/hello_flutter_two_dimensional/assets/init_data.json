@@ -1,6 +1,6 @@
 {
-  "default_column_count": 10,
-  "default_row_count": 10,
+  "default_column_count": 20,
+  "default_row_count": 20,
   "default_floor_type_names": [
     "床",
     "岩",

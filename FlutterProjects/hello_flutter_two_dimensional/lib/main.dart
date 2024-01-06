@@ -138,6 +138,9 @@ class MyHomePage extends HookConsumerWidget {
                 onTapUp: (details) {
                   _logger.fine('detail ${details.localPosition} ${details.globalPosition}');
                 },
+                onSecondaryTap: () {
+                  _logger.fine('secondary tap');
+                },
                 child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
               ),
             );
@@ -145,7 +148,7 @@ class MyHomePage extends HookConsumerWidget {
           columnCount: gridData.value!.columnCount,
           columnBuilder: (int column) {
             return const TableSpan(
-              extent: FixedTableSpanExtent(100),
+              extent: FixedTableSpanExtent(50),
               foregroundDecoration: TableSpanDecoration(
                 border: TableSpanBorder(
                   trailing: BorderSide(
@@ -160,7 +163,7 @@ class MyHomePage extends HookConsumerWidget {
           rowCount: gridData.value!.rowCount,
           rowBuilder: (int row) {
             return TableSpan(
-              extent: const FixedTableSpanExtent(100),
+              extent: const FixedTableSpanExtent(50),
               backgroundDecoration: TableSpanDecoration(
                 color: row.isEven ? Colors.blueAccent[100] : Colors.white,
               ),
