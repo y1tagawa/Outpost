@@ -60,7 +60,7 @@ final _initDataProvider = FutureProvider((ref) async {
     defaultFloorTypeNames: defaultFloorTypeNames,
     defaultWallTypeNames: defaultWallTypeNames,
   ).also((it) {
-    debugPrint('here1d');
+    _logger.fine('here1');
   });
 });
 
@@ -69,7 +69,6 @@ final _gridDataStreamController = StreamController<GridData>();
 final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   final initData = await ref.watch(_initDataProvider.future);
   _logger.fine('here2');
-  debugPrint('here2d');
   yield GridData(
     unitShape: UnitShape.square,
     columnCount: initData.defaultColumnCount,
@@ -78,7 +77,6 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
     wallTypeNames: initData.defaultWallTypeNames,
   ).also((it) {
     _logger.fine('here3');
-    debugPrint('here3d');
   });
   await for (final data in _gridDataStreamController.stream) {
     yield data;
@@ -89,7 +87,7 @@ final _gridDataEditStack = <GridData>[];
 final _gridDataUndoStack = <GridData>[];
 
 void main() {
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     debugPrint('[${record.loggerName}] ${record.level.name}: ${record.time}: ${record.message}');
   });
@@ -114,13 +112,13 @@ class MyApp extends StatelessWidget {
           ...const MaterialScrollBehavior().dragDevices,
         },
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends HookConsumerWidget {
-  MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -133,7 +131,15 @@ class MyHomePage extends HookConsumerWidget {
           diagonalDragBehavior: DiagonalDragBehavior.free,
           cellBuilder: (BuildContext context, TableVicinity vicinity) {
             return Center(
-              child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
+              child: GestureDetector(
+                onTap: () {
+                  _logger.fine('tapped! ${vicinity.column}, ${vicinity.row}');
+                },
+                onTapDown: (details) {
+                  _logger.fine('detail ${details.localPosition} ${details.globalPosition}');
+                },
+                child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
+              ),
             );
           },
           columnCount: gridData.value!.columnCount,
