@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +84,8 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   }
 });
 
+final _scaleProvider = StateProvider((ref) => 1);
+
 final _gridDataEditStack = <GridData>[];
 final _gridDataUndoStack = <GridData>[];
 
@@ -118,9 +121,19 @@ class MyApp extends StatelessWidget {
 }
 
 class SquareWidget extends HookConsumerWidget {
+  final double dimension;
   final int column;
   final int row;
-  const SquareWidget({super.key, required this.column, required this.row});
+  final void Function()? onWheelUp;
+  final void Function()? onWheelDown;
+  const SquareWidget({
+    super.key,
+    required this.dimension,
+    required this.column,
+    required this.row,
+    this.onWheelUp,
+    this.onWheelDown,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,11 +141,14 @@ class SquareWidget extends HookConsumerWidget {
       onPointerSignal: (event) {
         if (event is PointerScrollEvent) {
           _logger.fine('scroll ${event.localPosition} ${event.scrollDelta}');
+          if (event.scrollDelta.dy > 0.0) {
+            onWheelDown?.call();
+          } else if (event.scrollDelta.dy < 0.0) {
+            onWheelUp?.call();
+          }
           GestureBinding.instance.pointerSignalResolver.register(
             event,
-            (PointerSignalEvent _) {
-              _logger.fine('scroll2 ${event.localPosition} ${event.scrollDelta}');
-            },
+            (PointerSignalEvent _) {}, // do nothing to stop wheel scroll
           );
         }
       },
@@ -143,8 +159,9 @@ class SquareWidget extends HookConsumerWidget {
         onSecondaryTap: () {
           _logger.fine('secondary tap');
         },
-        child: Center(
-          child: Text('$column, $row'),
+        child: SizedBox.square(
+          dimension: dimension,
+          child: Center(child: Text('$column, $row')),
         ),
       ),
     );
@@ -158,19 +175,33 @@ class MyHomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const scaleToDimension = [25.0, 50.0, 75.0, 100.0];
     final gridData = ref.watch(_gridDataProvider);
+    final scale = ref.watch(_scaleProvider);
+    final dimension = scaleToDimension[scale];
+
     return Scaffold(
       body: gridData.when(
         data: (data) => TableView.builder(
           diagonalDragBehavior: DiagonalDragBehavior.free,
           cellBuilder: (BuildContext context, TableVicinity vicinity) {
-            return SquareWidget(column: vicinity.column, row: vicinity.row);
+            return SquareWidget(
+              dimension: dimension,
+              column: vicinity.column,
+              row: vicinity.row,
+              onWheelDown: () {
+                ref.read(_scaleProvider.notifier).state = math.min(scale + 1, 2);
+              },
+              onWheelUp: () {
+                ref.read(_scaleProvider.notifier).state = math.max(scale - 1, 0);
+              },
+            );
           },
           columnCount: gridData.value!.columnCount,
           columnBuilder: (int column) {
-            return const TableSpan(
-              extent: FixedTableSpanExtent(50),
-              foregroundDecoration: TableSpanDecoration(
+            return TableSpan(
+              extent: FixedTableSpanExtent(dimension),
+              foregroundDecoration: const TableSpanDecoration(
                 border: TableSpanBorder(
                   trailing: BorderSide(
                     color: Colors.black,
@@ -184,7 +215,7 @@ class MyHomePage extends HookConsumerWidget {
           rowCount: gridData.value!.rowCount,
           rowBuilder: (int row) {
             return TableSpan(
-              extent: const FixedTableSpanExtent(50),
+              extent: FixedTableSpanExtent(dimension),
               backgroundDecoration: TableSpanDecoration(
                 color: row.isEven ? Colors.blueAccent[100] : Colors.white,
               ),
