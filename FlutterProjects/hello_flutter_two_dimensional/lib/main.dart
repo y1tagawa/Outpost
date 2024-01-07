@@ -2,8 +2,8 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -117,6 +117,40 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class SquareWidget extends HookConsumerWidget {
+  final int column;
+  final int row;
+  const SquareWidget({super.key, required this.column, required this.row});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Listener(
+      onPointerSignal: (event) {
+        if (event is PointerScrollEvent) {
+          _logger.fine('scroll ${event.localPosition} ${event.scrollDelta}');
+          GestureBinding.instance.pointerSignalResolver.register(
+            event,
+            (PointerSignalEvent _) {
+              _logger.fine('scroll2 ${event.localPosition} ${event.scrollDelta}');
+            },
+          );
+        }
+      },
+      child: GestureDetector(
+        onTapUp: (details) {
+          _logger.fine('tap up ${details.localPosition}');
+        },
+        onSecondaryTap: () {
+          _logger.fine('secondary tap');
+        },
+        child: Center(
+          child: Text('$column, $row'),
+        ),
+      ),
+    );
+  }
+}
+
 class MyHomePage extends HookConsumerWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -130,20 +164,7 @@ class MyHomePage extends HookConsumerWidget {
         data: (data) => TableView.builder(
           diagonalDragBehavior: DiagonalDragBehavior.free,
           cellBuilder: (BuildContext context, TableVicinity vicinity) {
-            return Center(
-              child: GestureDetector(
-                onTap: () {
-                  _logger.fine('tapped! ${vicinity.column}, ${vicinity.row}');
-                },
-                onTapUp: (details) {
-                  _logger.fine('detail ${details.localPosition} ${details.globalPosition}');
-                },
-                onSecondaryTap: () {
-                  _logger.fine('secondary tap');
-                },
-                child: Text('Cell ${vicinity.column} : ${vicinity.row}'),
-              ),
-            );
+            return SquareWidget(column: vicinity.column, row: vicinity.row);
           },
           columnCount: gridData.value!.columnCount,
           columnBuilder: (int column) {
