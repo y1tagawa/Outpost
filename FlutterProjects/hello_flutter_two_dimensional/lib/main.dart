@@ -217,25 +217,39 @@ class EditToolWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final scaleIndex = ref.watch(_scaleIndexProvider);
+
     return Column(
       children: [
-        IconButton(
-          onPressed: () {
-            final scaleIndex = ref.watch(_scaleIndexProvider);
-            if (scaleIndex > 0) {
-              ref.read(_scaleIndexProvider.notifier).state = scaleIndex - 1;
-            }
-          },
-          icon: const Icon(Icons.zoom_out),
-        ),
-        IconButton(
-          onPressed: () {
-            final scaleIndex = ref.watch(_scaleIndexProvider);
-            if (scaleIndex < _scales.length - 1) {
-              ref.read(_scaleIndexProvider.notifier).state = scaleIndex + 1;
-            }
-          },
-          icon: const Icon(Icons.zoom_in),
+        Wrap(
+          direction: Axis.horizontal,
+          alignment: WrapAlignment.start,
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.insert_drive_file_outlined),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.file_open_outlined),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.task_outlined),
+            ),
+            IconButton(
+              onPressed: (scaleIndex > 0)
+                  ? () => ref.read(_scaleIndexProvider.notifier).state = scaleIndex - 1
+                  : null,
+              icon: const Icon(Icons.zoom_out),
+            ),
+            IconButton(
+              onPressed: (scaleIndex < _scales.length - 1)
+                  ? () => ref.read(_scaleIndexProvider.notifier).state = scaleIndex + 1
+                  : null,
+              icon: const Icon(Icons.zoom_in),
+            ),
+          ],
         ),
       ],
     );
@@ -256,7 +270,7 @@ class MyHomePage extends HookConsumerWidget {
         data: (data) => Row(
           children: [
             SizedBox(
-              width: 48.0,
+              width: 120.0,
               child: EditToolWidget(gridData: data),
             ),
             Expanded(child: MapWidget(gridData: data)),
