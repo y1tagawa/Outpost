@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,9 @@ import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
 import 'grid_data.dart';
 import 'scope_functions.dart';
+
+const _squareDimension = 100.0;
+const _scales = [0.25, 0.5, 0.75, 1.0];
 
 final _logger = Logger('hello_flutter_two_dimensional');
 
@@ -84,7 +86,7 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   }
 });
 
-final _scaleProvider = StateProvider((ref) => 1);
+final _scaleIndexProvider = StateProvider((ref) => 1);
 
 final _gridDataEditStack = <GridData>[];
 final _gridDataUndoStack = <GridData>[];
@@ -120,50 +122,122 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// 正方形ユニットタイルウィジェット
+///
 class SquareWidget extends HookConsumerWidget {
   final double dimension;
   final int column;
   final int row;
-  final void Function()? onWheelUp;
-  final void Function()? onWheelDown;
+
   const SquareWidget({
     super.key,
     required this.dimension,
     required this.column,
     required this.row,
-    this.onWheelUp,
-    this.onWheelDown,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Listener(
-      onPointerSignal: (event) {
-        if (event is PointerScrollEvent) {
-          _logger.fine('scroll ${event.localPosition} ${event.scrollDelta}');
-          if (event.scrollDelta.dy > 0.0) {
-            onWheelDown?.call();
-          } else if (event.scrollDelta.dy < 0.0) {
-            onWheelUp?.call();
-          }
-          GestureBinding.instance.pointerSignalResolver.register(
-            event,
-            (PointerSignalEvent _) {}, // do nothing to stop wheel scroll
-          );
-        }
+    return GestureDetector(
+      onTapUp: (details) {
+        _logger.fine('tap up ${details.localPosition}');
       },
-      child: GestureDetector(
-        onTapUp: (details) {
-          _logger.fine('tap up ${details.localPosition}');
-        },
-        onSecondaryTap: () {
-          _logger.fine('secondary tap');
-        },
-        child: SizedBox.square(
-          dimension: dimension,
-          child: Center(child: Text('$column, $row')),
-        ),
+      onSecondaryTap: () {
+        _logger.fine('secondary tap');
+      },
+      child: SizedBox.square(
+        dimension: dimension,
+        child: Center(child: Text('$column, $row')),
       ),
+    );
+  }
+}
+
+/// マップウィジェット
+///
+class MapWidget extends HookConsumerWidget {
+  final GridData gridData;
+
+  const MapWidget({
+    super.key,
+    required this.gridData,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final scaleIndex = ref.watch(_scaleIndexProvider);
+    final dimension = _squareDimension * _scales[scaleIndex];
+
+    return TableView.builder(
+      diagonalDragBehavior: DiagonalDragBehavior.free,
+      cellBuilder: (BuildContext context, TableVicinity vicinity) {
+        return SquareWidget(
+          dimension: dimension,
+          column: vicinity.column,
+          row: vicinity.row,
+        );
+      },
+      columnCount: gridData.columnCount,
+      columnBuilder: (int column) {
+        return TableSpan(
+          extent: FixedTableSpanExtent(dimension),
+          foregroundDecoration: const TableSpanDecoration(
+            border: TableSpanBorder(
+              trailing: BorderSide(
+                color: Colors.black,
+                width: 2,
+                style: BorderStyle.solid,
+              ),
+            ),
+          ),
+        );
+      },
+      rowCount: gridData.rowCount,
+      rowBuilder: (int row) {
+        return TableSpan(
+          extent: FixedTableSpanExtent(dimension),
+          backgroundDecoration: TableSpanDecoration(
+            color: row.isEven ? Colors.blueAccent[100] : Colors.white,
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// 編集ツールウィジェット
+///
+class EditToolWidget extends HookConsumerWidget {
+  final GridData gridData;
+
+  const EditToolWidget({
+    super.key,
+    required this.gridData,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        IconButton(
+          onPressed: () {
+            final scaleIndex = ref.watch(_scaleIndexProvider);
+            if (scaleIndex > 0) {
+              ref.read(_scaleIndexProvider.notifier).state = scaleIndex - 1;
+            }
+          },
+          icon: const Icon(Icons.zoom_out),
+        ),
+        IconButton(
+          onPressed: () {
+            final scaleIndex = ref.watch(_scaleIndexProvider);
+            if (scaleIndex < _scales.length - 1) {
+              ref.read(_scaleIndexProvider.notifier).state = scaleIndex + 1;
+            }
+          },
+          icon: const Icon(Icons.zoom_in),
+        ),
+      ],
     );
   }
 }
@@ -175,52 +249,18 @@ class MyHomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const scaleToDimension = [25.0, 50.0, 75.0, 100.0];
     final gridData = ref.watch(_gridDataProvider);
-    final scale = ref.watch(_scaleProvider);
-    final dimension = scaleToDimension[scale];
 
     return Scaffold(
       body: gridData.when(
-        data: (data) => TableView.builder(
-          diagonalDragBehavior: DiagonalDragBehavior.free,
-          cellBuilder: (BuildContext context, TableVicinity vicinity) {
-            return SquareWidget(
-              dimension: dimension,
-              column: vicinity.column,
-              row: vicinity.row,
-              onWheelDown: () {
-                ref.read(_scaleProvider.notifier).state = math.min(scale + 1, 2);
-              },
-              onWheelUp: () {
-                ref.read(_scaleProvider.notifier).state = math.max(scale - 1, 0);
-              },
-            );
-          },
-          columnCount: gridData.value!.columnCount,
-          columnBuilder: (int column) {
-            return TableSpan(
-              extent: FixedTableSpanExtent(dimension),
-              foregroundDecoration: const TableSpanDecoration(
-                border: TableSpanBorder(
-                  trailing: BorderSide(
-                    color: Colors.black,
-                    width: 2,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-              ),
-            );
-          },
-          rowCount: gridData.value!.rowCount,
-          rowBuilder: (int row) {
-            return TableSpan(
-              extent: FixedTableSpanExtent(dimension),
-              backgroundDecoration: TableSpanDecoration(
-                color: row.isEven ? Colors.blueAccent[100] : Colors.white,
-              ),
-            );
-          },
+        data: (data) => Row(
+          children: [
+            SizedBox(
+              width: 48.0,
+              child: EditToolWidget(gridData: data),
+            ),
+            Expanded(child: MapWidget(gridData: data)),
+          ],
         ),
         loading: () => const CircularProgressIndicator(),
         error: (error, stack) => Text(error.toString()),
