@@ -86,6 +86,10 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   }
 });
 
+/// ペイントインデックス
+final _paintIndexProvider = StateProvider((ref) => 0);
+
+/// 倍率インデックス
 final _scaleIndexProvider = StateProvider((ref) => 1);
 
 final _gridDataEditStack = <GridData>[];
@@ -217,6 +221,7 @@ class EditToolWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final paintIndex = ref.watch(_paintIndexProvider);
     final scaleIndex = ref.watch(_scaleIndexProvider);
 
     return Column(
@@ -225,18 +230,19 @@ class EditToolWidget extends HookConsumerWidget {
           direction: Axis.horizontal,
           alignment: WrapAlignment.start,
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.insert_drive_file_outlined),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.file_open_outlined),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.task_outlined),
-            ),
+            // IconButton(
+            //   onPressed: () {},
+            //   icon: const Icon(Icons.insert_drive_file_outlined),
+            // ),
+            // IconButton(
+            //   onPressed: () {},
+            //   icon: const Icon(Icons.file_open_outlined),
+            // ),
+            // IconButton(
+            //   onPressed: () {},
+            //   icon: const Icon(Icons.task_outlined),
+            // ),
+            // 倍率
             IconButton(
               onPressed: (scaleIndex > 0)
                   ? () => ref.read(_scaleIndexProvider.notifier).state = scaleIndex - 1
@@ -249,6 +255,18 @@ class EditToolWidget extends HookConsumerWidget {
                   : null,
               icon: const Icon(Icons.zoom_in),
             ),
+
+            // ペイントツール
+            for (int i = 0; i < 24; ++i)
+              (i == paintIndex)
+                  ? IconButton.outlined(
+                      onPressed: () {},
+                      icon: const Icon(Icons.add_circle_outline),
+                    )
+                  : IconButton(
+                      onPressed: () => ref.read(_paintIndexProvider.notifier).state = i,
+                      icon: const Icon(Icons.add_circle_outline),
+                    ),
           ],
         ),
       ],
@@ -270,7 +288,7 @@ class MyHomePage extends HookConsumerWidget {
         data: (data) => Row(
           children: [
             SizedBox(
-              width: 120.0,
+              width: 84.0,
               child: EditToolWidget(gridData: data),
             ),
             Expanded(child: MapWidget(gridData: data)),
