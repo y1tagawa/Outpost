@@ -134,20 +134,31 @@ class SquareWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.unitAt(column, row);
-    final floorType = unit.floorType;
 
     return GestureDetector(
-      onTap: () {
-        if (floorType.index != paintIndex) {
-          final newGridData =
-              gridData.setUnit(column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
-          _gridDataStreamController.sink.add(newGridData);
+      onTapUp: (details) {
+        _logger.fine('tap up: ${details.localPosition}');
+        if (details.localPosition.dy < dimension * 0.2) {
+          // 北
+        } else if (details.localPosition.dy >= dimension * 0.8) {
+          // 南
+        } else if (details.localPosition.dx >= dimension * 0.8) {
+          // 東
+        } else if (details.localPosition.dx < dimension * 0.2) {
+          // 西
+        } else {
+          // 床
+          if (unit.floorType.index != paintIndex) {
+            final newGridData = gridData.setUnit(
+                column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
+            _gridDataStreamController.sink.add(newGridData);
+          }
         }
       },
       child: Tooltip(
         message: '($column, $row)',
         child: Image.asset(
-          _paintImageAssets[floorType.index],
+          _paintImageAssets[unit.floorType.index],
           width: dimension,
           height: dimension,
         ),
@@ -273,7 +284,7 @@ class EditToolWidget extends HookConsumerWidget {
             ),
 
             // ペイントツール
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < _paintImageAssets.length; ++i)
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
