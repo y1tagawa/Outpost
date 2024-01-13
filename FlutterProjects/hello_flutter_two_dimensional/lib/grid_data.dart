@@ -2,26 +2,28 @@
 
 // 格子図データクラス
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'scope_functions.dart';
 
 /// 単位図形データクラス
 @immutable
 class UnitData {
   final int floorType;
-  final List<int> wallType; // N, (N)E, S, (N)W, SE, SW,
+  final List<int> _wallType; // N, (N)E, S, (N)W, SE, SW,
   final String onEnter;
   final String onLeave;
-  final Map<String, String> floorProperties;
-  final List<Map<String, String>> wallProperties;
+  final Map<String, String> floorProperties; //todo
+  final List<Map<String, String>> wallProperties; //todo
 
   const UnitData({
     this.floorType = 0,
-    this.wallType = const [0, 0, 0, 0, 0, 0],
+    List<int> wallType = const [0, 0, 0, 0, 0, 0],
     this.onEnter = '',
     this.onLeave = '',
     this.floorProperties = const {},
     this.wallProperties = const [{}, {}, {}, {}, {}, {}],
-  });
+  }) : _wallType = wallType;
 
 //<editor-fold desc="Data Methods">
   @override
@@ -30,7 +32,7 @@ class UnitData {
       (other is UnitData &&
           runtimeType == other.runtimeType &&
           floorType == other.floorType &&
-          wallType == other.wallType &&
+          _wallType == other._wallType &&
           onEnter == other.onEnter &&
           onLeave == other.onLeave &&
           floorProperties == other.floorProperties &&
@@ -39,7 +41,7 @@ class UnitData {
   @override
   int get hashCode =>
       floorType.hashCode ^
-      wallType.hashCode ^
+      _wallType.hashCode ^
       onEnter.hashCode ^
       onLeave.hashCode ^
       floorProperties.hashCode ^
@@ -49,7 +51,7 @@ class UnitData {
   String toString() {
     return 'UnitData{'
         ' floorType: $floorType,'
-        ' wallType: $wallType,'
+        ' _wallType: $_wallType,'
         ' onEnter: $onEnter,'
         ' onLeave: $onLeave,'
         ' floorProperties: $floorProperties,'
@@ -67,7 +69,7 @@ class UnitData {
   }) {
     return UnitData(
       floorType: floorType ?? this.floorType,
-      wallType: wallType ?? this.wallType,
+      wallType: wallType ?? this._wallType,
       onEnter: onEnter ?? this.onEnter,
       onLeave: onLeave ?? this.onLeave,
       floorProperties: floorProperties ?? this.floorProperties,
@@ -78,7 +80,7 @@ class UnitData {
   Map<String, dynamic> toMap() {
     return {
       'floorType': this.floorType,
-      'wallType': this.wallType,
+      'wallType': this._wallType,
       'onEnter': this.onEnter,
       'onLeave': this.onLeave,
       'unitProperties': this.floorProperties,
@@ -113,46 +115,37 @@ class GridData {
   final int columnCount;
   final int rowCount;
   final List<UnitData> _units;
-  final List<String> floorTypeNames;
-  final List<String> wallTypeNames;
-  final Map<String, String> gridProperties;
+  final Map<String, String> gridProperties; //todo
 
   GridData({
     required this.unitShape,
     required this.columnCount,
+    List<UnitData>? units,
     required this.rowCount,
-    required this.floorTypeNames,
-    required this.wallTypeNames,
     this.gridProperties = const {},
-  }) : _units = List.generate(columnCount * rowCount, (index) => const UnitData());
+  }) : _units = (units == null)
+            ? List.generate(columnCount * rowCount, (index) => const UnitData())
+            : units.also((_) {
+                assert(units.length == columnCount * rowCount);
+              });
 
-  GridData setFloorType(int column, int row, int floorType) {
-    return _setUnit(column, row, unitAt(column, row).copyWith(floorType: floorType));
-  }
-
+  // GridData setFloorType(int column, int row, int floorType) {
+  //   return setUnit(column, row, unitAt(column, row).copyWith(floorType: floorType));
+  // }
+  //
   UnitData unitAt(int column, int row) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
     return _units[row * rowCount + column];
   }
 
-  GridData _setUnit(int column, int row, UnitData unitData) {
+  GridData setUnit(int column, int row, UnitData unitData) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
     final newUnits = [..._units];
     newUnits[row * rowCount + column] = unitData;
     return copyWith(units: newUnits);
   }
-
-  const GridData._copy({
-    required this.unitShape,
-    required this.columnCount,
-    required this.rowCount,
-    required List<UnitData> units,
-    required this.floorTypeNames,
-    required this.wallTypeNames,
-    required this.gridProperties,
-  }) : _units = units;
 
 //<editor-fold desc="Data Methods">
   @override
@@ -164,8 +157,6 @@ class GridData {
           columnCount == other.columnCount &&
           rowCount == other.rowCount &&
           _units == other._units &&
-          floorTypeNames == other.floorTypeNames &&
-          wallTypeNames == other.wallTypeNames &&
           gridProperties == other.gridProperties);
 
   @override
@@ -174,8 +165,6 @@ class GridData {
       columnCount.hashCode ^
       rowCount.hashCode ^
       _units.hashCode ^
-      floorTypeNames.hashCode ^
-      wallTypeNames.hashCode ^
       gridProperties.hashCode;
 
   @override
@@ -185,8 +174,6 @@ class GridData {
         ' columnCount: $columnCount,'
         ' rowCount: $rowCount,'
         ' _units: $_units,'
-        ' unitTypeNames: $floorTypeNames,'
-        ' wallTypeNames: $wallTypeNames,'
         ' gridProperties: $gridProperties,'
         '}';
   }
@@ -200,13 +187,11 @@ class GridData {
     List<String>? wallTypeNames,
     Map<String, String>? gridProperties,
   }) {
-    return GridData._copy(
+    return GridData(
       unitShape: unitShape ?? this.unitShape,
       columnCount: columnCount ?? this.columnCount,
       rowCount: rowCount ?? this.rowCount,
       units: units ?? this._units,
-      floorTypeNames: floorTypeNames ?? this.floorTypeNames,
-      wallTypeNames: wallTypeNames ?? this.wallTypeNames,
       gridProperties: gridProperties ?? this.gridProperties,
     );
   }
@@ -217,20 +202,16 @@ class GridData {
       'columnCount': this.columnCount,
       'rowCount': this.rowCount,
       'units': this._units,
-      'unitTypeNames': this.floorTypeNames,
-      'wallTypeNames': this.wallTypeNames,
       'gridProperties': this.gridProperties,
     };
   }
 
   factory GridData.fromMap(Map<String, dynamic> map) {
-    return GridData._copy(
+    return GridData(
       unitShape: map['unitShape'] as UnitShape,
       columnCount: map['columnCount'] as int,
       rowCount: map['rowCount'] as int,
       units: map['units'] as List<UnitData>,
-      floorTypeNames: map['unitTypeNames'] as List<String>,
-      wallTypeNames: map['wallTypeNames'] as List<String>,
       gridProperties: map['gridProperties'] as Map<String, String>,
     );
   }

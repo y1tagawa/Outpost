@@ -26,14 +26,10 @@ final _logger = Logger('hello_flutter_two_dimensional');
 class _InitData {
   final int defaultColumnCount;
   final int defaultRowCount;
-  final List<String> defaultFloorTypeNames;
-  final List<String> defaultWallTypeNames;
 
   const _InitData({
     required this.defaultColumnCount,
     required this.defaultRowCount,
-    required this.defaultFloorTypeNames,
-    required this.defaultWallTypeNames,
   });
 }
 
@@ -52,21 +48,9 @@ final _initDataProvider = FutureProvider((ref) async {
     return it;
   });
 
-  final defaultFloorTypeNames = (json['default_floor_type_names']! as List<Object?>).let((it) {
-    assert(it.length >= 8);
-    return List.generate(it.length, (i) => it[i] as String);
-  });
-
-  final defaultWallTypeNames = (json['default_wall_type_names']! as List<Object?>).let((it) {
-    assert(it.length >= 8);
-    return List.generate(it.length, (i) => it[i] as String);
-  });
-
   return _InitData(
     defaultColumnCount: defaultColumnCount,
     defaultRowCount: defaultRowCount,
-    defaultFloorTypeNames: defaultFloorTypeNames,
-    defaultWallTypeNames: defaultWallTypeNames,
   ).also((it) {
     _logger.fine('here1');
   });
@@ -81,8 +65,6 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
     unitShape: UnitShape.square,
     columnCount: initData.defaultColumnCount,
     rowCount: initData.defaultRowCount,
-    floorTypeNames: initData.defaultFloorTypeNames,
-    wallTypeNames: initData.defaultWallTypeNames,
   ).also((it) {
     _logger.fine('here3');
   });
@@ -156,7 +138,7 @@ class SquareWidget extends HookConsumerWidget {
     return GestureDetector(
       onTap: () {
         if (floorType != paintIndex) {
-          final newGridData = gridData.setFloorType(column, row, paintIndex);
+          final newGridData = gridData.setUnit(column, row, unit.copyWith(floorType: paintIndex));
           _gridDataStreamController.sink.add(newGridData);
         }
       },

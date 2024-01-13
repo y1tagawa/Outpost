@@ -1,24 +1,4 @@
 {
   "default_column_count": 20,
-  "default_row_count": 20,
-  "default_floor_type_names": [
-    "床",
-    "岩",
-    "水",
-    "空中",
-    "床5",
-    "床6",
-    "床7",
-    "床8"
-  ],
-  "default_wall_type_names": [
-    "通路",
-    "扉",
-    "壁",
-    "壁4",
-    "壁5",
-    "壁6",
-    "壁7",
-    "壁8"
-  ]
+  "default_row_count": 20
 }
