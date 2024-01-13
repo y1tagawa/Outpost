@@ -137,15 +137,16 @@ class SquareWidget extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        if (floorType != paintIndex) {
-          final newGridData = gridData.setUnit(column, row, unit.copyWith(floorType: paintIndex));
+        if (floorType.index != paintIndex) {
+          final newGridData =
+              gridData.setUnit(column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
           _gridDataStreamController.sink.add(newGridData);
         }
       },
       child: Tooltip(
         message: '($column, $row)',
         child: Image.asset(
-          _paintImageAssets[floorType],
+          _paintImageAssets[floorType.index],
           width: dimension,
           height: dimension,
         ),

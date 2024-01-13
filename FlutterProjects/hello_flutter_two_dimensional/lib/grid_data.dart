@@ -2,28 +2,65 @@
 
 // 格子図データクラス
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'scope_functions.dart';
 
+const _currentVersion = 1;
+
+const _maxDirection = 6;
+
+/// 単位図形形状
+enum UnitShape {
+  square,
+  hexagon,
+}
+
+/// 床タイプ
+enum FloorType {
+  floor,
+  rock,
+  water,
+  cavity,
+}
+
+/// 壁タイプ
+enum WallType {
+  wall,
+  path,
+  door,
+}
+
 /// 単位図形データクラス
 @immutable
 class UnitData {
-  final int floorType;
-  final List<int> _wallType; // N, (N)E, S, (N)W, SE, SW,
+  final FloorType floorType;
+  final List<WallType> _wallTypes; // N, (N)E, S, (N)W, SE, SW,
   final String onEnter;
   final String onLeave;
   final Map<String, String> floorProperties; //todo
   final List<Map<String, String>> wallProperties; //todo
 
-  const UnitData({
-    this.floorType = 0,
-    List<int> wallType = const [0, 0, 0, 0, 0, 0],
+  UnitData({
+    this.floorType = FloorType.floor,
+    List<WallType>? wallTypes,
     this.onEnter = '',
     this.onLeave = '',
     this.floorProperties = const {},
     this.wallProperties = const [{}, {}, {}, {}, {}, {}],
-  }) : _wallType = wallType;
+  }) : _wallTypes = (wallTypes == null)
+            ? List.generate(_maxDirection, (_) => WallType.wall)
+            : wallTypes.also((it) {
+                assert(wallTypes.length == _maxDirection);
+              });
+
+  UnitData setWallType(int direction, WallType newWallType) {
+    final newWallTypes = [..._wallTypes].let((it) {
+      it[direction] = newWallType;
+    });
+    return copyWith(wallTypes: newWallTypes);
+  }
 
 //<editor-fold desc="Data Methods">
   @override
@@ -32,7 +69,7 @@ class UnitData {
       (other is UnitData &&
           runtimeType == other.runtimeType &&
           floorType == other.floorType &&
-          _wallType == other._wallType &&
+          _wallTypes == other._wallTypes &&
           onEnter == other.onEnter &&
           onLeave == other.onLeave &&
           floorProperties == other.floorProperties &&
@@ -41,7 +78,7 @@ class UnitData {
   @override
   int get hashCode =>
       floorType.hashCode ^
-      _wallType.hashCode ^
+      _wallTypes.hashCode ^
       onEnter.hashCode ^
       onLeave.hashCode ^
       floorProperties.hashCode ^
@@ -51,7 +88,7 @@ class UnitData {
   String toString() {
     return 'UnitData{'
         ' floorType: $floorType,'
-        ' _wallType: $_wallType,'
+        ' _wallType: $_wallTypes,'
         ' onEnter: $onEnter,'
         ' onLeave: $onLeave,'
         ' floorProperties: $floorProperties,'
@@ -60,8 +97,8 @@ class UnitData {
   }
 
   UnitData copyWith({
-    int? floorType,
-    List<int>? wallType,
+    FloorType? floorType,
+    List<WallType>? wallTypes,
     String? onEnter,
     String? onLeave,
     Map<String, String>? floorProperties,
@@ -69,7 +106,7 @@ class UnitData {
   }) {
     return UnitData(
       floorType: floorType ?? this.floorType,
-      wallType: wallType ?? this._wallType,
+      wallTypes: wallTypes ?? this._wallTypes,
       onEnter: onEnter ?? this.onEnter,
       onLeave: onLeave ?? this.onLeave,
       floorProperties: floorProperties ?? this.floorProperties,
@@ -80,7 +117,7 @@ class UnitData {
   Map<String, dynamic> toMap() {
     return {
       'floorType': this.floorType,
-      'wallType': this._wallType,
+      'wallTypes': this._wallTypes,
       'onEnter': this.onEnter,
       'onLeave': this.onLeave,
       'unitProperties': this.floorProperties,
@@ -90,8 +127,8 @@ class UnitData {
 
   factory UnitData.fromMap(Map<String, dynamic> map) {
     return UnitData(
-      floorType: map['floorType'] as int,
-      wallType: map['wallType'] as List<int>,
+      floorType: map['floorType'] as FloorType,
+      wallTypes: map['wallTypes'] as List<WallType>,
       onEnter: map['onEnter'] as String,
       onLeave: map['onLeave'] as String,
       floorProperties: map['unitProperties'] as Map<String, String>,
@@ -102,15 +139,10 @@ class UnitData {
 //</editor-fold>
 }
 
-/// 単位図形形状
-enum UnitShape {
-  square,
-  hexagon,
-}
-
 /// 格子図データクラス
 @immutable
 class GridData {
+  final int version;
   final UnitShape unitShape;
   final int columnCount;
   final int rowCount;
@@ -118,21 +150,21 @@ class GridData {
   final Map<String, String> gridProperties; //todo
 
   GridData({
+    this.version = _currentVersion,
     required this.unitShape,
     required this.columnCount,
     List<UnitData>? units,
     required this.rowCount,
     this.gridProperties = const {},
   }) : _units = (units == null)
-            ? List.generate(columnCount * rowCount, (index) => const UnitData())
+            ? List.generate(columnCount * rowCount, (index) => UnitData()).also((_) {
+                assert(columnCount > 0 && rowCount > 0);
+              })
             : units.also((_) {
+                assert(columnCount > 0 && rowCount > 0);
                 assert(units.length == columnCount * rowCount);
               });
 
-  // GridData setFloorType(int column, int row, int floorType) {
-  //   return setUnit(column, row, unitAt(column, row).copyWith(floorType: floorType));
-  // }
-  //
   UnitData unitAt(int column, int row) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
@@ -152,6 +184,7 @@ class GridData {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GridData &&
+          version == other.version &&
           runtimeType == other.runtimeType &&
           unitShape == other.unitShape &&
           columnCount == other.columnCount &&
@@ -161,6 +194,7 @@ class GridData {
 
   @override
   int get hashCode =>
+      version.hashCode ^
       unitShape.hashCode ^
       columnCount.hashCode ^
       rowCount.hashCode ^
@@ -171,6 +205,7 @@ class GridData {
   String toString() {
     return 'GridData{'
         ' unitShape: $unitShape,'
+        ' version: $version,'
         ' columnCount: $columnCount,'
         ' rowCount: $rowCount,'
         ' _units: $_units,'
@@ -179,6 +214,7 @@ class GridData {
   }
 
   GridData copyWith({
+    int? version,
     UnitShape? unitShape,
     int? columnCount,
     int? rowCount,
@@ -188,6 +224,7 @@ class GridData {
     Map<String, String>? gridProperties,
   }) {
     return GridData(
+      version: version ?? this.version,
       unitShape: unitShape ?? this.unitShape,
       columnCount: columnCount ?? this.columnCount,
       rowCount: rowCount ?? this.rowCount,
@@ -198,6 +235,7 @@ class GridData {
 
   Map<String, dynamic> toMap() {
     return {
+      'version': this.version,
       'unitShape': this.unitShape,
       'columnCount': this.columnCount,
       'rowCount': this.rowCount,
@@ -208,6 +246,7 @@ class GridData {
 
   factory GridData.fromMap(Map<String, dynamic> map) {
     return GridData(
+      version: map['version'] as int,
       unitShape: map['unitShape'] as UnitShape,
       columnCount: map['columnCount'] as int,
       rowCount: map['rowCount'] as int,
