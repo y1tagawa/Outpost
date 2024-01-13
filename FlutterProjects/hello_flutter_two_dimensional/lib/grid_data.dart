@@ -144,7 +144,7 @@ class GridData {
     return copyWith(units: newUnits);
   }
 
-  GridData._copy({
+  const GridData._copy({
     required this.unitShape,
     required this.columnCount,
     required this.rowCount,
