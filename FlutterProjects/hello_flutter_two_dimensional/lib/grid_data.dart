@@ -37,16 +37,14 @@ enum WallType {
 class UnitData {
   final FloorType floorType;
   final List<WallType> _wallTypes; // N, (N)E, S, (N)W, SE, SW,
-  final String onEnter;
-  final String onLeave;
   final Map<String, String> floorProperties; //todo
   final List<Map<String, String>> wallProperties; //todo
+
+  List<WallType> get wallTypes => [..._wallTypes];
 
   UnitData({
     this.floorType = FloorType.floor,
     List<WallType>? wallTypes,
-    this.onEnter = '',
-    this.onLeave = '',
     this.floorProperties = const {},
     this.wallProperties = const [{}, {}, {}, {}, {}, {}],
   }) : _wallTypes = (wallTypes == null)
@@ -54,13 +52,6 @@ class UnitData {
             : wallTypes.also((it) {
                 assert(wallTypes.length == _maxDirection);
               });
-
-  UnitData setWallType(int direction, WallType newWallType) {
-    final newWallTypes = [..._wallTypes].let((it) {
-      it[direction] = newWallType;
-    });
-    return copyWith(wallTypes: newWallTypes);
-  }
 
 //<editor-fold desc="Data Methods">
   @override
@@ -70,27 +61,18 @@ class UnitData {
           runtimeType == other.runtimeType &&
           floorType == other.floorType &&
           _wallTypes == other._wallTypes &&
-          onEnter == other.onEnter &&
-          onLeave == other.onLeave &&
           floorProperties == other.floorProperties &&
           wallProperties == other.wallProperties);
 
   @override
   int get hashCode =>
-      floorType.hashCode ^
-      _wallTypes.hashCode ^
-      onEnter.hashCode ^
-      onLeave.hashCode ^
-      floorProperties.hashCode ^
-      wallProperties.hashCode;
+      floorType.hashCode ^ _wallTypes.hashCode ^ floorProperties.hashCode ^ wallProperties.hashCode;
 
   @override
   String toString() {
     return 'UnitData{'
         ' floorType: $floorType,'
         ' _wallType: $_wallTypes,'
-        ' onEnter: $onEnter,'
-        ' onLeave: $onLeave,'
         ' floorProperties: $floorProperties,'
         ' wallProperties: $wallProperties,'
         '}';
@@ -107,8 +89,6 @@ class UnitData {
     return UnitData(
       floorType: floorType ?? this.floorType,
       wallTypes: wallTypes ?? this._wallTypes,
-      onEnter: onEnter ?? this.onEnter,
-      onLeave: onLeave ?? this.onLeave,
       floorProperties: floorProperties ?? this.floorProperties,
       wallProperties: wallProperties ?? this.wallProperties,
     );
@@ -118,8 +98,6 @@ class UnitData {
     return {
       'floorType': this.floorType,
       'wallTypes': this._wallTypes,
-      'onEnter': this.onEnter,
-      'onLeave': this.onLeave,
       'unitProperties': this.floorProperties,
       'wallProperties': this.wallProperties,
     };
@@ -129,8 +107,6 @@ class UnitData {
     return UnitData(
       floorType: map['floorType'] as FloorType,
       wallTypes: map['wallTypes'] as List<WallType>,
-      onEnter: map['onEnter'] as String,
-      onLeave: map['onLeave'] as String,
       floorProperties: map['unitProperties'] as Map<String, String>,
       wallProperties: map['wallProperties'] as List<Map<String, String>>,
     );

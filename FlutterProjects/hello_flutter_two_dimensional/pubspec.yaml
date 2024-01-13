@@ -29,3 +29,4 @@ flutter:
     - assets/init_data.json
     - assets/images/floor.png
     - assets/images/rock.png
+    - assets/images/water.png

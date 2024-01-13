@@ -19,6 +19,7 @@ const _scales = [0.25, 0.5, 0.75, 1.0];
 const _paintImageAssets = [
   'assets/images/floor.png',
   'assets/images/rock.png',
+  'assets/images/water.png',
 ];
 
 final _logger = Logger('hello_flutter_two_dimensional');
@@ -272,7 +273,7 @@ class EditToolWidget extends HookConsumerWidget {
             ),
 
             // ペイントツール
-            for (int i = 0; i < 2; ++i)
+            for (int i = 0; i < 3; ++i)
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
