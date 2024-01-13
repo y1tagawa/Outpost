@@ -2,7 +2,10 @@
 
 // 格子図データクラス
 
+import 'package:flutter/cupertino.dart';
+
 /// 単位図形データクラス
+@immutable
 class UnitData {
   final int floorType;
   final List<int> wallType; // N, (N)E, S, (N)W, SE, SW,
@@ -104,11 +107,12 @@ enum UnitShape {
 }
 
 /// 格子図データクラス
+@immutable
 class GridData {
   final UnitShape unitShape;
   final int columnCount;
   final int rowCount;
-  final List<UnitData> units;
+  final List<UnitData> _units;
   final List<String> floorTypeNames;
   final List<String> wallTypeNames;
   final Map<String, String> gridProperties;
@@ -120,17 +124,35 @@ class GridData {
     required this.floorTypeNames,
     required this.wallTypeNames,
     this.gridProperties = const {},
-  }) : units = List.generate(columnCount * rowCount, (index) => const UnitData());
+  }) : _units = List.generate(columnCount * rowCount, (index) => const UnitData());
+
+  GridData setFloorType(int column, int row, int floorType) {
+    return _setUnit(column, row, unitAt(column, row).copyWith(floorType: floorType));
+  }
+
+  UnitData unitAt(int column, int row) {
+    assert(column >= 0 && column < columnCount);
+    assert(row >= 0 && row < rowCount);
+    return _units[row * rowCount + column];
+  }
+
+  GridData _setUnit(int column, int row, UnitData unitData) {
+    assert(column >= 0 && column < columnCount);
+    assert(row >= 0 && row < rowCount);
+    final newUnits = [..._units];
+    newUnits[row * rowCount + column] = unitData;
+    return copyWith(units: newUnits);
+  }
 
   GridData._copy({
     required this.unitShape,
     required this.columnCount,
     required this.rowCount,
-    required this.units,
+    required List<UnitData> units,
     required this.floorTypeNames,
     required this.wallTypeNames,
     required this.gridProperties,
-  });
+  }) : _units = units;
 
 //<editor-fold desc="Data Methods">
   @override
@@ -141,7 +163,7 @@ class GridData {
           unitShape == other.unitShape &&
           columnCount == other.columnCount &&
           rowCount == other.rowCount &&
-          units == other.units &&
+          _units == other._units &&
           floorTypeNames == other.floorTypeNames &&
           wallTypeNames == other.wallTypeNames &&
           gridProperties == other.gridProperties);
@@ -151,7 +173,7 @@ class GridData {
       unitShape.hashCode ^
       columnCount.hashCode ^
       rowCount.hashCode ^
-      units.hashCode ^
+      _units.hashCode ^
       floorTypeNames.hashCode ^
       wallTypeNames.hashCode ^
       gridProperties.hashCode;
@@ -162,7 +184,7 @@ class GridData {
         ' unitShape: $unitShape,'
         ' columnCount: $columnCount,'
         ' rowCount: $rowCount,'
-        ' units: $units,'
+        ' _units: $_units,'
         ' unitTypeNames: $floorTypeNames,'
         ' wallTypeNames: $wallTypeNames,'
         ' gridProperties: $gridProperties,'
@@ -182,7 +204,7 @@ class GridData {
       unitShape: unitShape ?? this.unitShape,
       columnCount: columnCount ?? this.columnCount,
       rowCount: rowCount ?? this.rowCount,
-      units: units ?? this.units,
+      units: units ?? this._units,
       floorTypeNames: floorTypeNames ?? this.floorTypeNames,
       wallTypeNames: wallTypeNames ?? this.wallTypeNames,
       gridProperties: gridProperties ?? this.gridProperties,
@@ -194,7 +216,7 @@ class GridData {
       'unitShape': this.unitShape,
       'columnCount': this.columnCount,
       'rowCount': this.rowCount,
-      'units': this.units,
+      'units': this._units,
       'unitTypeNames': this.floorTypeNames,
       'wallTypeNames': this.wallTypeNames,
       'gridProperties': this.gridProperties,

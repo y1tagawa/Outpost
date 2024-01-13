@@ -16,6 +16,11 @@ import 'scope_functions.dart';
 const _squareDimension = 100.0;
 const _scales = [0.25, 0.5, 0.75, 1.0];
 
+const _paintImageAssets = [
+  'assets/images/floor.png',
+  'assets/images/rock.png',
+];
+
 final _logger = Logger('hello_flutter_two_dimensional');
 
 class _InitData {
@@ -130,28 +135,38 @@ class MyApp extends StatelessWidget {
 ///
 class SquareWidget extends HookConsumerWidget {
   final double dimension;
+  final GridData gridData;
   final int column;
   final int row;
 
   const SquareWidget({
     super.key,
     required this.dimension,
+    required this.gridData,
     required this.column,
     required this.row,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final paintIndex = ref.watch(_paintIndexProvider);
+    final unit = gridData.unitAt(column, row);
+    final floorType = unit.floorType;
+
     return GestureDetector(
-      onTapUp: (details) {
-        _logger.fine('tap up ${details.localPosition}');
+      onTap: () {
+        if (floorType != paintIndex) {
+          final newGridData = gridData.setFloorType(column, row, paintIndex);
+          _gridDataStreamController.sink.add(newGridData);
+        }
       },
-      onSecondaryTap: () {
-        _logger.fine('secondary tap');
-      },
-      child: SizedBox.square(
-        dimension: dimension,
-        child: Center(child: Text('$column, $row')),
+      child: Tooltip(
+        message: '($column, $row)',
+        child: Image.asset(
+          _paintImageAssets[floorType],
+          width: dimension,
+          height: dimension,
+        ),
       ),
     );
   }
@@ -177,6 +192,7 @@ class MapWidget extends HookConsumerWidget {
       cellBuilder: (BuildContext context, TableVicinity vicinity) {
         return SquareWidget(
           dimension: dimension,
+          gridData: gridData,
           column: vicinity.column,
           row: vicinity.row,
         );
@@ -189,7 +205,12 @@ class MapWidget extends HookConsumerWidget {
             border: TableSpanBorder(
               trailing: BorderSide(
                 color: Colors.black,
-                width: 2,
+                width: 1,
+                style: BorderStyle.solid,
+              ),
+              leading: BorderSide(
+                color: Colors.black,
+                width: 1,
                 style: BorderStyle.solid,
               ),
             ),
@@ -200,8 +221,19 @@ class MapWidget extends HookConsumerWidget {
       rowBuilder: (int row) {
         return TableSpan(
           extent: FixedTableSpanExtent(dimension),
-          backgroundDecoration: TableSpanDecoration(
-            color: row.isEven ? Colors.blueAccent[100] : Colors.white,
+          foregroundDecoration: const TableSpanDecoration(
+            border: TableSpanBorder(
+              trailing: BorderSide(
+                color: Colors.black,
+                width: 1,
+                style: BorderStyle.solid,
+              ),
+              leading: BorderSide(
+                color: Colors.black,
+                width: 1,
+                style: BorderStyle.solid,
+              ),
+            ),
           ),
         );
       },
@@ -257,15 +289,23 @@ class EditToolWidget extends HookConsumerWidget {
             ),
 
             // ペイントツール
-            for (int i = 0; i < 24; ++i)
+            for (int i = 0; i < 2; ++i)
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
-                      icon: const Icon(Icons.add_circle_outline),
+                      icon: Image.asset(
+                        _paintImageAssets[i],
+                        width: 24,
+                        height: 24,
+                      ),
                     )
                   : IconButton(
                       onPressed: () => ref.read(_paintIndexProvider.notifier).state = i,
-                      icon: const Icon(Icons.add_circle_outline),
+                      icon: Image.asset(
+                        _paintImageAssets[i],
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
           ],
         ),
