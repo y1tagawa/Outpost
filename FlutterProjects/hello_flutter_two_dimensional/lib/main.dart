@@ -165,19 +165,22 @@ class SquareWidget extends HookConsumerWidget {
     return GestureDetector(
       onTapUp: (details) {
         _logger.fine('tap up: ${details.localPosition}');
-        if (details.localPosition.dy < size * 0.2) {
-          // 北
-        } else if (details.localPosition.dy >= size * 0.8) {
-          // 南
-        } else if (details.localPosition.dx >= size * 0.8) {
-          // 東
-        } else if (details.localPosition.dx < size * 0.2) {
-          // 西
-        } else {
+        if (paintIndex < FloorType.values.length) {
           // 床
-          if (paintIndex < FloorType.values.length && unit.floorType.index != paintIndex) {
+          if (unit.floorType.index != paintIndex) {
             final newGridData = gridData.setUnit(
                 column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
+            _gridDataStreamController.sink.add(newGridData);
+          }
+        } else {
+          // 壁
+          final direction = 0; //todo
+          if (direction >= 0 && direction < 4) {
+            final newWallType = WallType.values[paintIndex - FloorType.values.length];
+            final newWallTypes = [...unit.wallTypes];
+            newWallTypes[direction] = newWallType;
+            final newUnitData = unit.copyWith(wallTypes: newWallTypes);
+            final newGridData = gridData.setUnit(column, row, newUnitData);
             _gridDataStreamController.sink.add(newGridData);
           }
         }
@@ -227,40 +230,40 @@ class MapWidget extends HookConsumerWidget {
       columnBuilder: (int column) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          foregroundDecoration: const TableSpanDecoration(
-            border: TableSpanBorder(
-              trailing: BorderSide(
-                color: Colors.white,
-                width: 1,
-                style: BorderStyle.solid,
-              ),
-              leading: BorderSide(
-                color: Colors.white,
-                width: 1,
-                style: BorderStyle.solid,
-              ),
-            ),
-          ),
+          // foregroundDecoration: const TableSpanDecoration(
+          //   border: TableSpanBorder(
+          //     trailing: BorderSide(
+          //       color: Colors.white,
+          //       width: 1,
+          //       style: BorderStyle.solid,
+          //     ),
+          //     leading: BorderSide(
+          //       color: Colors.white,
+          //       width: 1,
+          //       style: BorderStyle.solid,
+          //     ),
+          //   ),
+          // ),
         );
       },
       rowCount: gridData.rowCount,
       rowBuilder: (int row) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          foregroundDecoration: const TableSpanDecoration(
-            border: TableSpanBorder(
-              trailing: BorderSide(
-                color: Colors.white,
-                width: 1,
-                style: BorderStyle.solid,
-              ),
-              leading: BorderSide(
-                color: Colors.white,
-                width: 1,
-                style: BorderStyle.solid,
-              ),
-            ),
-          ),
+          // foregroundDecoration: const TableSpanDecoration(
+          //   border: TableSpanBorder(
+          //     trailing: BorderSide(
+          //       color: Colors.white,
+          //       width: 1,
+          //       style: BorderStyle.solid,
+          //     ),
+          //     leading: BorderSide(
+          //       color: Colors.white,
+          //       width: 1,
+          //       style: BorderStyle.solid,
+          //     ),
+          //   ),
+          // ),
         );
       },
     );
