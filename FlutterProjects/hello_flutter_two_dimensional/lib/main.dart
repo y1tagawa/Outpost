@@ -122,14 +122,14 @@ class MyApp extends StatelessWidget {
 /// 正方形ユニットタイルウィジェット
 ///
 class SquareWidget extends HookConsumerWidget {
-  final double dimension;
+  final double size;
   final GridData gridData;
   final int column;
   final int row;
 
   const SquareWidget({
     super.key,
-    required this.dimension,
+    required this.size,
     required this.gridData,
     required this.column,
     required this.row,
@@ -140,16 +140,38 @@ class SquareWidget extends HookConsumerWidget {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.unitAt(column, row);
 
+    Widget buildFloorSquare(FloorType floorType, double size) {
+      final builders = <Widget Function(double size)>[
+        (size) => Image.asset('assets/images/floor.png', width: size, height: size),
+        (size) => Image.asset('assets/images/rock.png', width: size, height: size),
+        (size) => Image.asset('assets/images/water.png', width: size, height: size),
+        (size) => Icon(Icons.air, size: size),
+      ];
+      return builders[floorType.index](size);
+    }
+
+    Widget buildWallSquare(WallType wallType, int direction, double size) {
+      final builders = <Widget Function(double size)>[
+        (size) => Image.asset('assets/images/wall.png', width: size, height: size),
+        (size) => Image.asset('assets/images/path.png', width: size, height: size),
+        (size) => Image.asset('assets/images/door.png', width: size, height: size),
+      ];
+      return Transform.rotate(
+        angle: 0.5 * math.pi * direction,
+        child: builders[wallType.index](size),
+      );
+    }
+
     return GestureDetector(
       onTapUp: (details) {
         _logger.fine('tap up: ${details.localPosition}');
-        if (details.localPosition.dy < dimension * 0.2) {
+        if (details.localPosition.dy < size * 0.2) {
           // 北
-        } else if (details.localPosition.dy >= dimension * 0.8) {
+        } else if (details.localPosition.dy >= size * 0.8) {
           // 南
-        } else if (details.localPosition.dx >= dimension * 0.8) {
+        } else if (details.localPosition.dx >= size * 0.8) {
           // 東
-        } else if (details.localPosition.dx < dimension * 0.2) {
+        } else if (details.localPosition.dx < size * 0.2) {
           // 西
         } else {
           // 床
@@ -165,44 +187,10 @@ class SquareWidget extends HookConsumerWidget {
         child: Stack(
           children: [
             // 床
-            Image.asset(
-              _paintImageAssets[unit.floorType.index],
-              width: dimension,
-              height: dimension,
-            ),
-            // 北
-            Transform.rotate(
-              angle: 0.5 * math.pi,
-              child: Image.asset(
-                _paintImageAssets[unit.wallTypes[0].index + FloorType.values.length],
-                width: dimension,
-                height: dimension,
-              ),
-            ),
-            // 東
-            Transform.rotate(
-              angle: math.pi,
-              child: Image.asset(
-                _paintImageAssets[unit.wallTypes[1].index + FloorType.values.length],
-                width: dimension,
-                height: dimension,
-              ),
-            ),
-            // 南
-            Transform.rotate(
-              angle: -0.5 * math.pi,
-              child: Image.asset(
-                _paintImageAssets[unit.wallTypes[2].index + FloorType.values.length],
-                width: dimension,
-                height: dimension,
-              ),
-            ),
-            // 西
-            Image.asset(
-              _paintImageAssets[unit.wallTypes[3].index + FloorType.values.length],
-              width: dimension,
-              height: dimension,
-            ),
+            buildFloorSquare(unit.floorType, size),
+            // 北、東、南、西
+            for (int direction = 0; direction < 4; ++direction)
+              buildWallSquare(unit.wallTypes[direction], direction, size),
           ],
         ),
       ),
@@ -223,13 +211,13 @@ class MapWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scaleIndex = ref.watch(_scaleIndexProvider);
-    final dimension = _squareDimension * _scales[scaleIndex];
+    final size = _squareDimension * _scales[scaleIndex];
 
     return TableView.builder(
       diagonalDragBehavior: DiagonalDragBehavior.free,
       cellBuilder: (BuildContext context, TableVicinity vicinity) {
         return SquareWidget(
-          dimension: dimension,
+          size: size,
           gridData: gridData,
           column: vicinity.column,
           row: vicinity.row,
@@ -238,7 +226,7 @@ class MapWidget extends HookConsumerWidget {
       columnCount: gridData.columnCount,
       columnBuilder: (int column) {
         return TableSpan(
-          extent: FixedTableSpanExtent(dimension),
+          extent: FixedTableSpanExtent(size),
           foregroundDecoration: const TableSpanDecoration(
             border: TableSpanBorder(
               trailing: BorderSide(
@@ -258,7 +246,7 @@ class MapWidget extends HookConsumerWidget {
       rowCount: gridData.rowCount,
       rowBuilder: (int row) {
         return TableSpan(
-          extent: FixedTableSpanExtent(dimension),
+          extent: FixedTableSpanExtent(size),
           foregroundDecoration: const TableSpanDecoration(
             border: TableSpanBorder(
               trailing: BorderSide(

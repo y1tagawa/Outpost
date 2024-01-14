@@ -22,7 +22,7 @@ enum FloorType {
   floor,
   rock,
   water,
-  cavity,
+  air,
 }
 
 /// 壁タイプ

@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="wall.svg"
-   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\path.png"
+   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\door.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -29,7 +29,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="7.5863456"
      inkscape:cx="33.191146"
-     inkscape:cy="42.200387"
+     inkscape:cy="47.473017"
      inkscape:document-units="mm"
      inkscape:current-layer="g926"
      inkscape:document-rotation="0"
@@ -345,7 +345,7 @@
     <rect
        style="fill:#aa0000;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect928"
-       width="2.1166666"
+       width="1.8520833"
        height="18.520834"
        x="0"
        y="3.96875" />
