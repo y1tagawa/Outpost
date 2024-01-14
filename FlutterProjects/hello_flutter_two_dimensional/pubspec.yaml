@@ -30,3 +30,6 @@ flutter:
     - assets/images/floor.png
     - assets/images/rock.png
     - assets/images/water.png
+    - assets/images/wall.png
+    - assets/images/path.png
+    - assets/images/door.png

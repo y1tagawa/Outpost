@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,10 @@ const _paintImageAssets = [
   'assets/images/floor.png',
   'assets/images/rock.png',
   'assets/images/water.png',
+  'assets/images/water.png',
+  'assets/images/wall.png',
+  'assets/images/path.png',
+  'assets/images/door.png',
 ];
 
 final _logger = Logger('hello_flutter_two_dimensional');
@@ -148,7 +153,7 @@ class SquareWidget extends HookConsumerWidget {
           // 西
         } else {
           // 床
-          if (unit.floorType.index != paintIndex) {
+          if (paintIndex < FloorType.values.length && unit.floorType.index != paintIndex) {
             final newGridData = gridData.setUnit(
                 column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
             _gridDataStreamController.sink.add(newGridData);
@@ -157,10 +162,48 @@ class SquareWidget extends HookConsumerWidget {
       },
       child: Tooltip(
         message: '($column, $row)',
-        child: Image.asset(
-          _paintImageAssets[unit.floorType.index],
-          width: dimension,
-          height: dimension,
+        child: Stack(
+          children: [
+            // 床
+            Image.asset(
+              _paintImageAssets[unit.floorType.index],
+              width: dimension,
+              height: dimension,
+            ),
+            // 北
+            Transform.rotate(
+              angle: 0.5 * math.pi,
+              child: Image.asset(
+                _paintImageAssets[unit.wallTypes[0].index + FloorType.values.length],
+                width: dimension,
+                height: dimension,
+              ),
+            ),
+            // 東
+            Transform.rotate(
+              angle: math.pi,
+              child: Image.asset(
+                _paintImageAssets[unit.wallTypes[1].index + FloorType.values.length],
+                width: dimension,
+                height: dimension,
+              ),
+            ),
+            // 南
+            Transform.rotate(
+              angle: -0.5 * math.pi,
+              child: Image.asset(
+                _paintImageAssets[unit.wallTypes[2].index + FloorType.values.length],
+                width: dimension,
+                height: dimension,
+              ),
+            ),
+            // 西
+            Image.asset(
+              _paintImageAssets[unit.wallTypes[3].index + FloorType.values.length],
+              width: dimension,
+              height: dimension,
+            ),
+          ],
         ),
       ),
     );
@@ -199,12 +242,12 @@ class MapWidget extends HookConsumerWidget {
           foregroundDecoration: const TableSpanDecoration(
             border: TableSpanBorder(
               trailing: BorderSide(
-                color: Colors.black,
+                color: Colors.white,
                 width: 1,
                 style: BorderStyle.solid,
               ),
               leading: BorderSide(
-                color: Colors.black,
+                color: Colors.white,
                 width: 1,
                 style: BorderStyle.solid,
               ),
@@ -219,12 +262,12 @@ class MapWidget extends HookConsumerWidget {
           foregroundDecoration: const TableSpanDecoration(
             border: TableSpanBorder(
               trailing: BorderSide(
-                color: Colors.black,
+                color: Colors.white,
                 width: 1,
                 style: BorderStyle.solid,
               ),
               leading: BorderSide(
-                color: Colors.black,
+                color: Colors.white,
                 width: 1,
                 style: BorderStyle.solid,
               ),
@@ -257,18 +300,6 @@ class EditToolWidget extends HookConsumerWidget {
           direction: Axis.horizontal,
           alignment: WrapAlignment.start,
           children: [
-            // IconButton(
-            //   onPressed: () {},
-            //   icon: const Icon(Icons.insert_drive_file_outlined),
-            // ),
-            // IconButton(
-            //   onPressed: () {},
-            //   icon: const Icon(Icons.file_open_outlined),
-            // ),
-            // IconButton(
-            //   onPressed: () {},
-            //   icon: const Icon(Icons.task_outlined),
-            // ),
             // 倍率
             IconButton(
               onPressed: (scaleIndex > 0)
@@ -283,8 +314,8 @@ class EditToolWidget extends HookConsumerWidget {
               icon: const Icon(Icons.zoom_in),
             ),
 
-            // ペイントツール
-            for (int i = 0; i < _paintImageAssets.length; ++i)
+            // 床
+            for (int i = 0; i < FloorType.values.length; ++i)
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
@@ -300,6 +331,32 @@ class EditToolWidget extends HookConsumerWidget {
                         _paintImageAssets[i],
                         width: 24,
                         height: 24,
+                      ),
+                    ),
+            // 壁
+            for (int i = 0; i < WallType.values.length; ++i)
+              ((i + FloorType.values.length) == paintIndex)
+                  ? IconButton.outlined(
+                      onPressed: () {},
+                      icon: Transform.translate(
+                        offset: const Offset(11, 0),
+                        child: Image.asset(
+                          _paintImageAssets[i + FloorType.values.length],
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                    )
+                  : IconButton(
+                      onPressed: () => ref.read(_paintIndexProvider.notifier).state =
+                          i + FloorType.values.length,
+                      icon: Transform.translate(
+                        offset: const Offset(11, 0),
+                        child: Image.asset(
+                          _paintImageAssets[i + FloorType.values.length],
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
           ],
