@@ -138,7 +138,7 @@ class SquareWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final paintIndex = ref.watch(_paintIndexProvider);
-    final unit = gridData.unitAt(column, row);
+    final unit = gridData.getUnit(column, row);
 
     Widget buildFloorSquare(FloorType floorType, double size) {
       final builders = <Widget Function(double size)>[
@@ -167,21 +167,21 @@ class SquareWidget extends HookConsumerWidget {
         _logger.fine('tap up: ${details.localPosition}');
         if (paintIndex < FloorType.values.length) {
           // 床
-          if (unit.floorType.index != paintIndex) {
-            final newGridData = gridData.setUnit(
-                column, row, unit.copyWith(floorType: FloorType.values[paintIndex]));
+          final newFloorType = FloorType.values[paintIndex];
+          if (unit.floorType != newFloorType) {
+            final newUnitData = unit.copyWith(floorType: newFloorType);
+            final newGridData = gridData.setUnit(column, row, newUnitData);
             _gridDataStreamController.sink.add(newGridData);
           }
         } else {
           // 壁
-          final direction = 0; //todo
-          if (direction >= 0 && direction < 4) {
+          final dir = 0; //todo
+          if (dir >= 0 && dir < 4) {
             final newWallType = WallType.values[paintIndex - FloorType.values.length];
-            final newWallTypes = [...unit.wallTypes];
-            newWallTypes[direction] = newWallType;
-            final newUnitData = unit.copyWith(wallTypes: newWallTypes);
-            final newGridData = gridData.setUnit(column, row, newUnitData);
-            _gridDataStreamController.sink.add(newGridData);
+            if (newWallType != unit.getWall(dir)) {
+              final newGridData = gridData.setUnit(column, row, unit.setWall(dir, newWallType));
+              _gridDataStreamController.sink.add(newGridData);
+            }
           }
         }
       },

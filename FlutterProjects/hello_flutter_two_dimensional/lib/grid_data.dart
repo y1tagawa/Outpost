@@ -40,7 +40,13 @@ class UnitData {
   final Map<String, String> floorProperties; //todo
   final List<Map<String, String>> wallProperties; //todo
 
-  List<WallType> get wallTypes => [..._wallTypes];
+  WallType getWall(int dir) => _wallTypes[dir];
+
+  UnitData setWall(int dir, WallType newWallType) {
+    final newWallTypes = [..._wallTypes];
+    newWallTypes[dir] = newWallType;
+    return copyWith(wallTypes: newWallTypes);
+  }
 
   UnitData({
     this.floorType = FloorType.floor,
@@ -141,7 +147,7 @@ class GridData {
                 assert(units.length == columnCount * rowCount);
               });
 
-  UnitData unitAt(int column, int row) {
+  UnitData getUnit(int column, int row) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
     return _units[row * rowCount + column];
