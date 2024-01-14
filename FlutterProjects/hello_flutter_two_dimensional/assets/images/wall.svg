@@ -330,25 +330,25 @@
      inkscape:label="door"
      style="display:inline">
     <rect
-       style="fill:#575354;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
+       style="fill:#575354;fill-opacity:1;stroke-width:0.244949;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect922"
-       width="2.6458333"
+       width="3.96875"
        height="2.6458333"
        x="0"
        y="0" />
     <rect
-       style="fill:#575354;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
+       style="fill:#575354;fill-opacity:1;stroke-width:0.244949;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect924"
-       width="2.6458333"
+       width="3.96875"
        height="2.6458333"
-       x="23.8125"
+       x="22.489584"
        y="0" />
     <rect
-       style="fill:#aa0000;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
+       style="fill:#aa0000;fill-opacity:1;stroke-width:0.185164;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect928"
-       width="18.520834"
+       width="15.875001"
        height="1.8520833"
-       x="3.96875"
+       x="5.2916665"
        y="0" />
   </g>
 </svg>
