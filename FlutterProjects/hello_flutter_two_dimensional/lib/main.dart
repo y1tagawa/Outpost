@@ -188,8 +188,9 @@ class SquareWidget extends HookConsumerWidget {
           }
         } else {
           // 壁
-          final dir = getDirection(details.localPosition - Offset(size * 0.5, size * 0.5));
-          if (dir >= 0 && dir < 4) {
+          final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
+          if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
+            final dir = getDirection(offset);
             final newWallType = WallType.values[paintIndex - LandType.values.length];
             if (newWallType != unit.getWall(dir)) {
               final newGridData = gridData.setUnit(column, row, unit.setWall(dir, newWallType));
@@ -205,8 +206,7 @@ class SquareWidget extends HookConsumerWidget {
             // 床
             buildLandSquare(unit.landType, size),
             // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) //
-              buildWallSquare(unit.getWall(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir) buildWallSquare(unit.getWall(dir), dir, size),
           ],
         ),
       ),
@@ -243,40 +243,13 @@ class MapWidget extends HookConsumerWidget {
       columnBuilder: (int column) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          // foregroundDecoration: const TableSpanDecoration(
-          //   border: TableSpanBorder(
-          //     trailing: BorderSide(
-          //       color: Colors.white,
-          //       width: 1,
-          //       style: BorderStyle.solid,
-          //     ),
-          //     leading: BorderSide(
-          //       color: Colors.white,
-          //       width: 1,
-          //       style: BorderStyle.solid,
-          //     ),
-          //   ),
-          // ),
         );
       },
       rowCount: gridData.rowCount,
       rowBuilder: (int row) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          // foregroundDecoration: const TableSpanDecoration(
-          //   border: TableSpanBorder(
-          //     trailing: BorderSide(
-          //       color: Colors.white,
-          //       width: 1,
-          //       style: BorderStyle.solid,
-          //     ),
-          //     leading: BorderSide(
-          //       color: Colors.white,
-          //       width: 1,
-          //       style: BorderStyle.solid,
-          //     ),
-          //   ),
-          // ),
+          backgroundDecoration: const TableSpanDecoration(color: Colors.black38),
         );
       },
     );
@@ -343,7 +316,7 @@ class EditToolWidget extends HookConsumerWidget {
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: Transform.translate(
-                        offset: const Offset(11, 0),
+                        offset: const Offset(0, 11),
                         child: Image.asset(
                           _paintImageAssets[i + LandType.values.length],
                           width: 24,
@@ -355,7 +328,7 @@ class EditToolWidget extends HookConsumerWidget {
                       onPressed: () =>
                           ref.read(_paintIndexProvider.notifier).state = i + LandType.values.length,
                       icon: Transform.translate(
-                        offset: const Offset(11, 0),
+                        offset: const Offset(0, 11),
                         child: Image.asset(
                           _paintImageAssets[i + LandType.values.length],
                           width: 24,

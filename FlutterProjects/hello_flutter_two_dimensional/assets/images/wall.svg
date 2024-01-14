@@ -29,7 +29,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="7.5863456"
      inkscape:cx="33.191146"
-     inkscape:cy="47.473017"
+     inkscape:cy="31.655124"
      inkscape:document-units="mm"
      inkscape:current-layer="g926"
      inkscape:document-rotation="0"
@@ -54,7 +54,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -293,13 +293,13 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="wall"
-     sodipodi:insensitive="true"
-     style="display:none">
+     style="display:none"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#4d4d4d;stroke-width:0.182574;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect886"
-       width="2.6458333"
-       height="26.458334"
+       width="26.458334"
+       height="2.6458333"
        x="4.4408921e-16"
        y="4.4408921e-16" />
   </g>
@@ -307,8 +307,8 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="path"
-     sodipodi:insensitive="true"
-     style="display:none">
+     style="display:none"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#575354;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect918"
@@ -321,13 +321,14 @@
        id="rect920"
        width="2.6458333"
        height="2.6458333"
-       x="0"
-       y="23.8125" />
+       x="23.8125"
+       y="7.9472862e-08" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="g926"
-     inkscape:label="door">
+     inkscape:label="door"
+     style="display:inline">
     <rect
        style="fill:#575354;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect922"
@@ -340,14 +341,14 @@
        id="rect924"
        width="2.6458333"
        height="2.6458333"
-       x="0"
-       y="23.8125" />
+       x="23.8125"
+       y="0" />
     <rect
        style="fill:#aa0000;fill-opacity:1;stroke-width:0.2;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect928"
-       width="1.8520833"
-       height="18.520834"
-       x="0"
-       y="3.96875" />
+       width="18.520834"
+       height="1.8520833"
+       x="3.96875"
+       y="0" />
   </g>
 </svg>
