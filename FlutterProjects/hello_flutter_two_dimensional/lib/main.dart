@@ -162,6 +162,19 @@ class SquareWidget extends HookConsumerWidget {
       );
     }
 
+    int getDirection(Offset offset) {
+      double angle = math.atan2(offset.dy, offset.dx);
+      if (angle >= -0.75 * math.pi && angle < -0.25 * math.pi) {
+        return 0;
+      } else if (angle >= -0.25 * math.pi && angle < 0.25 * math.pi) {
+        return 1;
+      } else if (angle >= 0.25 * math.pi && angle < 0.75 * math.pi) {
+        return 2;
+      } else {
+        return 3;
+      }
+    }
+
     return GestureDetector(
       onTapUp: (details) {
         _logger.fine('tap up: ${details.localPosition}');
@@ -175,7 +188,7 @@ class SquareWidget extends HookConsumerWidget {
           }
         } else {
           // 壁
-          final dir = 0; //todo
+          final dir = getDirection(details.localPosition - Offset(size * 0.5, size * 0.5));
           if (dir >= 0 && dir < 4) {
             final newWallType = WallType.values[paintIndex - LandType.values.length];
             if (newWallType != unit.getWall(dir)) {
