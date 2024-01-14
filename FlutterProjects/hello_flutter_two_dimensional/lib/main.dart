@@ -140,14 +140,14 @@ class SquareWidget extends HookConsumerWidget {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.getUnit(column, row);
 
-    Widget buildFloorSquare(FloorType floorType, double size) {
+    Widget buildLandSquare(LandType landType, double size) {
       final builders = <Widget Function(double size)>[
         (size) => Image.asset('assets/images/floor.png', width: size, height: size),
         (size) => Image.asset('assets/images/rock.png', width: size, height: size),
         (size) => Image.asset('assets/images/water.png', width: size, height: size),
         (size) => Icon(Icons.air, size: size),
       ];
-      return builders[floorType.index](size);
+      return builders[landType.index](size);
     }
 
     Widget buildWallSquare(WallType wallType, int direction, double size) {
@@ -165,11 +165,11 @@ class SquareWidget extends HookConsumerWidget {
     return GestureDetector(
       onTapUp: (details) {
         _logger.fine('tap up: ${details.localPosition}');
-        if (paintIndex < FloorType.values.length) {
+        if (paintIndex < LandType.values.length) {
           // 床
-          final newFloorType = FloorType.values[paintIndex];
-          if (unit.floorType != newFloorType) {
-            final newUnitData = unit.copyWith(floorType: newFloorType);
+          final newLandType = LandType.values[paintIndex];
+          if (unit.landType != newLandType) {
+            final newUnitData = unit.copyWith(landType: newLandType);
             final newGridData = gridData.setUnit(column, row, newUnitData);
             _gridDataStreamController.sink.add(newGridData);
           }
@@ -177,7 +177,7 @@ class SquareWidget extends HookConsumerWidget {
           // 壁
           final dir = 0; //todo
           if (dir >= 0 && dir < 4) {
-            final newWallType = WallType.values[paintIndex - FloorType.values.length];
+            final newWallType = WallType.values[paintIndex - LandType.values.length];
             if (newWallType != unit.getWall(dir)) {
               final newGridData = gridData.setUnit(column, row, unit.setWall(dir, newWallType));
               _gridDataStreamController.sink.add(newGridData);
@@ -190,10 +190,10 @@ class SquareWidget extends HookConsumerWidget {
         child: Stack(
           children: [
             // 床
-            buildFloorSquare(unit.floorType, size),
+            buildLandSquare(unit.landType, size),
             // 北、東、南、西
-            for (int direction = 0; direction < 4; ++direction)
-              buildWallSquare(unit.wallTypes[direction], direction, size),
+            for (int dir = 0; dir < 4; ++dir) //
+              buildWallSquare(unit.getWall(dir), dir, size),
           ],
         ),
       ),
@@ -306,7 +306,7 @@ class EditToolWidget extends HookConsumerWidget {
             ),
 
             // 床
-            for (int i = 0; i < FloorType.values.length; ++i)
+            for (int i = 0; i < LandType.values.length; ++i)
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
@@ -326,25 +326,25 @@ class EditToolWidget extends HookConsumerWidget {
                     ),
             // 壁
             for (int i = 0; i < WallType.values.length; ++i)
-              ((i + FloorType.values.length) == paintIndex)
+              ((i + LandType.values.length) == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: Transform.translate(
                         offset: const Offset(11, 0),
                         child: Image.asset(
-                          _paintImageAssets[i + FloorType.values.length],
+                          _paintImageAssets[i + LandType.values.length],
                           width: 24,
                           height: 24,
                         ),
                       ),
                     )
                   : IconButton(
-                      onPressed: () => ref.read(_paintIndexProvider.notifier).state =
-                          i + FloorType.values.length,
+                      onPressed: () =>
+                          ref.read(_paintIndexProvider.notifier).state = i + LandType.values.length,
                       icon: Transform.translate(
                         offset: const Offset(11, 0),
                         child: Image.asset(
-                          _paintImageAssets[i + FloorType.values.length],
+                          _paintImageAssets[i + LandType.values.length],
                           width: 24,
                           height: 24,
                         ),

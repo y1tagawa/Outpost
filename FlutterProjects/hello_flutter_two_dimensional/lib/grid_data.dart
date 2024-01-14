@@ -18,7 +18,7 @@ enum UnitShape {
 }
 
 /// 床タイプ
-enum FloorType {
+enum LandType {
   floor,
   rock,
   water,
@@ -35,7 +35,7 @@ enum WallType {
 /// 単位図形データクラス
 @immutable
 class UnitData {
-  final FloorType floorType;
+  final LandType landType;
   final List<WallType> _wallTypes; // N, (N)E, S, (N)W, SE, SW,
   final Map<String, String> floorProperties; //todo
   final List<Map<String, String>> wallProperties; //todo
@@ -49,7 +49,7 @@ class UnitData {
   }
 
   UnitData({
-    this.floorType = FloorType.floor,
+    this.landType = LandType.floor,
     List<WallType>? wallTypes,
     this.floorProperties = const {},
     this.wallProperties = const [{}, {}, {}, {}, {}, {}],
@@ -65,19 +65,19 @@ class UnitData {
       identical(this, other) ||
       (other is UnitData &&
           runtimeType == other.runtimeType &&
-          floorType == other.floorType &&
+          landType == other.landType &&
           _wallTypes == other._wallTypes &&
           floorProperties == other.floorProperties &&
           wallProperties == other.wallProperties);
 
   @override
   int get hashCode =>
-      floorType.hashCode ^ _wallTypes.hashCode ^ floorProperties.hashCode ^ wallProperties.hashCode;
+      landType.hashCode ^ _wallTypes.hashCode ^ floorProperties.hashCode ^ wallProperties.hashCode;
 
   @override
   String toString() {
     return 'UnitData{'
-        ' floorType: $floorType,'
+        ' landType: $landType,'
         ' _wallType: $_wallTypes,'
         ' floorProperties: $floorProperties,'
         ' wallProperties: $wallProperties,'
@@ -85,7 +85,7 @@ class UnitData {
   }
 
   UnitData copyWith({
-    FloorType? floorType,
+    LandType? landType,
     List<WallType>? wallTypes,
     String? onEnter,
     String? onLeave,
@@ -93,7 +93,7 @@ class UnitData {
     List<Map<String, String>>? wallProperties,
   }) {
     return UnitData(
-      floorType: floorType ?? this.floorType,
+      landType: landType ?? this.landType,
       wallTypes: wallTypes ?? this._wallTypes,
       floorProperties: floorProperties ?? this.floorProperties,
       wallProperties: wallProperties ?? this.wallProperties,
@@ -102,7 +102,7 @@ class UnitData {
 
   Map<String, dynamic> toMap() {
     return {
-      'floorType': this.floorType,
+      'landType': this.landType,
       'wallTypes': this._wallTypes,
       'unitProperties': this.floorProperties,
       'wallProperties': this.wallProperties,
@@ -111,7 +111,7 @@ class UnitData {
 
   factory UnitData.fromMap(Map<String, dynamic> map) {
     return UnitData(
-      floorType: map['floorType'] as FloorType,
+      landType: map['landType'] as LandType,
       wallTypes: map['wallTypes'] as List<WallType>,
       floorProperties: map['unitProperties'] as Map<String, String>,
       wallProperties: map['wallProperties'] as List<Map<String, String>>,
@@ -201,7 +201,7 @@ class GridData {
     int? columnCount,
     int? rowCount,
     List<UnitData>? units,
-    List<String>? floorTypeNames,
+    List<String>? landTypeNames,
     List<String>? wallTypeNames,
     Map<String, String>? gridProperties,
   }) {
