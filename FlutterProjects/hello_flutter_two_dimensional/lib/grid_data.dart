@@ -9,8 +9,6 @@ import 'scope_functions.dart';
 
 const _currentVersion = 1;
 
-const _maxDirection = 6;
-
 /// 単位図形形状
 enum UnitShape {
   square,
@@ -18,10 +16,10 @@ enum UnitShape {
 }
 
 /// 床タイプ
-enum LandType { rock, floor, water, air }
+enum LandType { floor, rock, water, air }
 
 /// 壁タイプ
-enum WallType { wall, path, door }
+enum WallType { path, wall, door }
 
 /// 地図上の印
 enum MarkType { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
@@ -29,10 +27,28 @@ enum MarkType { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, ma
 /// 単位図形データクラス
 @immutable
 class UnitData {
+  static const dirCount = 5;
+
   final LandType landType;
   final List<WallType> _wallTypes; // N, (N)E, S, (N)W, SE, SW,
   final MarkType landMarkType;
   final List<MarkType> _wallMarkTypes; // =
+
+  UnitData({
+    this.landType = LandType.floor,
+    List<WallType>? wallTypes,
+    this.landMarkType = MarkType.none,
+    List<MarkType>? wallMarkTypes,
+  })  : _wallTypes = (wallTypes == null)
+            ? List.generate(dirCount, (_) => WallType.path)
+            : wallTypes.also((it) {
+                assert(it.length == dirCount);
+              }),
+        _wallMarkTypes = (wallMarkTypes == null)
+            ? List.generate(dirCount, (_) => MarkType.none)
+            : wallMarkTypes.also((it) {
+                assert(it.length == dirCount);
+              });
 
   WallType getWall(int dir) => _wallTypes[dir];
 
@@ -49,22 +65,6 @@ class UnitData {
     newWallMarkTypes[dir] = newWallMarkType;
     return copyWith(wallMarkTypes: newWallMarkTypes);
   }
-
-  UnitData({
-    this.landType = LandType.rock,
-    List<WallType>? wallTypes,
-    this.landMarkType = MarkType.none,
-    List<MarkType>? wallMarkTypes,
-  })  : _wallTypes = (wallTypes == null)
-            ? List.generate(_maxDirection, (_) => WallType.wall)
-            : wallTypes.also((it) {
-                assert(it.length == _maxDirection);
-              }),
-        _wallMarkTypes = (wallMarkTypes == null)
-            ? List.generate(_maxDirection, (_) => MarkType.none)
-            : wallMarkTypes.also((it) {
-                assert(it.length == _maxDirection);
-              });
 
 //<editor-fold desc="Data Methods">
   @override

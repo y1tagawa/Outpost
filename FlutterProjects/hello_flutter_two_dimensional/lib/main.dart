@@ -29,8 +29,8 @@ Widget _buildLandSquare(LandType landType, double size) {
 
 Widget _buildWallSquare(WallType wallType, int dir, double size) {
   final builders = <Widget Function(double size)>[
-    (size) => Image.asset('assets/images/wall.png', width: size, height: size),
     (size) => Image.asset('assets/images/path.png', width: size, height: size),
+    (size) => Image.asset('assets/images/wall.png', width: size, height: size),
     (size) => Image.asset('assets/images/door.png', width: size, height: size),
   ];
   return Transform.rotate(
@@ -41,7 +41,7 @@ Widget _buildWallSquare(WallType wallType, int dir, double size) {
 
 Widget _buildMarkSquare(MarkType markType, double size, double iconSize) {
   final builders = <Widget Function(double size)>[
-    (size) => SizedBox.square(dimension: size),
+    (size) => Icon(Icons.filter_none_outlined, size: size),
     (size) => Icon(Icons.filter_1_outlined, size: size),
     (size) => Icon(Icons.filter_2_outlined, size: size),
     (size) => Icon(Icons.filter_3_outlined, size: size),
@@ -98,10 +98,14 @@ final _gridDataStreamController = StreamController<GridData>();
 final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   final initData = await ref.watch(_initDataProvider.future);
   _logger.fine('here2');
+  final columnCount = initData.defaultColumnCount;
+  final rowCount = initData.defaultRowCount;
+  final wallTypes = List.generate(UnitData.dirCount, (_) => WallType.wall);
   yield GridData(
     unitShape: UnitShape.square,
-    columnCount: initData.defaultColumnCount,
-    rowCount: initData.defaultRowCount,
+    columnCount: columnCount,
+    rowCount: rowCount,
+    units: List.generate(columnCount * rowCount, (_) => UnitData(wallTypes: wallTypes)),
   ).also((it) {
     _logger.fine('here3');
   });
@@ -115,7 +119,6 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
 /// 100~199 壁
 /// 200~299 マーク
 final _toolIndexProvider = StateProvider((ref) => 0);
-const _minLandToolIndex = 0;
 const _minWallToolIndex = 100;
 const _minMarkToolIndex = 200;
 
@@ -257,9 +260,12 @@ class SquareWidget extends HookConsumerWidget {
             // 北、東、南、西
             for (int dir = 0; dir < 4; ++dir) _buildWallSquare(unit.getWall(dir), dir, size),
             // 床マーク
-            _buildMarkSquare(unit.landMarkType, size, markSize),
+            if (unit.landMarkType != MarkType.none)
+              _buildMarkSquare(unit.landMarkType, size, markSize),
             // 壁マーク
-            for (int dir = 0; dir < 4; ++dir) buildWallMark(unit.getWallMark(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir)
+              if (unit.getWallMark(dir) != MarkType.none)
+                buildWallMark(unit.getWallMark(dir), dir, size),
           ],
         ),
       ),
