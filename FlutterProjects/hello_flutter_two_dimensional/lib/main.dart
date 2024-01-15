@@ -335,18 +335,40 @@ class EditToolWidget extends HookConsumerWidget {
       children: [
         Wrap(
           children: [
-            // 倍率
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.insert_drive_file_outlined),
+              tooltip: 'new',
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.file_open_outlined),
+              tooltip: 'open',
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.task_outlined),
+              tooltip: 'save',
+            ),
+          ],
+        ),
+
+        // 倍率
+        Wrap(
+          children: [
             IconButton(
               onPressed: (scaleIndex > 0)
                   ? () => ref.read(_scaleIndexProvider.notifier).state = scaleIndex - 1
                   : null,
               icon: const Icon(Icons.zoom_out),
+              tooltip: 'zoom out',
             ),
             IconButton(
               onPressed: (scaleIndex < _scales.length - 1)
                   ? () => ref.read(_scaleIndexProvider.notifier).state = scaleIndex + 1
                   : null,
               icon: const Icon(Icons.zoom_in),
+              tooltip: 'zoom in',
             ),
           ],
         ),
@@ -359,10 +381,12 @@ class EditToolWidget extends HookConsumerWidget {
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: _buildLandSquare(LandType.values[i], 24),
+                      tooltip: LandType.values[i].name,
                     )
                   : IconButton(
                       onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
                       icon: _buildLandSquare(LandType.values[i], 24),
+                      tooltip: LandType.values[i].name,
                     ),
           ],
         ),
@@ -381,6 +405,7 @@ class EditToolWidget extends HookConsumerWidget {
                           child: _buildWallSquare(WallType.values[i], 1, 24),
                         ),
                       ),
+                      tooltip: WallType.values[i].name,
                     )
                   : IconButton(
                       onPressed: () =>
@@ -392,6 +417,7 @@ class EditToolWidget extends HookConsumerWidget {
                           child: _buildWallSquare(WallType.values[i], 1, 24),
                         ),
                       ),
+                      tooltip: WallType.values[i].name,
                     ),
           ],
         ),
@@ -404,11 +430,13 @@ class EditToolWidget extends HookConsumerWidget {
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: _buildMarkSquare(MarkType.values[i], 24, 20),
+                      tooltip: MarkType.values[i].name,
                     )
                   : IconButton(
                       onPressed: () =>
                           ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
                       icon: _buildMarkSquare(MarkType.values[i], 24, 20),
+                      tooltip: MarkType.values[i].name,
                     ),
           ],
         ),
