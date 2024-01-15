@@ -225,8 +225,8 @@ class SquareWidget extends HookConsumerWidget {
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             final dir = getDirection(offset);
             final newWallType = WallType.values[toolIndex - _minWallToolIndex];
-            if (newWallType != unit.getWall(dir)) {
-              final newGridData = gridData.setUnit(column, row, unit.setWall(dir, newWallType));
+            if (newWallType != unit.getWallType(dir)) {
+              final newGridData = gridData.setWallTypes(column, row, dir, newWallType);
               _gridDataStreamController.sink.add(newGridData);
             }
           }
@@ -237,8 +237,9 @@ class SquareWidget extends HookConsumerWidget {
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             // 壁マーク
             final dir = getDirection(offset);
-            if (newMarkType != unit.getWallMark(dir)) {
-              final newGridData = gridData.setUnit(column, row, unit.setWallMark(dir, newMarkType));
+            if (newMarkType != unit.getWallMarkType(dir)) {
+              final newGridData =
+                  gridData.setUnit(column, row, unit.setWallMarkType(dir, newMarkType));
               _gridDataStreamController.sink.add(newGridData);
             }
           } else {
@@ -258,14 +259,14 @@ class SquareWidget extends HookConsumerWidget {
             // 床
             _buildLandSquare(unit.landType, size),
             // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(unit.getWall(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(unit.getWallType(dir), dir, size),
             // 床マーク
             if (unit.landMarkType != MarkType.none)
               _buildMarkSquare(unit.landMarkType, size, markSize),
             // 壁マーク
             for (int dir = 0; dir < 4; ++dir)
-              if (unit.getWallMark(dir) != MarkType.none)
-                buildWallMark(unit.getWallMark(dir), dir, size),
+              if (unit.getWallMarkType(dir) != MarkType.none)
+                buildWallMark(unit.getWallMarkType(dir), dir, size),
           ],
         ),
       ),

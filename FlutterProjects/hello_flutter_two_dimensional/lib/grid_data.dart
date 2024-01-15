@@ -50,17 +50,17 @@ class UnitData {
                 assert(it.length == dirCount);
               });
 
-  WallType getWall(int dir) => _wallTypes[dir];
+  WallType getWallType(int dir) => _wallTypes[dir];
 
-  UnitData setWall(int dir, WallType newWallType) {
+  UnitData setWallType(int dir, WallType newWallType) {
     final newWallTypes = [..._wallTypes];
     newWallTypes[dir] = newWallType;
     return copyWith(wallTypes: newWallTypes);
   }
 
-  MarkType getWallMark(int dir) => _wallMarkTypes[dir];
+  MarkType getWallMarkType(int dir) => _wallMarkTypes[dir];
 
-  UnitData setWallMark(int dir, MarkType newWallMarkType) {
+  UnitData setWallMarkType(int dir, MarkType newWallMarkType) {
     final newWallMarkTypes = [..._wallMarkTypes];
     newWallMarkTypes[dir] = newWallMarkType;
     return copyWith(wallMarkTypes: newWallMarkTypes);
@@ -163,6 +163,47 @@ class GridData {
     assert(row >= 0 && row < rowCount);
     final newUnits = [..._units];
     newUnits[row * rowCount + column] = unitData;
+    return copyWith(units: newUnits);
+  }
+
+  /// 対面の壁も同時にセットする
+  GridData setWallTypes(int column, int row, int dir, WallType newWallType) {
+    // とりあえず正方形のみ
+    assert(unitShape == UnitShape.square);
+
+    assert(column >= 0 && column < columnCount);
+    assert(row >= 0 && row < rowCount);
+    final newUnits = [..._units];
+    switch (dir) {
+      case 0: // 北
+        newUnits[row * rowCount + column] = getUnit(column, row).setWallType(0, newWallType);
+        if (row > 0) {
+          newUnits[(row - 1) * rowCount + column] =
+              getUnit(column, row - 1).setWallType(2, newWallType);
+        }
+        break;
+      case 1: // 東
+        newUnits[row * rowCount + column] = getUnit(column, row).setWallType(1, newWallType);
+        if (column < columnCount - 1) {
+          newUnits[row * rowCount + (column + 1)] =
+              getUnit(column + 1, row).setWallType(3, newWallType);
+        }
+        break;
+      case 2: // 南
+        newUnits[row * rowCount + column] = getUnit(column, row).setWallType(2, newWallType);
+        if (row < rowCount - 1) {
+          newUnits[(row + 1) * rowCount + column] =
+              getUnit(column, row + 1).setWallType(0, newWallType);
+        }
+        break;
+      default: // 西
+        newUnits[row * rowCount + column] = getUnit(column, row).setWallType(3, newWallType);
+        if (column > 0) {
+          newUnits[row * rowCount + (column - 1)] =
+              getUnit(column - 1, row).setWallType(1, newWallType);
+        }
+        break;
+    }
     return copyWith(units: newUnits);
   }
 
