@@ -331,6 +331,37 @@ class EditToolWidget extends HookConsumerWidget {
     final toolIndex = ref.watch(_toolIndexProvider);
     final scaleIndex = ref.watch(_scaleIndexProvider);
 
+    Widget buildWallIcon(WallType wallType) {
+      return Transform.translate(
+        offset: const Offset(-21, 0),
+        child: Transform.scale(
+          scaleX: 2.0,
+          child: _buildWallSquare(wallType, 1, 24),
+        ),
+      );
+    }
+
+    Widget buildIconButton({
+      required bool outlined,
+      void Function()? onPressed,
+      String? tooltip,
+      required Widget icon,
+    }) {
+      if (outlined) {
+        return IconButton.outlined(
+          onPressed: onPressed,
+          icon: icon,
+          tooltip: tooltip,
+        );
+      } else {
+        return IconButton(
+          onPressed: onPressed,
+          icon: icon,
+          tooltip: tooltip,
+        );
+      }
+    }
+
     return Column(
       children: [
         Wrap(
@@ -377,17 +408,12 @@ class EditToolWidget extends HookConsumerWidget {
         Wrap(
           children: [
             for (int i = 0; i < LandType.values.length; ++i)
-              (i == toolIndex)
-                  ? IconButton.outlined(
-                      onPressed: () {},
-                      icon: _buildLandSquare(LandType.values[i], 24),
-                      tooltip: LandType.values[i].name,
-                    )
-                  : IconButton(
-                      onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
-                      icon: _buildLandSquare(LandType.values[i], 24),
-                      tooltip: LandType.values[i].name,
-                    ),
+              buildIconButton(
+                outlined: (i == toolIndex),
+                onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
+                icon: _buildLandSquare(LandType.values[i], 24),
+                tooltip: LandType.values[i].name,
+              ),
           ],
         ),
 
@@ -395,30 +421,13 @@ class EditToolWidget extends HookConsumerWidget {
         Wrap(
           children: [
             for (int i = 0; i < WallType.values.length; ++i)
-              (i + _minWallToolIndex == toolIndex)
-                  ? IconButton.outlined(
-                      onPressed: () {},
-                      icon: Transform.translate(
-                        offset: const Offset(-21, 0),
-                        child: Transform.scale(
-                          scaleX: 2.0,
-                          child: _buildWallSquare(WallType.values[i], 1, 24),
-                        ),
-                      ),
-                      tooltip: WallType.values[i].name,
-                    )
-                  : IconButton(
-                      onPressed: () =>
-                          ref.read(_toolIndexProvider.notifier).state = i + _minWallToolIndex,
-                      icon: Transform.translate(
-                        offset: const Offset(-21, 0),
-                        child: Transform.scale(
-                          scaleX: 2.0,
-                          child: _buildWallSquare(WallType.values[i], 1, 24),
-                        ),
-                      ),
-                      tooltip: WallType.values[i].name,
-                    ),
+              buildIconButton(
+                outlined: (i + _minWallToolIndex == toolIndex),
+                onPressed: () =>
+                    ref.read(_toolIndexProvider.notifier).state = i + _minWallToolIndex,
+                icon: buildWallIcon(WallType.values[i]),
+                tooltip: WallType.values[i].name,
+              ),
           ],
         ),
 
@@ -426,18 +435,13 @@ class EditToolWidget extends HookConsumerWidget {
         Wrap(
           children: [
             for (int i = 0; i < MarkType.values.length; ++i)
-              (i + _minMarkToolIndex == toolIndex)
-                  ? IconButton.outlined(
-                      onPressed: () {},
-                      icon: _buildMarkSquare(MarkType.values[i], 24, 20),
-                      tooltip: MarkType.values[i].name,
-                    )
-                  : IconButton(
-                      onPressed: () =>
-                          ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
-                      icon: _buildMarkSquare(MarkType.values[i], 24, 20),
-                      tooltip: MarkType.values[i].name,
-                    ),
+              buildIconButton(
+                outlined: (i + _minMarkToolIndex == toolIndex),
+                onPressed: () =>
+                    ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
+                icon: _buildMarkSquare(MarkType.values[i], 24, 20),
+                tooltip: MarkType.values[i].name,
+              ),
           ],
         ),
       ],
