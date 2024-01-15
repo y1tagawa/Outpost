@@ -110,8 +110,14 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   }
 });
 
-/// ペイントインデックス
-final _paintIndexProvider = StateProvider((ref) => 0);
+/// 編集ツールインデックス
+/// 0~99 床
+/// 100~199 壁
+/// 200~299 マーク
+final _toolIndexProvider = StateProvider((ref) => 0);
+const _minLandToolIndex = 0;
+const _minWallToolIndex = 100;
+const _minMarkToolIndex = 200;
 
 /// 倍率インデックス
 final _scaleIndexProvider = StateProvider((ref) => 1);
@@ -168,7 +174,7 @@ class SquareWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paintIndex = ref.watch(_paintIndexProvider);
+    final toolIndex = ref.watch(_toolIndexProvider);
     final unit = gridData.getUnit(column, row);
 
     final markSize = math.min(size * 0.4, 20.0);
@@ -202,20 +208,20 @@ class SquareWidget extends HookConsumerWidget {
     return GestureDetector(
       onTapUp: (details) {
         _logger.fine('tap up: ${details.localPosition}');
-        if (paintIndex < LandType.values.length) {
+        if (toolIndex < _minWallToolIndex) {
           // 床
-          final newLandType = LandType.values[paintIndex];
+          final newLandType = LandType.values[toolIndex];
           if (unit.landType != newLandType) {
             final newUnitData = unit.copyWith(landType: newLandType);
             final newGridData = gridData.setUnit(column, row, newUnitData);
             _gridDataStreamController.sink.add(newGridData);
           }
-        } else if (paintIndex < LandType.values.length + WallType.values.length) {
+        } else if (toolIndex < _minMarkToolIndex) {
           // 壁
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             final dir = getDirection(offset);
-            final newWallType = WallType.values[paintIndex - LandType.values.length];
+            final newWallType = WallType.values[toolIndex - _minWallToolIndex];
             if (newWallType != unit.getWall(dir)) {
               final newGridData = gridData.setUnit(column, row, unit.setWall(dir, newWallType));
               _gridDataStreamController.sink.add(newGridData);
@@ -223,8 +229,7 @@ class SquareWidget extends HookConsumerWidget {
           }
         } else {
           // マーク
-          final newMarkType =
-              MarkType.values[paintIndex - (LandType.values.length + WallType.values.length)];
+          final newMarkType = MarkType.values[toolIndex - _minMarkToolIndex];
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             // 壁マーク
@@ -316,7 +321,7 @@ class EditToolWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paintIndex = ref.watch(_paintIndexProvider);
+    final toolIndex = ref.watch(_toolIndexProvider);
     final scaleIndex = ref.watch(_scaleIndexProvider);
 
     return Column(
@@ -341,18 +346,18 @@ class EditToolWidget extends HookConsumerWidget {
 
             // 床
             for (int i = 0; i < LandType.values.length; ++i)
-              (i == paintIndex)
+              (i == toolIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: _buildLandSquare(LandType.values[i], 24),
                     )
                   : IconButton(
-                      onPressed: () => ref.read(_paintIndexProvider.notifier).state = i,
+                      onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
                       icon: _buildLandSquare(LandType.values[i], 24),
                     ),
             // 壁
             for (int i = 0; i < WallType.values.length; ++i)
-              ((i + LandType.values.length) == paintIndex)
+              (i + _minWallToolIndex == toolIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: Transform.translate(
@@ -362,7 +367,7 @@ class EditToolWidget extends HookConsumerWidget {
                     )
                   : IconButton(
                       onPressed: () =>
-                          ref.read(_paintIndexProvider.notifier).state = i + LandType.values.length,
+                          ref.read(_toolIndexProvider.notifier).state = i + _minWallToolIndex,
                       icon: Transform.translate(
                         offset: const Offset(-11, 0),
                         child: _buildWallSquare(WallType.values[i], 1, 24),
@@ -370,14 +375,14 @@ class EditToolWidget extends HookConsumerWidget {
                     ),
             // マーク
             for (int i = 0; i < MarkType.values.length; ++i)
-              ((i + LandType.values.length + WallType.values.length) == paintIndex)
+              (i + _minMarkToolIndex == toolIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: _buildMarkSquare(MarkType.values[i], 24, 20),
                     )
                   : IconButton(
-                      onPressed: () => ref.read(_paintIndexProvider.notifier).state =
-                          i + LandType.values.length + WallType.values.length,
+                      onPressed: () =>
+                          ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
                       icon: _buildMarkSquare(MarkType.values[i], 24, 20),
                     ),
           ],
