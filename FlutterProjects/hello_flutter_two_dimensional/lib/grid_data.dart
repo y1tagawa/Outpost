@@ -18,27 +18,21 @@ enum UnitShape {
 }
 
 /// 床タイプ
-enum LandType {
-  floor,
-  rock,
-  water,
-  air,
-}
+enum LandType { rock, floor, water, air }
 
 /// 壁タイプ
-enum WallType {
-  wall,
-  path,
-  door,
-}
+enum WallType { wall, path, door }
+
+/// 地図上の印
+enum MarkType { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
 
 /// 単位図形データクラス
 @immutable
 class UnitData {
   final LandType landType;
   final List<WallType> _wallTypes; // N, (N)E, S, (N)W, SE, SW,
-  final Map<String, String> floorProperties; //todo
-  final List<Map<String, String>> wallProperties; //todo
+  final MarkType landMarkType;
+  final List<MarkType> _wallMarkTypes; // =
 
   WallType getWall(int dir) => _wallTypes[dir];
 
@@ -48,15 +42,28 @@ class UnitData {
     return copyWith(wallTypes: newWallTypes);
   }
 
+  MarkType getWallMark(int dir) => _wallMarkTypes[dir];
+
+  UnitData setWallMark(int dir, MarkType newWallMarkType) {
+    final newWallMarkTypes = [..._wallMarkTypes];
+    newWallMarkTypes[dir] = newWallMarkType;
+    return copyWith(wallMarkTypes: newWallMarkTypes);
+  }
+
   UnitData({
-    this.landType = LandType.floor,
+    this.landType = LandType.rock,
     List<WallType>? wallTypes,
-    this.floorProperties = const {},
-    this.wallProperties = const [{}, {}, {}, {}, {}, {}],
-  }) : _wallTypes = (wallTypes == null)
+    this.landMarkType = MarkType.none,
+    List<MarkType>? wallMarkTypes,
+  })  : _wallTypes = (wallTypes == null)
             ? List.generate(_maxDirection, (_) => WallType.wall)
             : wallTypes.also((it) {
-                assert(wallTypes.length == _maxDirection);
+                assert(it.length == _maxDirection);
+              }),
+        _wallMarkTypes = (wallMarkTypes == null)
+            ? List.generate(_maxDirection, (_) => MarkType.none)
+            : wallMarkTypes.also((it) {
+                assert(it.length == _maxDirection);
               });
 
 //<editor-fold desc="Data Methods">
@@ -67,36 +74,34 @@ class UnitData {
           runtimeType == other.runtimeType &&
           landType == other.landType &&
           _wallTypes == other._wallTypes &&
-          floorProperties == other.floorProperties &&
-          wallProperties == other.wallProperties);
+          landMarkType == other.landMarkType &&
+          _wallMarkTypes == other._wallMarkTypes);
 
   @override
   int get hashCode =>
-      landType.hashCode ^ _wallTypes.hashCode ^ floorProperties.hashCode ^ wallProperties.hashCode;
+      landType.hashCode ^ _wallTypes.hashCode ^ landMarkType.hashCode ^ _wallMarkTypes.hashCode;
 
   @override
   String toString() {
     return 'UnitData{'
         ' landType: $landType,'
         ' _wallType: $_wallTypes,'
-        ' floorProperties: $floorProperties,'
-        ' wallProperties: $wallProperties,'
+        ' landMarkType: $landMarkType,'
+        ' _wallMarkType: $_wallMarkTypes,'
         '}';
   }
 
   UnitData copyWith({
     LandType? landType,
     List<WallType>? wallTypes,
-    String? onEnter,
-    String? onLeave,
-    Map<String, String>? floorProperties,
-    List<Map<String, String>>? wallProperties,
+    MarkType? landMarkType,
+    List<MarkType>? wallMarkTypes,
   }) {
     return UnitData(
       landType: landType ?? this.landType,
       wallTypes: wallTypes ?? this._wallTypes,
-      floorProperties: floorProperties ?? this.floorProperties,
-      wallProperties: wallProperties ?? this.wallProperties,
+      landMarkType: landMarkType ?? this.landMarkType,
+      wallMarkTypes: wallMarkTypes ?? this._wallMarkTypes,
     );
   }
 
@@ -104,8 +109,8 @@ class UnitData {
     return {
       'landType': this.landType,
       'wallTypes': this._wallTypes,
-      'unitProperties': this.floorProperties,
-      'wallProperties': this.wallProperties,
+      'landMarkType': this.landMarkType,
+      'wallMarkTypes': this._wallMarkTypes,
     };
   }
 
@@ -113,8 +118,8 @@ class UnitData {
     return UnitData(
       landType: map['landType'] as LandType,
       wallTypes: map['wallTypes'] as List<WallType>,
-      floorProperties: map['unitProperties'] as Map<String, String>,
-      wallProperties: map['wallProperties'] as List<Map<String, String>>,
+      landMarkType: map['landMarkType'] as MarkType,
+      wallMarkTypes: map['wallMarkTypes'] as List<MarkType>,
     );
   }
 
