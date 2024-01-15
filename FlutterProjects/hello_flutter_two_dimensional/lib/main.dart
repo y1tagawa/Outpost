@@ -20,7 +20,7 @@ const _scales = [0.25, 0.5, 0.75, 1.0];
 Widget _buildLandSquare(LandType landType, double size) {
   final builders = <Widget Function(double size)>[
     (size) => Image.asset('assets/images/floor.png', width: size, height: size),
-    (size) => Image.asset('assets/images/rock.png', width: size, height: size),
+    (size) => Icon(Icons.broken_image, size: size),
     (size) => Icon(Icons.water, size: size),
     (size) => Icon(Icons.air, size: size),
   ];
@@ -171,7 +171,7 @@ class SquareWidget extends HookConsumerWidget {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.getUnit(column, row);
 
-    final markSize = math.min(size * 0.25, 20.0);
+    final markSize = math.min(size * 0.4, 20.0);
 
     Widget buildWallMark(MarkType markType, int dir, double size) {
       final offsets = [
