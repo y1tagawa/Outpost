@@ -21,7 +21,7 @@ Widget _buildLandSquare(LandType landType, double size) {
   final builders = <Widget Function(double size)>[
     (size) => Image.asset('assets/images/floor.png', width: size, height: size),
     (size) => Image.asset('assets/images/rock.png', width: size, height: size),
-    (size) => Image.asset('assets/images/water.png', width: size, height: size),
+    (size) => Icon(Icons.water, size: size),
     (size) => Icon(Icons.air, size: size),
   ];
   return builders[landType.index](size);
