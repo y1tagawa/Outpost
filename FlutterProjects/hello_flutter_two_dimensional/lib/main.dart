@@ -15,7 +15,7 @@ import 'grid_data.dart';
 import 'scope_functions.dart';
 
 const _squareDimension = 100.0;
-const _scales = [0.25, 0.5, 0.75, 1.0];
+const _scales = [0.25, 0.3535534, 0.5];
 
 Widget _buildLandSquare(LandType landType, double size) {
   final builders = <Widget Function(double size)>[
@@ -41,10 +41,10 @@ Widget _buildWallSquare(WallType wallType, int dir, double size) {
 
 Widget _buildMarkSquare(MarkType markType, double size, double iconSize) {
   final builders = <Widget Function(double size)>[
-    (size) => Icon(Icons.filter_none_outlined, size: size),
-    (size) => Icon(Icons.filter_1_outlined, size: size),
-    (size) => Icon(Icons.filter_2_outlined, size: size),
-    (size) => Icon(Icons.filter_3_outlined, size: size),
+    (size) => Image.asset('assets/images/mark_none.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark1.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark2.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark3.png', width: size, height: size),
     (size) => Icon(Icons.filter_4_outlined, size: size),
     (size) => Icon(Icons.filter_5_outlined, size: size),
     (size) => Icon(Icons.filter_6_outlined, size: size),
@@ -334,8 +334,6 @@ class EditToolWidget extends HookConsumerWidget {
     return Column(
       children: [
         Wrap(
-          direction: Axis.horizontal,
-          alignment: WrapAlignment.start,
           children: [
             // 倍率
             IconButton(
@@ -350,8 +348,12 @@ class EditToolWidget extends HookConsumerWidget {
                   : null,
               icon: const Icon(Icons.zoom_in),
             ),
+          ],
+        ),
 
-            // 床
+        // 床
+        Wrap(
+          children: [
             for (int i = 0; i < LandType.values.length; ++i)
               (i == toolIndex)
                   ? IconButton.outlined(
@@ -362,25 +364,41 @@ class EditToolWidget extends HookConsumerWidget {
                       onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
                       icon: _buildLandSquare(LandType.values[i], 24),
                     ),
-            // 壁
+          ],
+        ),
+
+        // 壁
+        Wrap(
+          children: [
             for (int i = 0; i < WallType.values.length; ++i)
               (i + _minWallToolIndex == toolIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: Transform.translate(
-                        offset: const Offset(-11, 0),
-                        child: _buildWallSquare(WallType.values[i], 1, 24),
+                        offset: const Offset(-21, 0),
+                        child: Transform.scale(
+                          scaleX: 2.0,
+                          child: _buildWallSquare(WallType.values[i], 1, 24),
+                        ),
                       ),
                     )
                   : IconButton(
                       onPressed: () =>
                           ref.read(_toolIndexProvider.notifier).state = i + _minWallToolIndex,
                       icon: Transform.translate(
-                        offset: const Offset(-11, 0),
-                        child: _buildWallSquare(WallType.values[i], 1, 24),
+                        offset: const Offset(-21, 0),
+                        child: Transform.scale(
+                          scaleX: 2.0,
+                          child: _buildWallSquare(WallType.values[i], 1, 24),
+                        ),
                       ),
                     ),
-            // マーク
+          ],
+        ),
+
+        // マーク
+        Wrap(
+          children: [
             for (int i = 0; i < MarkType.values.length; ++i)
               (i + _minMarkToolIndex == toolIndex)
                   ? IconButton.outlined(
@@ -413,7 +431,7 @@ class MyHomePage extends HookConsumerWidget {
         data: (data) => Row(
           children: [
             SizedBox(
-              width: 84.0,
+              width: 168.0,
               child: EditToolWidget(gridData: data),
             ),
             Expanded(child: MapWidget(gridData: data)),

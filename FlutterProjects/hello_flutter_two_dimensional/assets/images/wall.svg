@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="wall.svg"
-   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\door.png"
+   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\mark1.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -27,11 +27,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.5863456"
-     inkscape:cx="33.191146"
-     inkscape:cy="36.927755"
+     inkscape:zoom="4"
+     inkscape:cx="34.49887"
+     inkscape:cy="49.284738"
      inkscape:document-units="mm"
-     inkscape:current-layer="g926"
+     inkscape:current-layer="g2122"
      inkscape:document-rotation="0"
      showgrid="true"
      units="px"
@@ -328,7 +328,8 @@
      inkscape:groupmode="layer"
      id="g926"
      inkscape:label="door"
-     style="display:inline">
+     style="display:none"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#575354;fill-opacity:1;stroke-width:0.244949;stroke-linecap:round;stroke-linejoin:round;stop-color:#000000"
        id="rect922"
@@ -350,5 +351,98 @@
        height="2.6458333"
        x="6.6145835"
        y="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2084"
+     inkscape:label="mark_none"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2078"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.6458333,23.8125 23.8125,2.6458333"
+       id="path2094"
+       sodipodi:nodetypes="cc" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="mark1"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="path2068"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.212628"
+       y="19.789993"
+       id="text2114"><tspan
+         sodipodi:role="line"
+         id="tspan2112"
+         x="13.212628"
+         y="19.789993"
+         style="stroke-width:0.264583">1</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2102"
+     inkscape:label="mark2"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2096"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.278776"
+       y="19.818932"
+       id="text2110"><tspan
+         sodipodi:role="line"
+         id="tspan2108"
+         x="13.278776"
+         y="19.818932"
+         style="stroke-width:0.264583">2</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2122"
+     inkscape:label="mark3"
+     style="display:inline">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2116"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.721126"
+       y="19.653568"
+       id="text2126"><tspan
+         sodipodi:role="line"
+         id="tspan2124"
+         x="13.721126"
+         y="19.653568"
+         style="stroke-width:0.264583">3</tspan></text>
   </g>
 </svg>

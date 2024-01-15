@@ -29,7 +29,10 @@ flutter:
     - assets/init_data.json
     - assets/images/floor.png
     - assets/images/rock.png
-    - assets/images/water.png
     - assets/images/wall.png
     - assets/images/path.png
     - assets/images/door.png
+    - assets/images/mark_none.png
+    - assets/images/mark1.png
+    - assets/images/mark2.png
+    - assets/images/mark3.png
