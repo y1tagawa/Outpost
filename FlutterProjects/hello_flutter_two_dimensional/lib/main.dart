@@ -27,6 +27,20 @@ const _paintImageAssets = [
   'assets/images/door.png',
 ];
 
+const _markIcons = [
+  '\u2460',
+  '\u2460',
+  '\u2461',
+  '\u2462',
+  '\u2463',
+  '\u2464',
+  '\u2465',
+  '\u2466',
+  '\u2467',
+  '\u2468',
+  '\u2469',
+];
+
 final _logger = Logger('hello_flutter_two_dimensional');
 
 class _InitData {
@@ -140,7 +154,7 @@ class SquareWidget extends HookConsumerWidget {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.getUnit(column, row);
 
-    Widget buildLandSquare(LandType landType, double size) {
+    Widget buildLand(LandType landType, double size) {
       final builders = <Widget Function(double size)>[
         (size) => Image.asset('assets/images/floor.png', width: size, height: size),
         (size) => Image.asset('assets/images/rock.png', width: size, height: size),
@@ -150,15 +164,41 @@ class SquareWidget extends HookConsumerWidget {
       return builders[landType.index](size);
     }
 
-    Widget buildWallSquare(WallType wallType, int direction, double size) {
+    Widget buildWall(WallType wallType, int dir, double size) {
       final builders = <Widget Function(double size)>[
         (size) => Image.asset('assets/images/wall.png', width: size, height: size),
         (size) => Image.asset('assets/images/path.png', width: size, height: size),
         (size) => Image.asset('assets/images/door.png', width: size, height: size),
       ];
       return Transform.rotate(
-        angle: 0.5 * math.pi * direction,
+        angle: 0.5 * math.pi * dir,
         child: builders[wallType.index](size),
+      );
+    }
+
+    Widget buildLandMark(MarkType markType, double size) {
+      return SizedBox.square(
+        dimension: size,
+        child: Center(
+          child: Text(
+            _markIcons[markType.index],
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ),
+      );
+    }
+
+    Widget buildWallMark(MarkType markType, int dir, double size) {
+      final offsets = [
+        Offset(0, size * -0.25),
+        Offset(size * 0.25, 0),
+        Offset(0, size * 0.25),
+        Offset(size * -0.25, 0),
+      ];
+
+      return Transform.translate(
+        offset: offsets[dir],
+        child: buildLandMark(markType, size),
       );
     }
 
@@ -204,9 +244,13 @@ class SquareWidget extends HookConsumerWidget {
         child: Stack(
           children: [
             // 床
-            buildLandSquare(unit.landType, size),
+            buildLand(unit.landType, size),
             // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) buildWallSquare(unit.getWall(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir) buildWall(unit.getWall(dir), dir, size),
+            // 床マーク
+            buildLandMark(unit.landMarkType, size),
+            // 壁マーク
+            for (int dir = 0; dir < 4; ++dir) buildWallMark(unit.getWallMark(dir), dir, size),
           ],
         ),
       ),
