@@ -17,29 +17,46 @@ import 'scope_functions.dart';
 const _squareDimension = 100.0;
 const _scales = [0.25, 0.5, 0.75, 1.0];
 
-const _paintImageAssets = [
-  'assets/images/floor.png',
-  'assets/images/rock.png',
-  'assets/images/water.png',
-  'assets/images/water.png',
-  'assets/images/wall.png',
-  'assets/images/path.png',
-  'assets/images/door.png',
-];
+Widget _buildLandSquare(LandType landType, double size) {
+  final builders = <Widget Function(double size)>[
+    (size) => Image.asset('assets/images/floor.png', width: size, height: size),
+    (size) => Image.asset('assets/images/rock.png', width: size, height: size),
+    (size) => Image.asset('assets/images/water.png', width: size, height: size),
+    (size) => Icon(Icons.air, size: size),
+  ];
+  return builders[landType.index](size);
+}
 
-const _markIcons = [
-  '\u2460',
-  '\u2460',
-  '\u2461',
-  '\u2462',
-  '\u2463',
-  '\u2464',
-  '\u2465',
-  '\u2466',
-  '\u2467',
-  '\u2468',
-  '\u2469',
-];
+Widget _buildWallSquare(WallType wallType, int dir, double size) {
+  final builders = <Widget Function(double size)>[
+    (size) => Image.asset('assets/images/wall.png', width: size, height: size),
+    (size) => Image.asset('assets/images/path.png', width: size, height: size),
+    (size) => Image.asset('assets/images/door.png', width: size, height: size),
+  ];
+  return Transform.rotate(
+    angle: 0.5 * math.pi * dir,
+    child: builders[wallType.index](size),
+  );
+}
+
+Widget _buildMarkSquare(MarkType markType, double size, double iconSize) {
+  final builders = <Widget Function(double size)>[
+    (size) => SizedBox.square(dimension: size),
+    (size) => Icon(Icons.filter_1_outlined, size: size),
+    (size) => Icon(Icons.filter_2_outlined, size: size),
+    (size) => Icon(Icons.filter_3_outlined, size: size),
+    (size) => Icon(Icons.filter_4_outlined, size: size),
+    (size) => Icon(Icons.filter_5_outlined, size: size),
+    (size) => Icon(Icons.filter_6_outlined, size: size),
+    (size) => Icon(Icons.filter_7_outlined, size: size),
+    (size) => Icon(Icons.filter_8_outlined, size: size),
+    (size) => Icon(Icons.filter_9_outlined, size: size),
+  ];
+  return SizedBox.square(
+    dimension: size,
+    child: Center(child: builders[markType.index](iconSize)),
+  );
+}
 
 final _logger = Logger('hello_flutter_two_dimensional');
 
@@ -154,39 +171,7 @@ class SquareWidget extends HookConsumerWidget {
     final paintIndex = ref.watch(_paintIndexProvider);
     final unit = gridData.getUnit(column, row);
 
-    Widget buildLand(LandType landType, double size) {
-      final builders = <Widget Function(double size)>[
-        (size) => Image.asset('assets/images/floor.png', width: size, height: size),
-        (size) => Image.asset('assets/images/rock.png', width: size, height: size),
-        (size) => Image.asset('assets/images/water.png', width: size, height: size),
-        (size) => Icon(Icons.air, size: size),
-      ];
-      return builders[landType.index](size);
-    }
-
-    Widget buildWall(WallType wallType, int dir, double size) {
-      final builders = <Widget Function(double size)>[
-        (size) => Image.asset('assets/images/wall.png', width: size, height: size),
-        (size) => Image.asset('assets/images/path.png', width: size, height: size),
-        (size) => Image.asset('assets/images/door.png', width: size, height: size),
-      ];
-      return Transform.rotate(
-        angle: 0.5 * math.pi * dir,
-        child: builders[wallType.index](size),
-      );
-    }
-
-    Widget buildLandMark(MarkType markType, double size) {
-      return SizedBox.square(
-        dimension: size,
-        child: Center(
-          child: Text(
-            _markIcons[markType.index],
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-      );
-    }
+    final markSize = math.min(size * 0.25, 20.0);
 
     Widget buildWallMark(MarkType markType, int dir, double size) {
       final offsets = [
@@ -195,10 +180,9 @@ class SquareWidget extends HookConsumerWidget {
         Offset(0, size * 0.25),
         Offset(size * -0.25, 0),
       ];
-
       return Transform.translate(
         offset: offsets[dir],
-        child: buildLandMark(markType, size),
+        child: _buildMarkSquare(markType, size, markSize),
       );
     }
 
@@ -226,7 +210,7 @@ class SquareWidget extends HookConsumerWidget {
             final newGridData = gridData.setUnit(column, row, newUnitData);
             _gridDataStreamController.sink.add(newGridData);
           }
-        } else {
+        } else if (paintIndex < LandType.values.length + WallType.values.length) {
           // 壁
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
@@ -237,6 +221,26 @@ class SquareWidget extends HookConsumerWidget {
               _gridDataStreamController.sink.add(newGridData);
             }
           }
+        } else {
+          // マーク
+          final newMarkType =
+              MarkType.values[paintIndex - (LandType.values.length + WallType.values.length)];
+          final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
+          if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
+            // 壁マーク
+            final dir = getDirection(offset);
+            if (newMarkType != unit.getWallMark(dir)) {
+              final newGridData = gridData.setUnit(column, row, unit.setWallMark(dir, newMarkType));
+              _gridDataStreamController.sink.add(newGridData);
+            }
+          } else {
+            // 床マーク
+            if (newMarkType != unit.landMarkType) {
+              final newGridData =
+                  gridData.setUnit(column, row, unit.copyWith(landMarkType: newMarkType));
+              _gridDataStreamController.sink.add(newGridData);
+            }
+          }
         }
       },
       child: Tooltip(
@@ -244,11 +248,11 @@ class SquareWidget extends HookConsumerWidget {
         child: Stack(
           children: [
             // 床
-            buildLand(unit.landType, size),
+            _buildLandSquare(unit.landType, size),
             // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) buildWall(unit.getWall(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(unit.getWall(dir), dir, size),
             // 床マーク
-            buildLandMark(unit.landMarkType, size),
+            _buildMarkSquare(unit.landMarkType, size, markSize),
             // 壁マーク
             for (int dir = 0; dir < 4; ++dir) buildWallMark(unit.getWallMark(dir), dir, size),
           ],
@@ -340,19 +344,11 @@ class EditToolWidget extends HookConsumerWidget {
               (i == paintIndex)
                   ? IconButton.outlined(
                       onPressed: () {},
-                      icon: Image.asset(
-                        _paintImageAssets[i],
-                        width: 24,
-                        height: 24,
-                      ),
+                      icon: _buildLandSquare(LandType.values[i], 24),
                     )
                   : IconButton(
                       onPressed: () => ref.read(_paintIndexProvider.notifier).state = i,
-                      icon: Image.asset(
-                        _paintImageAssets[i],
-                        width: 24,
-                        height: 24,
-                      ),
+                      icon: _buildLandSquare(LandType.values[i], 24),
                     ),
             // 壁
             for (int i = 0; i < WallType.values.length; ++i)
@@ -360,25 +356,29 @@ class EditToolWidget extends HookConsumerWidget {
                   ? IconButton.outlined(
                       onPressed: () {},
                       icon: Transform.translate(
-                        offset: const Offset(0, 11),
-                        child: Image.asset(
-                          _paintImageAssets[i + LandType.values.length],
-                          width: 24,
-                          height: 24,
-                        ),
+                        offset: const Offset(-11, 0),
+                        child: _buildWallSquare(WallType.values[i], 1, 24),
                       ),
                     )
                   : IconButton(
                       onPressed: () =>
                           ref.read(_paintIndexProvider.notifier).state = i + LandType.values.length,
                       icon: Transform.translate(
-                        offset: const Offset(0, 11),
-                        child: Image.asset(
-                          _paintImageAssets[i + LandType.values.length],
-                          width: 24,
-                          height: 24,
-                        ),
+                        offset: const Offset(-11, 0),
+                        child: _buildWallSquare(WallType.values[i], 1, 24),
                       ),
+                    ),
+            // マーク
+            for (int i = 0; i < MarkType.values.length; ++i)
+              ((i + LandType.values.length + WallType.values.length) == paintIndex)
+                  ? IconButton.outlined(
+                      onPressed: () {},
+                      icon: _buildMarkSquare(MarkType.values[i], 24, 20),
+                    )
+                  : IconButton(
+                      onPressed: () => ref.read(_paintIndexProvider.notifier).state =
+                          i + LandType.values.length + WallType.values.length,
+                      icon: _buildMarkSquare(MarkType.values[i], 24, 20),
                     ),
           ],
         ),
