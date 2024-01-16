@@ -45,12 +45,12 @@ Widget _buildMarkSquare(MarkType markType, double size, double iconSize) {
     (size) => Image.asset('assets/images/mark1.png', width: size, height: size),
     (size) => Image.asset('assets/images/mark2.png', width: size, height: size),
     (size) => Image.asset('assets/images/mark3.png', width: size, height: size),
-    (size) => Icon(Icons.filter_4_outlined, size: size),
-    (size) => Icon(Icons.filter_5_outlined, size: size),
-    (size) => Icon(Icons.filter_6_outlined, size: size),
-    (size) => Icon(Icons.filter_7_outlined, size: size),
-    (size) => Icon(Icons.filter_8_outlined, size: size),
-    (size) => Icon(Icons.filter_9_outlined, size: size),
+    (size) => Image.asset('assets/images/mark4.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark5.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark6.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark7.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark8.png', width: size, height: size),
+    (size) => Image.asset('assets/images/mark9.png', width: size, height: size),
   ];
   return SizedBox.square(
     dimension: size,

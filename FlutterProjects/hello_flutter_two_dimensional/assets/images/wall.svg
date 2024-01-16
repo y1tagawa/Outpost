@@ -15,7 +15,7 @@
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
    sodipodi:docname="wall.svg"
-   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\mark1.png"
+   inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Outpost\FlutterProjects\hello_flutter_two_dimensional\assets\images\mark7.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
   <defs
@@ -29,9 +29,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="4"
      inkscape:cx="34.49887"
-     inkscape:cy="49.284738"
+     inkscape:cy="42.71853"
      inkscape:document-units="mm"
-     inkscape:current-layer="g2122"
+     inkscape:current-layer="g2170"
      inkscape:document-rotation="0"
      showgrid="true"
      units="px"
@@ -425,7 +425,8 @@
      inkscape:groupmode="layer"
      id="g2122"
      inkscape:label="mark3"
-     style="display:inline">
+     style="display:none"
+     sodipodi:insensitive="true">
     <ellipse
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
        id="ellipse2116"
@@ -444,5 +445,129 @@
          x="13.721126"
          y="19.653568"
          style="stroke-width:0.264583">3</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2134"
+     inkscape:label="mark4"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2128"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="12.939778"
+       y="19.707312"
+       id="text2132"><tspan
+         sodipodi:role="line"
+         x="12.939778"
+         y="19.707312"
+         style="stroke-width:0.264583"
+         id="tspan2136">4</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2146"
+     inkscape:label="mark5"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2140"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.4028"
+       y="19.707312"
+       id="text2144"><tspan
+         sodipodi:role="line"
+         x="13.4028"
+         y="19.707312"
+         style="stroke-width:0.264583"
+         id="tspan2142">5</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2154"
+     inkscape:label="mark6"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2148"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="12.985253"
+       y="19.798262"
+       id="text2152"><tspan
+         sodipodi:role="line"
+         x="12.985253"
+         y="19.798262"
+         style="stroke-width:0.264583"
+         id="tspan2150">6</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2162"
+     inkscape:label="mark7"
+     style="display:none"
+     sodipodi:insensitive="true">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2156"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.249837"
+       y="20.195137"
+       id="text2160"><tspan
+         sodipodi:role="line"
+         x="13.249837"
+         y="20.195137"
+         style="stroke-width:0.264583"
+         id="tspan2158">7</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="g2170"
+     inkscape:label="mark8"
+     style="display:inline">
+    <ellipse
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="ellipse2164"
+       cx="13.229166"
+       cy="13.361458"
+       rx="10.583333"
+       ry="10.451041" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:16.9333px;line-height:1.25;font-family:'BIZ UDPGothic';-inkscape-font-specification:'BIZ UDPGothic Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;stroke-width:0.264583"
+       x="13.328385"
+       y="19.649433"
+       id="text2168"><tspan
+         sodipodi:role="line"
+         x="13.328385"
+         y="19.649433"
+         style="stroke-width:0.264583"
+         id="tspan2166">8</tspan></text>
   </g>
 </svg>
