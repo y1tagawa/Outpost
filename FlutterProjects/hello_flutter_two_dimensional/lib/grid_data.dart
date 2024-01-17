@@ -22,10 +22,10 @@ enum LandType { floor, rock, water, air }
 enum WallType { path, wall, door }
 
 /// 印
-enum MarkType { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
+enum Mark { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
 
-/// タイル値
-//enum TileType { none, tile1, tile2, tile3 }
+/// タイル属性値
+enum TileAttr { none, attr1, tile2, tile3 }
 
 /// 建造物、特殊地形
 //enum BuildingType
@@ -44,22 +44,22 @@ class TileData {
 
   final LandType landType;
   final List<WallType> _wallTypes;
-  final MarkType landMarkType;
-  final List<MarkType> _wallMarkTypes;
+  final Mark landMark;
+  final List<Mark> _wallMarks;
 
   TileData({
     this.landType = LandType.floor,
     List<WallType>? wallTypes,
-    this.landMarkType = MarkType.none,
-    List<MarkType>? wallMarkTypes,
+    this.landMark = Mark.none,
+    List<Mark>? wallMarks,
   })  : _wallTypes = (wallTypes == null)
             ? List.generate(dirCount, (_) => WallType.path)
             : wallTypes.also((it) {
                 assert(it.length == dirCount);
               }),
-        _wallMarkTypes = (wallMarkTypes == null)
-            ? List.generate(dirCount, (_) => MarkType.none)
-            : wallMarkTypes.also((it) {
+        _wallMarks = (wallMarks == null)
+            ? List.generate(dirCount, (_) => Mark.none)
+            : wallMarks.also((it) {
                 assert(it.length == dirCount);
               });
 
@@ -71,12 +71,12 @@ class TileData {
     return copyWith(wallTypes: newWallTypes);
   }
 
-  MarkType getWallMarkType(int dir) => _wallMarkTypes[dir];
+  Mark getWallMark(int dir) => _wallMarks[dir];
 
-  TileData setWallMarkType(int dir, MarkType newWallMarkType) {
-    final newWallMarkTypes = [..._wallMarkTypes];
-    newWallMarkTypes[dir] = newWallMarkType;
-    return copyWith(wallMarkTypes: newWallMarkTypes);
+  TileData setWallMark(int dir, Mark newWallMark) {
+    final newWallMarks = [..._wallMarks];
+    newWallMarks[dir] = newWallMark;
+    return copyWith(wallMarks: newWallMarks);
   }
 
 //<editor-fold desc="Data Methods">
@@ -87,34 +87,34 @@ class TileData {
           runtimeType == other.runtimeType &&
           landType == other.landType &&
           _wallTypes == other._wallTypes &&
-          landMarkType == other.landMarkType &&
-          _wallMarkTypes == other._wallMarkTypes);
+          landMark == other.landMark &&
+          _wallMarks == other._wallMarks);
 
   @override
   int get hashCode =>
-      landType.hashCode ^ _wallTypes.hashCode ^ landMarkType.hashCode ^ _wallMarkTypes.hashCode;
+      landType.hashCode ^ _wallTypes.hashCode ^ landMark.hashCode ^ _wallMarks.hashCode;
 
   @override
   String toString() {
     return 'UnitData{'
         ' landType: $landType,'
         ' _wallType: $_wallTypes,'
-        ' landMarkType: $landMarkType,'
-        ' _wallMarkType: $_wallMarkTypes,'
+        ' landMark: $landMark,'
+        ' _wallMark: $_wallMarks,'
         '}';
   }
 
   TileData copyWith({
     LandType? landType,
     List<WallType>? wallTypes,
-    MarkType? landMarkType,
-    List<MarkType>? wallMarkTypes,
+    Mark? landMark,
+    List<Mark>? wallMarks,
   }) {
     return TileData(
       landType: landType ?? this.landType,
       wallTypes: wallTypes ?? this._wallTypes,
-      landMarkType: landMarkType ?? this.landMarkType,
-      wallMarkTypes: wallMarkTypes ?? this._wallMarkTypes,
+      landMark: landMark ?? this.landMark,
+      wallMarks: wallMarks ?? this._wallMarks,
     );
   }
 
@@ -122,8 +122,8 @@ class TileData {
     return {
       'landType': this.landType,
       'wallTypes': this._wallTypes,
-      'landMarkType': this.landMarkType,
-      'wallMarkTypes': this._wallMarkTypes,
+      'landMark': this.landMark,
+      'wallMarks': this._wallMarks,
     };
   }
 
@@ -131,8 +131,8 @@ class TileData {
     return TileData(
       landType: map['landType'] as LandType,
       wallTypes: map['wallTypes'] as List<WallType>,
-      landMarkType: map['landMarkType'] as MarkType,
-      wallMarkTypes: map['wallMarkTypes'] as List<MarkType>,
+      landMark: map['landMark'] as Mark,
+      wallMarks: map['wallMarks'] as List<Mark>,
     );
   }
 

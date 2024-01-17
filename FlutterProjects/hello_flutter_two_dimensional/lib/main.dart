@@ -39,7 +39,7 @@ Widget _buildWallSquare(WallType wallType, int dir, double size) {
   );
 }
 
-Widget _buildMarkSquare(MarkType markType, double size, double iconSize) {
+Widget _buildMarkSquare(Mark markType, double size, double iconSize) {
   final builders = <Widget Function(double size)>[
     (size) => Image.asset('assets/images/mark_none.png', width: size, height: size),
     (size) => Image.asset('assets/images/mark1.png', width: size, height: size),
@@ -182,7 +182,7 @@ class SquareWidget extends HookConsumerWidget {
 
     final markSize = math.min(size * 0.4, 20.0);
 
-    Widget buildWallMark(MarkType markType, int dir, double size) {
+    Widget buildWallMark(Mark markType, int dir, double size) {
       final offsets = [
         Offset(0, size * -0.25),
         Offset(size * 0.25, 0),
@@ -232,21 +232,19 @@ class SquareWidget extends HookConsumerWidget {
           }
         } else {
           // マーク
-          final newMarkType = MarkType.values[toolIndex - _minMarkToolIndex];
+          final newMark = Mark.values[toolIndex - _minMarkToolIndex];
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             // 壁マーク
             final dir = getDirection(offset);
-            if (newMarkType != tile.getWallMarkType(dir)) {
-              final newGridData =
-                  gridData.setTile(column, row, tile.setWallMarkType(dir, newMarkType));
+            if (newMark != tile.getWallMark(dir)) {
+              final newGridData = gridData.setTile(column, row, tile.setWallMark(dir, newMark));
               _gridDataStreamController.sink.add(newGridData);
             }
           } else {
             // 床マーク
-            if (newMarkType != tile.landMarkType) {
-              final newGridData =
-                  gridData.setTile(column, row, tile.copyWith(landMarkType: newMarkType));
+            if (newMark != tile.landMark) {
+              final newGridData = gridData.setTile(column, row, tile.copyWith(landMark: newMark));
               _gridDataStreamController.sink.add(newGridData);
             }
           }
@@ -261,12 +259,11 @@ class SquareWidget extends HookConsumerWidget {
             // 北、東、南、西
             for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
             // 床マーク
-            if (tile.landMarkType != MarkType.none)
-              _buildMarkSquare(tile.landMarkType, size, markSize),
+            if (tile.landMark != Mark.none) _buildMarkSquare(tile.landMark, size, markSize),
             // 壁マーク
             for (int dir = 0; dir < 4; ++dir)
-              if (tile.getWallMarkType(dir) != MarkType.none)
-                buildWallMark(tile.getWallMarkType(dir), dir, size),
+              if (tile.getWallMark(dir) != Mark.none)
+                buildWallMark(tile.getWallMark(dir), dir, size),
           ],
         ),
       ),
@@ -434,13 +431,13 @@ class EditToolWidget extends HookConsumerWidget {
         // マーク
         Wrap(
           children: [
-            for (int i = 0; i < MarkType.values.length; ++i)
+            for (int i = 0; i < Mark.values.length; ++i)
               buildIconButton(
                 outlined: (i + _minMarkToolIndex == toolIndex),
                 onPressed: () =>
                     ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
-                icon: _buildMarkSquare(MarkType.values[i], 24, 20),
-                tooltip: MarkType.values[i].name,
+                icon: _buildMarkSquare(Mark.values[i], 24, 20),
+                tooltip: Mark.values[i].name,
               ),
           ],
         ),
