@@ -100,12 +100,12 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
   _logger.fine('here2');
   final columnCount = initData.defaultColumnCount;
   final rowCount = initData.defaultRowCount;
-  final wallTypes = List.generate(UnitData.dirCount, (_) => WallType.wall);
+  final wallTypes = List.generate(TileData.dirCount, (_) => WallType.wall);
   yield GridData(
-    unitShape: UnitShape.square,
+    tileShape: TileShape.square,
     columnCount: columnCount,
     rowCount: rowCount,
-    units: List.generate(columnCount * rowCount, (_) => UnitData(wallTypes: wallTypes)),
+    tiles: List.generate(columnCount * rowCount, (_) => TileData(wallTypes: wallTypes)),
   ).also((it) {
     _logger.fine('here3');
   });
@@ -178,7 +178,7 @@ class SquareWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toolIndex = ref.watch(_toolIndexProvider);
-    final unit = gridData.getUnit(column, row);
+    final tile = gridData.getTile(column, row);
 
     final markSize = math.min(size * 0.4, 20.0);
 
@@ -214,9 +214,9 @@ class SquareWidget extends HookConsumerWidget {
         if (toolIndex < _minWallToolIndex) {
           // 床
           final newLandType = LandType.values[toolIndex];
-          if (unit.landType != newLandType) {
-            final newUnitData = unit.copyWith(landType: newLandType);
-            final newGridData = gridData.setUnit(column, row, newUnitData);
+          if (tile.landType != newLandType) {
+            final newTileData = tile.copyWith(landType: newLandType);
+            final newGridData = gridData.setTile(column, row, newTileData);
             _gridDataStreamController.sink.add(newGridData);
           }
         } else if (toolIndex < _minMarkToolIndex) {
@@ -225,7 +225,7 @@ class SquareWidget extends HookConsumerWidget {
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             final dir = getDirection(offset);
             final newWallType = WallType.values[toolIndex - _minWallToolIndex];
-            if (newWallType != unit.getWallType(dir)) {
+            if (newWallType != tile.getWallType(dir)) {
               final newGridData = gridData.setWallTypes(column, row, dir, newWallType);
               _gridDataStreamController.sink.add(newGridData);
             }
@@ -237,16 +237,16 @@ class SquareWidget extends HookConsumerWidget {
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
             // 壁マーク
             final dir = getDirection(offset);
-            if (newMarkType != unit.getWallMarkType(dir)) {
+            if (newMarkType != tile.getWallMarkType(dir)) {
               final newGridData =
-                  gridData.setUnit(column, row, unit.setWallMarkType(dir, newMarkType));
+                  gridData.setTile(column, row, tile.setWallMarkType(dir, newMarkType));
               _gridDataStreamController.sink.add(newGridData);
             }
           } else {
             // 床マーク
-            if (newMarkType != unit.landMarkType) {
+            if (newMarkType != tile.landMarkType) {
               final newGridData =
-                  gridData.setUnit(column, row, unit.copyWith(landMarkType: newMarkType));
+                  gridData.setTile(column, row, tile.copyWith(landMarkType: newMarkType));
               _gridDataStreamController.sink.add(newGridData);
             }
           }
@@ -257,16 +257,16 @@ class SquareWidget extends HookConsumerWidget {
         child: Stack(
           children: [
             // 床
-            _buildLandSquare(unit.landType, size),
+            _buildLandSquare(tile.landType, size),
             // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(unit.getWallType(dir), dir, size),
+            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
             // 床マーク
-            if (unit.landMarkType != MarkType.none)
-              _buildMarkSquare(unit.landMarkType, size, markSize),
+            if (tile.landMarkType != MarkType.none)
+              _buildMarkSquare(tile.landMarkType, size, markSize),
             // 壁マーク
             for (int dir = 0; dir < 4; ++dir)
-              if (unit.getWallMarkType(dir) != MarkType.none)
-                buildWallMark(unit.getWallMarkType(dir), dir, size),
+              if (tile.getWallMarkType(dir) != MarkType.none)
+                buildWallMark(tile.getWallMarkType(dir), dir, size),
           ],
         ),
       ),
