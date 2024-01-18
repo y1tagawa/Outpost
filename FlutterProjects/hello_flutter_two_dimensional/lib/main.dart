@@ -256,22 +256,18 @@ class SquareWidget extends HookConsumerWidget {
           }
         }
       },
-      child: Tooltip(
-        message: '($column, $row)',
-        child: Stack(
-          children: [
-            // 床
-            _buildLandSquare(tile.landType, size),
-            // 北、東、南、西
-            for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
-            // 床マーク
-            if (tile.landMark != Mark.none) _buildMarkSquare(tile.landMark, size, markSize),
-            // 壁マーク
-            for (int dir = 0; dir < 4; ++dir)
-              if (tile.getWallMark(dir) != Mark.none)
-                buildWallMark(tile.getWallMark(dir), dir, size),
-          ],
-        ),
+      child: Stack(
+        children: [
+          // 床
+          _buildLandSquare(tile.landType, size),
+          // 北、東、南、西
+          for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
+          // 床マーク
+          if (tile.landMark != Mark.none) _buildMarkSquare(tile.landMark, size, markSize),
+          // 壁マーク
+          for (int dir = 0; dir < 4; ++dir)
+            if (tile.getWallMark(dir) != Mark.none) buildWallMark(tile.getWallMark(dir), dir, size),
+        ],
       ),
     );
   }
@@ -344,27 +340,6 @@ class EditToolWidget extends HookConsumerWidget {
       );
     }
 
-    Widget buildIconButton({
-      required bool outlined,
-      void Function()? onPressed,
-      String? tooltip,
-      required Widget icon,
-    }) {
-      if (outlined) {
-        return IconButton.outlined(
-          onPressed: onPressed,
-          icon: icon,
-          tooltip: tooltip,
-        );
-      } else {
-        return IconButton(
-          onPressed: onPressed,
-          icon: icon,
-          tooltip: tooltip,
-        );
-      }
-    }
-
     return Column(
       children: [
         Wrap(
@@ -407,59 +382,71 @@ class EditToolWidget extends HookConsumerWidget {
           ],
         ),
 
-        // 床
-        DropdownButton(
-          value: ref.watch(_landToolIndexProvider),
-          iconSize:
-              editToolIndex >= _minLandToolIndex && editToolIndex < _minWallToolIndex ? 24.0 : 16.0,
-          items: [
-            for (int i = 0; i < LandType.values.length; ++i)
-              DropdownMenuItem(
-                value: i,
-                child: _buildLandSquare(LandType.values[i], 24),
+        Wrap(
+          children: [
+            // 床
+            ColoredBox(
+              color: editToolIndex >= _minLandToolIndex && editToolIndex < _minWallToolIndex
+                  ? Colors.black12
+                  : Colors.transparent,
+              child: DropdownButton(
+                value: ref.watch(_landToolIndexProvider),
+                items: [
+                  for (int i = 0; i < LandType.values.length; ++i)
+                    DropdownMenuItem(
+                      value: i,
+                      child: _buildLandSquare(LandType.values[i], 24),
+                    ),
+                ],
+                onChanged: (value) {
+                  ref.read(_landToolIndexProvider.notifier).state =
+                      ref.read(_editToolIndexProvider.notifier).state = value!;
+                },
               ),
-          ],
-          onChanged: (value) {
-            ref.read(_landToolIndexProvider.notifier).state =
-                ref.read(_editToolIndexProvider.notifier).state = value!;
-          },
-        ),
+            ),
 
-        // 壁
-        DropdownButton(
-          value: ref.watch(_wallToolIndexProvider),
-          iconSize:
-              editToolIndex >= _minWallToolIndex && editToolIndex < _minMarkToolIndex ? 24.0 : 16.0,
-          items: [
-            for (int i = 0; i < WallType.values.length; ++i)
-              DropdownMenuItem(
-                value: i + _minWallToolIndex,
-                child: buildWallIcon(WallType.values[i]),
+            // 壁
+            ColoredBox(
+              color: editToolIndex >= _minWallToolIndex && editToolIndex < _minMarkToolIndex
+                  ? Colors.black12
+                  : Colors.transparent,
+              child: DropdownButton(
+                value: ref.watch(_wallToolIndexProvider),
+                items: [
+                  for (int i = 0; i < WallType.values.length; ++i)
+                    DropdownMenuItem(
+                      value: i + _minWallToolIndex,
+                      child: buildWallIcon(WallType.values[i]),
+                    ),
+                ],
+                onChanged: (value) {
+                  ref.read(_wallToolIndexProvider.notifier).state =
+                      ref.read(_editToolIndexProvider.notifier).state = value!;
+                },
               ),
-          ],
-          onChanged: (value) {
-            ref.read(_wallToolIndexProvider.notifier).state =
-                ref.read(_editToolIndexProvider.notifier).state = value!;
-          },
-        ),
+            ),
 
-        // マーク
-        DropdownButton(
-          value: ref.watch(_markToolIndexProvider),
-          iconSize: editToolIndex >= _minMarkToolIndex && editToolIndex < _minTitbitToolIndex
-              ? 24.0
-              : 16.0,
-          items: [
-            for (int i = 0; i < Mark.values.length; ++i)
-              DropdownMenuItem(
-                value: i + _minMarkToolIndex,
-                child: _buildMarkSquare(Mark.values[i], 24, 20),
+            // マーク
+            ColoredBox(
+              color: editToolIndex >= _minMarkToolIndex && editToolIndex < _minTitbitToolIndex
+                  ? Colors.black12
+                  : Colors.transparent,
+              child: DropdownButton(
+                value: ref.watch(_markToolIndexProvider),
+                items: [
+                  for (int i = 0; i < Mark.values.length; ++i)
+                    DropdownMenuItem(
+                      value: i + _minMarkToolIndex,
+                      child: _buildMarkSquare(Mark.values[i], 24, 20),
+                    ),
+                ],
+                onChanged: (value) {
+                  ref.read(_markToolIndexProvider.notifier).state =
+                      ref.read(_editToolIndexProvider.notifier).state = value!;
+                },
               ),
+            ),
           ],
-          onChanged: (value) {
-            ref.read(_markToolIndexProvider.notifier).state =
-                ref.read(_editToolIndexProvider.notifier).state = value!;
-          },
         ),
       ],
     );
