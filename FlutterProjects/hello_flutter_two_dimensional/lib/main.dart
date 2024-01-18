@@ -58,6 +58,15 @@ Widget _buildMarkSquare(Mark markType, double size, double iconSize) {
   );
 }
 
+Widget _buildTitbitSquare(Titbit titbit, int index, double size) {
+  const alphas = [0x00, 0x42, 0x61, 0x73];
+  const colors = [Colors.red, Colors.green, Colors.blue, Colors.yellow];
+  return ColoredBox(
+    color: colors[index].withAlpha(alphas[titbit.index]),
+    child: SizedBox.square(dimension: size),
+  );
+}
+
 final _logger = Logger('hello_flutter_two_dimensional');
 
 class _InitData {
@@ -118,6 +127,7 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
 /// 0~99 床
 /// 100~199 壁
 /// 200~299 マーク
+/// 300~399, 400~499... 少数属性値
 final _editToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
 const _minLandToolIndex = 0;
 const _minWallToolIndex = 100;
@@ -127,6 +137,8 @@ const _minTitbitToolIndex = 300;
 final _landToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
 final _wallToolIndexProvider = StateProvider((ref) => _minWallToolIndex);
 final _markToolIndexProvider = StateProvider((ref) => _minMarkToolIndex);
+final _titbitToolIndexProviders = List.generate(
+    TileData.titbitCount, (index) => StateProvider((ref) => _minTitbitToolIndex + index * 100));
 
 /// 倍率インデックス
 final _scaleIndexProvider = StateProvider((ref) => 1);
@@ -236,7 +248,7 @@ class SquareWidget extends HookConsumerWidget {
               _gridDataStreamController.sink.add(newGridData);
             }
           }
-        } else {
+        } else if (toolIndex < _minTitbitToolIndex) {
           // マーク
           final newMark = Mark.values[toolIndex - _minMarkToolIndex];
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
@@ -254,12 +266,23 @@ class SquareWidget extends HookConsumerWidget {
               _gridDataStreamController.sink.add(newGridData);
             }
           }
+        } else {
+          // titbit
+          final index = (toolIndex - _minTitbitToolIndex) ~/ 100;
+          final newTitbit = Titbit.values[(toolIndex - _minTitbitToolIndex) % 100];
+          if (newTitbit != tile.getTitbit(index)) {
+            final newGridData = gridData.setTile(column, row, tile.setTitbit(index, newTitbit));
+            _gridDataStreamController.sink.add(newGridData);
+          }
         }
       },
       child: Stack(
         children: [
           // 床
           _buildLandSquare(tile.landType, size),
+          // titbits
+          for (int i = 0; i < TileData.titbitCount; ++i)
+            if (tile.getTitbit(i) != Titbit.none) _buildTitbitSquare(tile.getTitbit(i), i, size),
           // 北、東、南、西
           for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
           // 床マーク
@@ -448,6 +471,27 @@ class EditToolWidget extends HookConsumerWidget {
             ),
           ],
         ),
+
+        // titbits
+        Wrap(
+          children: [
+            for (int i = 0; i < TileData.titbitCount; ++i)
+              DropdownButton(
+                value: ref.watch(_titbitToolIndexProviders[i]),
+                items: [
+                  for (int j = 0; j < Titbit.values.length; ++j)
+                    DropdownMenuItem(
+                      value: j + _minTitbitToolIndex + i * 100,
+                      child: _buildTitbitSquare(Titbit.values[j], i, 24),
+                    ),
+                ],
+                onChanged: (value) {
+                  ref.read(_titbitToolIndexProviders[i].notifier).state =
+                      ref.read(_editToolIndexProvider.notifier).state = value!;
+                },
+              ),
+          ],
+        )
       ],
     );
   }

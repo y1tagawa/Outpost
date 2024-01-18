@@ -26,7 +26,7 @@ enum Mark { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 
 
 /// 少数属性値
 /// タイルごとに0~3の数値に対応する属性値を持たせることができる
-enum Titbit { none, value1, value2, value3 }
+enum Titbit { none, v1, v2, v3 }
 
 /// 建造物、特殊地形
 //enum Building
