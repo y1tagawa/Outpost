@@ -24,12 +24,13 @@ enum WallType { path, wall, door }
 /// 印
 enum Mark { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
 
-/// タイル属性値
-enum TileAttr { none, attr1, tile2, tile3 }
+/// 少数属性値
+/// タイルごとに0~3の数値に対応する属性値を持たせることができる
+enum Titbit { none, value1, value2, value3 }
 
 /// 建造物、特殊地形
-//enum BuildingType
-//enum FeatureType { river, road, wall }
+//enum Building
+//enum Feature { river, road, wall }
 
 /// todo: ランダム遭遇危険度 このへんは色濃度か？
 /// todo: 道、川、城壁などの連続地形bit
@@ -40,18 +41,20 @@ class TileData {
   /// 方向の最大数（1ユニットの壁の数）
   static const dirCount = 6; // N, (N)E, S, (N)W, SE, SW,
 
-  static const tileCount = 6;
+  static const titbitCount = 4; // エンカウント確率、ダーク・ライトゾーンなど
 
   final LandType landType;
   final List<WallType> _wallTypes;
   final Mark landMark;
   final List<Mark> _wallMarks;
+  final List<Titbit> _titbits;
 
   TileData({
     this.landType = LandType.floor,
     List<WallType>? wallTypes,
     this.landMark = Mark.none,
     List<Mark>? wallMarks,
+    List<Titbit>? titbits,
   })  : _wallTypes = (wallTypes == null)
             ? List.generate(dirCount, (_) => WallType.path)
             : wallTypes.also((it) {
@@ -61,22 +64,47 @@ class TileData {
             ? List.generate(dirCount, (_) => Mark.none)
             : wallMarks.also((it) {
                 assert(it.length == dirCount);
+              }),
+        _titbits = (titbits == null)
+            ? List.generate(titbitCount, (_) => Titbit.none)
+            : titbits.also((it) {
+                assert(it.length == titbitCount);
               });
 
-  WallType getWallType(int dir) => _wallTypes[dir];
+  WallType getWallType(int dir) {
+    assert(dir >= 0 && dir < dirCount);
+    return _wallTypes[dir];
+  }
 
-  TileData setWallType(int dir, WallType newWallType) {
+  TileData setWallType(int dir, WallType newValue) {
+    assert(dir >= 0 && dir < dirCount);
     final newWallTypes = [..._wallTypes];
-    newWallTypes[dir] = newWallType;
+    newWallTypes[dir] = newValue;
     return copyWith(wallTypes: newWallTypes);
   }
 
-  Mark getWallMark(int dir) => _wallMarks[dir];
+  Mark getWallMark(int dir) {
+    assert(dir >= 0 && dir < dirCount);
+    return _wallMarks[dir];
+  }
 
-  TileData setWallMark(int dir, Mark newWallMark) {
+  TileData setWallMark(int dir, Mark newValue) {
+    assert(dir >= 0 && dir < dirCount);
     final newWallMarks = [..._wallMarks];
-    newWallMarks[dir] = newWallMark;
+    newWallMarks[dir] = newValue;
     return copyWith(wallMarks: newWallMarks);
+  }
+
+  Titbit getTitbit(int index) {
+    assert(index >= 0 && index < titbitCount);
+    return _titbits[index];
+  }
+
+  TileData setTitbit(int index, Titbit newValue) {
+    assert(index >= 0 && index < titbitCount);
+    final newTitbits = [..._titbits];
+    newTitbits[index] = newValue;
+    return copyWith(titbits: newTitbits);
   }
 
 //<editor-fold desc="Data Methods">
@@ -88,11 +116,16 @@ class TileData {
           landType == other.landType &&
           _wallTypes == other._wallTypes &&
           landMark == other.landMark &&
-          _wallMarks == other._wallMarks);
+          _wallMarks == other._wallMarks &&
+          _titbits == other._titbits);
 
   @override
   int get hashCode =>
-      landType.hashCode ^ _wallTypes.hashCode ^ landMark.hashCode ^ _wallMarks.hashCode;
+      landType.hashCode ^
+      _wallTypes.hashCode ^
+      landMark.hashCode ^
+      _wallMarks.hashCode ^
+      _titbits.hashCode;
 
   @override
   String toString() {
@@ -100,7 +133,8 @@ class TileData {
         ' landType: $landType,'
         ' _wallType: $_wallTypes,'
         ' landMark: $landMark,'
-        ' _wallMark: $_wallMarks,'
+        ' _wallMarks: $_wallMarks,'
+        ' _titbits: $_titbits,'
         '}';
   }
 
@@ -109,12 +143,14 @@ class TileData {
     List<WallType>? wallTypes,
     Mark? landMark,
     List<Mark>? wallMarks,
+    List<Titbit>? titbits,
   }) {
     return TileData(
       landType: landType ?? this.landType,
       wallTypes: wallTypes ?? this._wallTypes,
       landMark: landMark ?? this.landMark,
       wallMarks: wallMarks ?? this._wallMarks,
+      titbits: titbits ?? this._titbits,
     );
   }
 
@@ -124,6 +160,7 @@ class TileData {
       'wallTypes': this._wallTypes,
       'landMark': this.landMark,
       'wallMarks': this._wallMarks,
+      'titbits': this._titbits,
     };
   }
 
@@ -133,6 +170,7 @@ class TileData {
       wallTypes: map['wallTypes'] as List<WallType>,
       landMark: map['landMark'] as Mark,
       wallMarks: map['wallMarks'] as List<Mark>,
+      titbits: map['titbits'] as List<Titbit>,
     );
   }
 
