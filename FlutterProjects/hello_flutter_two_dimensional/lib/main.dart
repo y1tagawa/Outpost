@@ -118,9 +118,15 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
 /// 0~99 床
 /// 100~199 壁
 /// 200~299 マーク
-final _toolIndexProvider = StateProvider((ref) => 0);
+final _editToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
+const _minLandToolIndex = 0;
 const _minWallToolIndex = 100;
 const _minMarkToolIndex = 200;
+const _minTitbitToolIndex = 300;
+
+final _landToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
+final _wallToolIndexProvider = StateProvider((ref) => _minWallToolIndex);
+final _markToolIndexProvider = StateProvider((ref) => _minMarkToolIndex);
 
 /// 倍率インデックス
 final _scaleIndexProvider = StateProvider((ref) => 1);
@@ -177,7 +183,7 @@ class SquareWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final toolIndex = ref.watch(_toolIndexProvider);
+    final toolIndex = ref.watch(_editToolIndexProvider);
     final tile = gridData.getTile(column, row);
 
     final markSize = math.min(size * 0.4, 20.0);
@@ -325,7 +331,7 @@ class EditToolWidget extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final toolIndex = ref.watch(_toolIndexProvider);
+    final editToolIndex = ref.watch(_editToolIndexProvider);
     final scaleIndex = ref.watch(_scaleIndexProvider);
 
     Widget buildWallIcon(WallType wallType) {
@@ -402,44 +408,58 @@ class EditToolWidget extends HookConsumerWidget {
         ),
 
         // 床
-        Wrap(
-          children: [
+        DropdownButton(
+          value: ref.watch(_landToolIndexProvider),
+          iconSize:
+              editToolIndex >= _minLandToolIndex && editToolIndex < _minWallToolIndex ? 24.0 : 16.0,
+          items: [
             for (int i = 0; i < LandType.values.length; ++i)
-              buildIconButton(
-                outlined: (i == toolIndex),
-                onPressed: () => ref.read(_toolIndexProvider.notifier).state = i,
-                icon: _buildLandSquare(LandType.values[i], 24),
-                tooltip: LandType.values[i].name,
+              DropdownMenuItem(
+                value: i,
+                child: _buildLandSquare(LandType.values[i], 24),
               ),
           ],
+          onChanged: (value) {
+            ref.read(_landToolIndexProvider.notifier).state =
+                ref.read(_editToolIndexProvider.notifier).state = value!;
+          },
         ),
 
         // 壁
-        Wrap(
-          children: [
+        DropdownButton(
+          value: ref.watch(_wallToolIndexProvider),
+          iconSize:
+              editToolIndex >= _minWallToolIndex && editToolIndex < _minMarkToolIndex ? 24.0 : 16.0,
+          items: [
             for (int i = 0; i < WallType.values.length; ++i)
-              buildIconButton(
-                outlined: (i + _minWallToolIndex == toolIndex),
-                onPressed: () =>
-                    ref.read(_toolIndexProvider.notifier).state = i + _minWallToolIndex,
-                icon: buildWallIcon(WallType.values[i]),
-                tooltip: WallType.values[i].name,
+              DropdownMenuItem(
+                value: i + _minWallToolIndex,
+                child: buildWallIcon(WallType.values[i]),
               ),
           ],
+          onChanged: (value) {
+            ref.read(_wallToolIndexProvider.notifier).state =
+                ref.read(_editToolIndexProvider.notifier).state = value!;
+          },
         ),
 
         // マーク
-        Wrap(
-          children: [
+        DropdownButton(
+          value: ref.watch(_markToolIndexProvider),
+          iconSize: editToolIndex >= _minMarkToolIndex && editToolIndex < _minTitbitToolIndex
+              ? 24.0
+              : 16.0,
+          items: [
             for (int i = 0; i < Mark.values.length; ++i)
-              buildIconButton(
-                outlined: (i + _minMarkToolIndex == toolIndex),
-                onPressed: () =>
-                    ref.read(_toolIndexProvider.notifier).state = i + _minMarkToolIndex,
-                icon: _buildMarkSquare(Mark.values[i], 24, 20),
-                tooltip: Mark.values[i].name,
+              DropdownMenuItem(
+                value: i + _minMarkToolIndex,
+                child: _buildMarkSquare(Mark.values[i], 24, 20),
               ),
           ],
+          onChanged: (value) {
+            ref.read(_markToolIndexProvider.notifier).state =
+                ref.read(_editToolIndexProvider.notifier).state = value!;
+          },
         ),
       ],
     );
