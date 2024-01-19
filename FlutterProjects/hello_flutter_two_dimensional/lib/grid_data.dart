@@ -15,8 +15,11 @@ enum TileShape {
   hexagon,
 }
 
-/// 床タイプ
+/// 地形タイプ
 enum LandType { floor, rock, water, air }
+
+/// 地形特長
+enum LandFeature { river, road, castle }
 
 /// 壁タイプ
 enum WallType { path, wall, door }
@@ -30,7 +33,6 @@ enum Titbit { none, v1, v2, v3 }
 
 /// 建造物、特殊地形
 //enum Building
-//enum Feature { river, road, wall }
 
 /// todo: ランダム遭遇危険度 このへんは色濃度か？
 /// todo: 道、川、城壁などの連続地形bit
@@ -44,6 +46,7 @@ class TileData {
   static const titbitCount = 3; // エンカウント確率、ダーク・ライトゾーンなど
 
   final LandType landType;
+  final List<bool> _landFeatures;
   final List<WallType> _wallTypes;
   final Mark landMark;
   final List<Mark> _wallMarks;
@@ -51,11 +54,17 @@ class TileData {
 
   TileData({
     this.landType = LandType.floor,
+    List<bool>? landFeatures,
     List<WallType>? wallTypes,
     this.landMark = Mark.none,
     List<Mark>? wallMarks,
     List<Titbit>? titbits,
-  })  : _wallTypes = (wallTypes == null)
+  })  : _landFeatures = (landFeatures == null)
+            ? List.generate(LandFeature.values.length, (_) => false)
+            : landFeatures.also((it) {
+                assert(it.length == LandFeature.values.length);
+              }),
+        _wallTypes = (wallTypes == null)
             ? List.generate(dirCount, (_) => WallType.path)
             : wallTypes.also((it) {
                 assert(it.length == dirCount);
@@ -70,6 +79,14 @@ class TileData {
             : titbits.also((it) {
                 assert(it.length == titbitCount);
               });
+
+  bool getLandFeature(LandFeature index) => _landFeatures[index.index];
+
+  TileData setLandFeature(LandFeature index, bool newValue) {
+    final newLandFeatures = [..._landFeatures];
+    newLandFeatures[index.index] = newValue;
+    return copyWith(landFeatures: newLandFeatures);
+  }
 
   WallType getWallType(int dir) {
     assert(dir >= 0 && dir < dirCount);
@@ -114,6 +131,7 @@ class TileData {
       (other is TileData &&
           runtimeType == other.runtimeType &&
           landType == other.landType &&
+          _landFeatures == other._landFeatures &&
           _wallTypes == other._wallTypes &&
           landMark == other.landMark &&
           _wallMarks == other._wallMarks &&
@@ -122,6 +140,7 @@ class TileData {
   @override
   int get hashCode =>
       landType.hashCode ^
+      _landFeatures.hashCode ^
       _wallTypes.hashCode ^
       landMark.hashCode ^
       _wallMarks.hashCode ^
@@ -131,7 +150,8 @@ class TileData {
   String toString() {
     return 'UnitData{'
         ' landType: $landType,'
-        ' _wallType: $_wallTypes,'
+        ' _landFeatures: $_landFeatures,'
+        ' _wallTypes: $_wallTypes,'
         ' landMark: $landMark,'
         ' _wallMarks: $_wallMarks,'
         ' _titbits: $_titbits,'
@@ -140,6 +160,7 @@ class TileData {
 
   TileData copyWith({
     LandType? landType,
+    List<bool>? landFeatures,
     List<WallType>? wallTypes,
     Mark? landMark,
     List<Mark>? wallMarks,
@@ -147,6 +168,7 @@ class TileData {
   }) {
     return TileData(
       landType: landType ?? this.landType,
+      landFeatures: landFeatures ?? this._landFeatures,
       wallTypes: wallTypes ?? this._wallTypes,
       landMark: landMark ?? this.landMark,
       wallMarks: wallMarks ?? this._wallMarks,
@@ -157,6 +179,7 @@ class TileData {
   Map<String, dynamic> toMap() {
     return {
       'landType': this.landType,
+      'landFeatures': this._landFeatures,
       'wallTypes': this._wallTypes,
       'landMark': this.landMark,
       'wallMarks': this._wallMarks,
@@ -167,6 +190,7 @@ class TileData {
   factory TileData.fromMap(Map<String, dynamic> map) {
     return TileData(
       landType: map['landType'] as LandType,
+      landFeatures: map['landFeatures'] as List<bool>,
       wallTypes: map['wallTypes'] as List<WallType>,
       landMark: map['landMark'] as Mark,
       wallMarks: map['wallMarks'] as List<Mark>,
@@ -289,7 +313,7 @@ class GridData {
 
   GridData copyWith({
     int? version,
-    TileShape? tileShale,
+    TileShape? tileShape,
     int? columnCount,
     int? rowCount,
     List<TileData>? tiles,
@@ -299,7 +323,7 @@ class GridData {
   }) {
     return GridData(
       version: version ?? this.version,
-      tileShape: tileShale ?? this.tileShape,
+      tileShape: tileShape ?? this.tileShape,
       columnCount: columnCount ?? this.columnCount,
       rowCount: rowCount ?? this.rowCount,
       tiles: tiles ?? this._tiles,
