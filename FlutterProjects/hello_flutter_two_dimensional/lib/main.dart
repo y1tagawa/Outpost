@@ -240,7 +240,7 @@ class SquareWidget extends HookConsumerWidget {
           final newLandType = LandType.values[toolIndex];
           if (tile.landType != newLandType) {
             final newTileData = tile.copyWith(landType: newLandType);
-            final newGridData = gridData.setTile(column, row, newTileData);
+            final newGridData = gridData.copyWithTile(column, row, newTileData);
             _gridDataStreamController.sink.add(newGridData);
           }
         } else if (toolIndex < _minMarkToolIndex) {
@@ -250,7 +250,7 @@ class SquareWidget extends HookConsumerWidget {
             final dir = getDirection(offset);
             final newWallType = WallType.values[toolIndex - _minWallToolIndex];
             if (newWallType != tile.getWallType(dir)) {
-              final newGridData = gridData.setWallTypes(column, row, dir, newWallType);
+              final newGridData = gridData.copyWithWallTypeBothSides(column, row, dir, newWallType);
               _gridDataStreamController.sink.add(newGridData);
             }
           }
@@ -262,13 +262,15 @@ class SquareWidget extends HookConsumerWidget {
             // 壁マーク
             final dir = getDirection(offset);
             if (newMark != tile.getWallMark(dir)) {
-              final newGridData = gridData.setTile(column, row, tile.setWallMark(dir, newMark));
+              final newGridData =
+                  gridData.copyWithTile(column, row, tile.copyWithWallMark(dir, newMark));
               _gridDataStreamController.sink.add(newGridData);
             }
           } else {
             // 床マーク
             if (newMark != tile.landMark) {
-              final newGridData = gridData.setTile(column, row, tile.copyWith(landMark: newMark));
+              final newGridData =
+                  gridData.copyWithTile(column, row, tile.copyWith(landMark: newMark));
               _gridDataStreamController.sink.add(newGridData);
             }
           }
@@ -277,7 +279,8 @@ class SquareWidget extends HookConsumerWidget {
           final index = (toolIndex - _minTitbitToolIndex) ~/ 100;
           final newTitbit = Titbit.values[(toolIndex - _minTitbitToolIndex) % 100];
           if (newTitbit != tile.getTitbit(index)) {
-            final newGridData = gridData.setTile(column, row, tile.setTitbit(index, newTitbit));
+            final newGridData =
+                gridData.copyWithTile(column, row, tile.setTitbit(index, newTitbit));
             _gridDataStreamController.sink.add(newGridData);
           }
         }

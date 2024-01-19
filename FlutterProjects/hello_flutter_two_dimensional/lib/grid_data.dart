@@ -18,26 +18,27 @@ enum TileShape {
 /// 地形タイプ
 enum LandType { floor, rock, water, air }
 
-/// 地形特長
+/// 地形特徴
+/// ビット。隣に同じ特徴があると結合する。川と道が交差すると橋、川と城壁で水門、道と城壁で門ができる。
 enum LandFeature { river, road, castle }
 
 /// 壁タイプ
 enum WallType { path, wall, door }
 
-/// 印
+/// マーク
 enum Mark { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
 
-/// 少数属性値
-/// タイルごとに0~3の数値に対応する属性値を持たせることができる
+/// 小属性値
+/// タイルごとに0~3の数値に対応する属性値を持たせることができる。遭遇率とかダークゾーンとか。
 enum Titbit { none, v1, v2, v3 }
 
 /// 単位図形データクラス
 @immutable
 class TileData {
-  /// 方向の最大数（1ユニットの壁の数）
+  /// 方向の最大数（1タイルの壁の数）
   static const dirCount = 6; // N, (N)E, S, (N)W, SE, SW,
-
-  static const titbitCount = 3; // エンカウント確率、ダーク・ライトゾーンなど
+  /// 小属性値の数
+  static const titbitCount = 3;
 
   final LandType landType;
   final List<bool> _landFeatures;
@@ -74,43 +75,51 @@ class TileData {
                 assert(it.length == titbitCount);
               });
 
+  /// 地形特長
   bool getLandFeature(LandFeature index) => _landFeatures[index.index];
 
-  TileData setLandFeature(LandFeature index, bool newValue) {
+  /// 地形特長を変更したコピー
+  TileData copyWithLandFeature(LandFeature index, bool newValue) {
     final newLandFeatures = [..._landFeatures];
     newLandFeatures[index.index] = newValue;
     return copyWith(landFeatures: newLandFeatures);
   }
 
+  /// 壁タイプ[`dir`]
   WallType getWallType(int dir) {
     assert(dir >= 0 && dir < dirCount);
     return _wallTypes[dir];
   }
 
-  TileData setWallType(int dir, WallType newValue) {
+  /// 壁タイプ[`dir`]を変更したコピー
+  TileData copyWithWallType(int dir, WallType newValue) {
     assert(dir >= 0 && dir < dirCount);
     final newWallTypes = [..._wallTypes];
     newWallTypes[dir] = newValue;
     return copyWith(wallTypes: newWallTypes);
   }
 
+  /// 壁マーク[`dir`]
   Mark getWallMark(int dir) {
     assert(dir >= 0 && dir < dirCount);
     return _wallMarks[dir];
   }
 
-  TileData setWallMark(int dir, Mark newValue) {
+  /// 壁マーク[`dir`]を変更したコピー
+  TileData copyWithWallMark(int dir, Mark newValue) {
     assert(dir >= 0 && dir < dirCount);
     final newWallMarks = [..._wallMarks];
     newWallMarks[dir] = newValue;
     return copyWith(wallMarks: newWallMarks);
   }
 
+  /// 小属性値[`index`]
   Titbit getTitbit(int index) {
     assert(index >= 0 && index < titbitCount);
     return _titbits[index];
   }
 
+  /// 小属性値[`index`]を変更したコピー
   TileData setTitbit(int index, Titbit newValue) {
     assert(index >= 0 && index < titbitCount);
     final newTitbits = [..._titbits];
@@ -219,13 +228,15 @@ class GridData {
                 assert(tiles.length == columnCount * rowCount);
               });
 
+  /// 単位図形[`row`][`column`]
   TileData getTile(int column, int row) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
     return _tiles[row * rowCount + column];
   }
 
-  GridData setTile(int column, int row, TileData tileData) {
+  /// 単位図形[`row`][`column`]を変更したコピー
+  GridData copyWithTile(int column, int row, TileData tileData) {
     assert(column >= 0 && column < columnCount);
     assert(row >= 0 && row < rowCount);
     final newTiles = [..._tiles];
@@ -233,9 +244,9 @@ class GridData {
     return copyWith(tiles: newTiles);
   }
 
-  /// 対面の壁も同時にセットする
-  GridData setWallTypes(int column, int row, int dir, WallType newWallType) {
-    // とりあえず正方形のみ
+  /// 単位図形[`row`][`column`]の壁タイプ[`dir`]およびその背面を変更したコピー
+  GridData copyWithWallTypeBothSides(int column, int row, int dir, WallType newWallType) {
+    // todo:6角形
     assert(tileShape == TileShape.square);
 
     assert(column >= 0 && column < columnCount);
@@ -243,31 +254,31 @@ class GridData {
     final newTiles = [..._tiles];
     switch (dir) {
       case 0: // 北
-        newTiles[row * rowCount + column] = getTile(column, row).setWallType(0, newWallType);
+        newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(0, newWallType);
         if (row > 0) {
           newTiles[(row - 1) * rowCount + column] =
-              getTile(column, row - 1).setWallType(2, newWallType);
+              getTile(column, row - 1).copyWithWallType(2, newWallType);
         }
         break;
       case 1: // 東
-        newTiles[row * rowCount + column] = getTile(column, row).setWallType(1, newWallType);
+        newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(1, newWallType);
         if (column < columnCount - 1) {
           newTiles[row * rowCount + (column + 1)] =
-              getTile(column + 1, row).setWallType(3, newWallType);
+              getTile(column + 1, row).copyWithWallType(3, newWallType);
         }
         break;
       case 2: // 南
-        newTiles[row * rowCount + column] = getTile(column, row).setWallType(2, newWallType);
+        newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(2, newWallType);
         if (row < rowCount - 1) {
           newTiles[(row + 1) * rowCount + column] =
-              getTile(column, row + 1).setWallType(0, newWallType);
+              getTile(column, row + 1).copyWithWallType(0, newWallType);
         }
         break;
       default: // 西
-        newTiles[row * rowCount + column] = getTile(column, row).setWallType(3, newWallType);
+        newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(3, newWallType);
         if (column > 0) {
           newTiles[row * rowCount + (column - 1)] =
-              getTile(column - 1, row).setWallType(1, newWallType);
+              getTile(column - 1, row).copyWithWallType(1, newWallType);
         }
         break;
     }
