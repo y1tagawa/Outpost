@@ -41,7 +41,7 @@ class TileData {
   /// 方向の最大数（1ユニットの壁の数）
   static const dirCount = 6; // N, (N)E, S, (N)W, SE, SW,
 
-  static const titbitCount = 4; // エンカウント確率、ダーク・ライトゾーンなど
+  static const titbitCount = 3; // エンカウント確率、ダーク・ライトゾーンなど
 
   final LandType landType;
   final List<WallType> _wallTypes;

@@ -131,7 +131,7 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
 /// 0~99 床
 /// 100~199 壁
 /// 200~299 マーク
-/// 300~399, 400~499...699 少数属性値
+/// 300~399, 400~499...599 少数属性値
 final _editToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
 const _minLandToolIndex = 0;
 const _minWallToolIndex = 100;
@@ -141,8 +141,9 @@ const _minTitbitToolIndex = 300;
 final _landToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
 final _wallToolIndexProvider = StateProvider((ref) => _minWallToolIndex);
 final _markToolIndexProvider = StateProvider((ref) => _minMarkToolIndex);
-final _titbitToolIndexProviders = List.generate(
-    TileData.titbitCount, (index) => StateProvider((ref) => _minTitbitToolIndex + index * 100));
+
+final _visibleTitbitLayerProvider = StateProvider((ref) => -1); // -1:非表示
+final _titbitToolAlphaProvider = StateProvider((ref) => 0);
 
 /// 倍率インデックス
 final _scaleIndexProvider = StateProvider((ref) => 1);
@@ -201,6 +202,7 @@ class SquareWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final toolIndex = ref.watch(_editToolIndexProvider);
     final tile = gridData.getTile(column, row);
+    final visibleTitbitLayer = ref.watch(_visibleTitbitLayerProvider);
 
     final markSize = math.min(size * 0.4, 20.0);
 
@@ -286,7 +288,8 @@ class SquareWidget extends HookConsumerWidget {
           _buildLandSquare(tile.landType, size),
           // titbits
           for (int i = 0; i < TileData.titbitCount; ++i)
-            if (tile.getTitbit(i) != Titbit.none) _buildTitbitSquare(tile.getTitbit(i), i, size),
+            if (i == visibleTitbitLayer && tile.getTitbit(i) != Titbit.none)
+              _buildTitbitSquare(tile.getTitbit(i), i, size),
           // 北、東、南、西
           for (int dir = 0; dir < 4; ++dir) _buildWallSquare(tile.getWallType(dir), dir, size),
           // 床マーク
@@ -356,6 +359,7 @@ class EditToolWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final editToolIndex = ref.watch(_editToolIndexProvider);
     final scaleIndex = ref.watch(_scaleIndexProvider);
+    final visibleTitbitLayer = ref.watch(_visibleTitbitLayerProvider);
 
     Widget buildWallIcon(WallType wallType) {
       return Transform.translate(
@@ -479,19 +483,40 @@ class EditToolWidget extends HookConsumerWidget {
         // titbits
         Wrap(
           children: [
-            for (int i = 0; i < TileData.titbitCount; ++i)
+            // titbit表示レイヤー
+            DropdownButton(
+              value: visibleTitbitLayer,
+              items: [
+                // 非表示
+                DropdownMenuItem(
+                  value: -1,
+                  child: _buildTitbitSquare(Titbit.none, 0, 24),
+                ),
+                // 表示レイヤー
+                for (int i = 0; i < TileData.titbitCount; ++i)
+                  DropdownMenuItem(
+                    value: i,
+                    child: _buildTitbitSquare(Titbit.v2, i, 24),
+                  )
+              ],
+              onChanged: (value) {
+                ref.read(_visibleTitbitLayerProvider.notifier).state = value!;
+              },
+            ),
+            if (visibleTitbitLayer >= 0)
               DropdownButton(
-                value: ref.watch(_titbitToolIndexProviders[i]),
+                value: ref.watch(_titbitToolAlphaProvider),
                 items: [
                   for (int j = 0; j < Titbit.values.length; ++j)
                     DropdownMenuItem(
-                      value: j + _minTitbitToolIndex + i * 100,
-                      child: _buildTitbitSquare(Titbit.values[j], i, 24),
+                      value: j,
+                      child: _buildTitbitSquare(Titbit.values[j], visibleTitbitLayer, 24),
                     ),
                 ],
                 onChanged: (value) {
-                  ref.read(_titbitToolIndexProviders[i].notifier).state =
-                      ref.read(_editToolIndexProvider.notifier).state = value!;
+                  ref.read(_titbitToolAlphaProvider.notifier).state = value!;
+                  final toolIndex = visibleTitbitLayer * 100 + _minTitbitToolIndex + value;
+                  ref.read(_editToolIndexProvider.notifier).state = toolIndex;
                 },
               ),
           ],
