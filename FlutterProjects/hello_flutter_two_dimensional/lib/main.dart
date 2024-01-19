@@ -59,12 +59,16 @@ Widget _buildMarkSquare(Mark markType, double size, double iconSize) {
 }
 
 Widget _buildTitbitSquare(Titbit titbit, int index, double size) {
-  const alphas = [0x00, 0x42, 0x61, 0x73];
+  const alphas = [0x00, 0x30, 0x60, 0xA0];
   const colors = [Colors.red, Colors.green, Colors.blue, Colors.yellow];
-  return ColoredBox(
-    color: colors[index].withAlpha(alphas[titbit.index]),
-    child: SizedBox.square(dimension: size),
-  );
+  if (titbit == Titbit.none) {
+    return SizedBox.square(dimension: size);
+  } else {
+    return ColoredBox(
+      color: colors[index].withAlpha(alphas[titbit.index]),
+      child: SizedBox.square(dimension: size),
+    );
+  }
 }
 
 final _logger = Logger('hello_flutter_two_dimensional');
@@ -127,7 +131,7 @@ final _gridDataProvider = StreamProvider<GridData>((ref) async* {
 /// 0~99 床
 /// 100~199 壁
 /// 200~299 マーク
-/// 300~399, 400~499... 少数属性値
+/// 300~399, 400~499...699 少数属性値
 final _editToolIndexProvider = StateProvider((ref) => _minLandToolIndex);
 const _minLandToolIndex = 0;
 const _minWallToolIndex = 100;
