@@ -415,7 +415,6 @@ class _GridWidget extends HookConsumerWidget {
       rowBuilder: (int row) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          backgroundDecoration: const TableSpanDecoration(color: Colors.white70),
           backgroundDecoration: const TableSpanDecoration(color: Color(0xFFB3B3B3)),
         );
       },
