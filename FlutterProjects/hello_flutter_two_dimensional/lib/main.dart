@@ -471,7 +471,9 @@ class EditToolWidget extends HookConsumerWidget {
             IconButton(
               onPressed: () {
                 final map = gridData.toMap();
-                print(jsonEncode(map));
+                //final json = const JsonEncoder.withIndent('  ').convert(map);
+                final json = jsonEncode(map);
+                print(json);
               },
               icon: const Icon(Icons.task_outlined),
               tooltip: 'save',
