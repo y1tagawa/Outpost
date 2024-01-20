@@ -19,8 +19,8 @@ enum TileShape {
 enum LandType { floor, rock, water, air }
 
 /// 地形特徴
-/// ビット。隣に同じ特徴があると結合する。川と道が交差すると橋、川と城壁で水門、道と城壁で門ができる。
-enum LandFeature { river, road, castle }
+/// 隣に接続可能な特徴や地形があると接続する。
+enum LandFeature { none, river, road, castle, bridge, watergate, gate }
 
 /// 壁タイプ
 enum WallType { path, wall, door }
@@ -41,7 +41,7 @@ class TileData {
   static const titbitCount = 3;
 
   final LandType landType;
-  final List<bool> _landFeatures;
+  final LandFeature landFeature;
   final List<WallType> _wallTypes;
   final Mark landMark;
   final List<Mark> _wallMarks;
@@ -49,17 +49,12 @@ class TileData {
 
   TileData({
     this.landType = LandType.floor,
-    List<bool>? landFeatures,
+    this.landFeature = LandFeature.none,
     List<WallType>? wallTypes,
     this.landMark = Mark.none,
     List<Mark>? wallMarks,
     List<Titbit>? titbits,
-  })  : _landFeatures = (landFeatures == null)
-            ? List.generate(LandFeature.values.length, (_) => false)
-            : landFeatures.also((it) {
-                assert(it.length == LandFeature.values.length);
-              }),
-        _wallTypes = (wallTypes == null)
+  })  : _wallTypes = (wallTypes == null)
             ? List.generate(dirCount, (_) => WallType.path)
             : wallTypes.also((it) {
                 assert(it.length == dirCount);
@@ -74,16 +69,6 @@ class TileData {
             : titbits.also((it) {
                 assert(it.length == titbitCount);
               });
-
-  /// 地形特長
-  bool getLandFeature(LandFeature index) => _landFeatures[index.index];
-
-  /// 地形特長を変更したコピー
-  TileData copyWithLandFeature(LandFeature index, bool newValue) {
-    final newLandFeatures = [..._landFeatures];
-    newLandFeatures[index.index] = newValue;
-    return copyWith(landFeatures: newLandFeatures);
-  }
 
   /// 壁タイプ[`dir`]
   WallType getWallType(int dir) {
@@ -134,7 +119,7 @@ class TileData {
       (other is TileData &&
           runtimeType == other.runtimeType &&
           landType == other.landType &&
-          _landFeatures == other._landFeatures &&
+          landFeature == other.landFeature &&
           _wallTypes == other._wallTypes &&
           landMark == other.landMark &&
           _wallMarks == other._wallMarks &&
@@ -143,7 +128,7 @@ class TileData {
   @override
   int get hashCode =>
       landType.hashCode ^
-      _landFeatures.hashCode ^
+      landFeature.hashCode ^
       _wallTypes.hashCode ^
       landMark.hashCode ^
       _wallMarks.hashCode ^
@@ -153,7 +138,7 @@ class TileData {
   String toString() {
     return 'UnitData{'
         ' landType: $landType,'
-        ' _landFeatures: $_landFeatures,'
+        ' landFeature: $landFeature,'
         ' _wallTypes: $_wallTypes,'
         ' landMark: $landMark,'
         ' _wallMarks: $_wallMarks,'
@@ -163,7 +148,7 @@ class TileData {
 
   TileData copyWith({
     LandType? landType,
-    List<bool>? landFeatures,
+    LandFeature? landFeature,
     List<WallType>? wallTypes,
     Mark? landMark,
     List<Mark>? wallMarks,
@@ -171,7 +156,7 @@ class TileData {
   }) {
     return TileData(
       landType: landType ?? this.landType,
-      landFeatures: landFeatures ?? this._landFeatures,
+      landFeature: landFeature ?? this.landFeature,
       wallTypes: wallTypes ?? this._wallTypes,
       landMark: landMark ?? this.landMark,
       wallMarks: wallMarks ?? this._wallMarks,
@@ -182,7 +167,7 @@ class TileData {
   Map<String, dynamic> toMap() {
     return {
       'landType': this.landType,
-      'landFeatures': this._landFeatures,
+      'landFeature': this.landFeature,
       'wallTypes': this._wallTypes,
       'landMark': this.landMark,
       'wallMarks': this._wallMarks,
@@ -193,7 +178,7 @@ class TileData {
   factory TileData.fromMap(Map<String, dynamic> map) {
     return TileData(
       landType: map['landType'] as LandType,
-      landFeatures: map['landFeatures'] as List<bool>,
+      landFeature: map['landFeatures'] as LandFeature,
       wallTypes: map['wallTypes'] as List<WallType>,
       landMark: map['landMark'] as Mark,
       wallMarks: map['wallMarks'] as List<Mark>,
