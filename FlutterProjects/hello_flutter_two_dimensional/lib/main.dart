@@ -128,7 +128,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-///
+/// 正方形地形タイプアイコン
 class _LandSquare extends StatelessWidget {
   static const _icons = [
     (Icons.square_outlined, Colors.grey),
@@ -149,7 +149,7 @@ class _LandSquare extends StatelessWidget {
   }
 }
 
-///
+/// 正方形壁タイプアイコン
 class _WallSquare extends StatelessWidget {
   static const _assets = [
     'assets/images/path.png',
@@ -181,7 +181,7 @@ class _WallSquare extends StatelessWidget {
   }
 }
 
-///
+/// 丸数字アイコン
 class _MarkSquare extends StatelessWidget {
   static const _assets = [
     'assets/images/mark_none.png',
@@ -218,7 +218,7 @@ class _MarkSquare extends StatelessWidget {
   }
 }
 
-///
+/// 正方形小属性値アイコン
 class _TitbitSquare extends StatelessWidget {
   static const _alphas = [0x00, 0x30, 0x60, 0xA0];
   static const _colors = [Colors.red, Colors.green, Colors.blue, Colors.yellow];
@@ -249,13 +249,14 @@ class _TitbitSquare extends StatelessWidget {
 
 /// 正方形単位図形ウィジェット
 ///
+/// 正方形単位図形を描画する。クリックされたら編集ツールに合わせて描画する。
 class _SquareWidget extends HookConsumerWidget {
   final double size;
   final GridData gridData;
   final int column;
   final int row;
-  final int toolIndex;
   final int visibleTitbitLayer;
+  final void Function(int column, int row, int dir)? onClick;
 
   const _SquareWidget({
     super.key,
@@ -263,8 +264,8 @@ class _SquareWidget extends HookConsumerWidget {
     required this.gridData,
     required this.column,
     required this.row,
-    required this.toolIndex,
     required this.visibleTitbitLayer,
+    this.onClick,
   });
 
   @override
@@ -285,8 +286,8 @@ class _SquareWidget extends HookConsumerWidget {
       );
     }
 
-    int getDirection(Offset offset) {
-      double angle = math.atan2(offset.dy, offset.dx);
+    int getDir(Offset offset) {
+      final angle = math.atan2(offset.dy, offset.dx);
       if (angle >= -0.75 * math.pi && angle < -0.25 * math.pi) {
         return 0;
       } else if (angle >= -0.25 * math.pi && angle < 0.25 * math.pi) {
@@ -300,54 +301,15 @@ class _SquareWidget extends HookConsumerWidget {
 
     return GestureDetector(
       onTapUp: (details) {
-        if (toolIndex < _minWallToolIndex) {
-          // 床
-          final newLandType = LandType.values[toolIndex];
-          if (tile.landType != newLandType) {
-            final newTileData = tile.copyWith(landType: newLandType);
-            final newGridData = gridData.copyWithTile(column, row, newTileData);
-            _gridDataStreamController.sink.add(newGridData);
-          }
-        } else if (toolIndex < _minMarkToolIndex) {
-          // 壁
+        if (onClick != null) {
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
+          final int dir;
           if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
-            final dir = getDirection(offset);
-            final newWallType = WallType.values[toolIndex - _minWallToolIndex];
-            if (newWallType != tile.getWallType(dir)) {
-              final newGridData = gridData.copyWithWallTypeBothSides(column, row, dir, newWallType);
-              _gridDataStreamController.sink.add(newGridData);
-            }
-          }
-        } else if (toolIndex < _minTitbitToolIndex) {
-          // マーク
-          final newMark = Mark.values[toolIndex - _minMarkToolIndex];
-          final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
-          if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
-            // 壁マーク
-            final dir = getDirection(offset);
-            if (newMark != tile.getWallMark(dir)) {
-              final newGridData =
-                  gridData.copyWithTile(column, row, tile.copyWithWallMark(dir, newMark));
-              _gridDataStreamController.sink.add(newGridData);
-            }
+            dir = getDir(offset);
           } else {
-            // 床マーク
-            if (newMark != tile.landMark) {
-              final newGridData =
-                  gridData.copyWithTile(column, row, tile.copyWith(landMark: newMark));
-              _gridDataStreamController.sink.add(newGridData);
-            }
+            dir = -1;
           }
-        } else {
-          // titbit
-          final index = (toolIndex - _minTitbitToolIndex) ~/ 100;
-          final newTitbit = Titbit.values[(toolIndex - _minTitbitToolIndex) % 100];
-          if (newTitbit != tile.getTitbit(index)) {
-            final newGridData =
-                gridData.copyWithTile(column, row, tile.copyWithTitbit(index, newTitbit));
-            _gridDataStreamController.sink.add(newGridData);
-          }
+          onClick!(column, row, dir);
         }
       },
       child: Stack(
@@ -365,11 +327,14 @@ class _SquareWidget extends HookConsumerWidget {
           for (int dir = 0; dir < 4; ++dir)
             _WallSquare(wallType: tile.getWallType(dir), dir: dir, size: size),
           // 床マーク
-          if (tile.landMark != Mark.none)
-            _MarkSquare(mark: tile.landMark, size: size, iconSize: markSize),
+          if (markSize >= 14.0)
+            if (tile.landMark != Mark.none)
+              _MarkSquare(mark: tile.landMark, size: size, iconSize: markSize),
           // 壁マーク
-          for (int dir = 0; dir < 4; ++dir)
-            if (tile.getWallMark(dir) != Mark.none) buildWallMark(tile.getWallMark(dir), dir, size),
+          if (markSize >= 14.0)
+            for (int dir = 0; dir < 4; ++dir)
+              if (tile.getWallMark(dir) != Mark.none)
+                buildWallMark(tile.getWallMark(dir), dir, size),
         ],
       ),
     );
@@ -401,8 +366,58 @@ class _GridWidget extends HookConsumerWidget {
           gridData: gridData,
           column: vicinity.column,
           row: vicinity.row,
-          toolIndex: toolIndex,
           visibleTitbitLayer: visibleTitbitLayer,
+          onClick: (int column, int row, int dir) {
+            final tile = gridData.getTile(column, row);
+            if (toolIndex < _minWallToolIndex) {
+              // 床
+              final newLandType = LandType.values[toolIndex];
+              if (tile.landType != newLandType) {
+                final newTileData = tile.copyWith(landType: newLandType);
+                final newGridData = gridData.copyWithTile(column, row, newTileData);
+                _gridDataStreamController.sink.add(newGridData);
+              }
+            } else if (toolIndex < _minMarkToolIndex) {
+              // 壁
+              if (dir >= 0) {
+                // offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
+                final newWallType = WallType.values[toolIndex - _minWallToolIndex];
+                if (newWallType != tile.getWallType(dir)) {
+                  final newGridData =
+                      gridData.copyWithWallTypeBothSides(column, row, dir, newWallType);
+                  _gridDataStreamController.sink.add(newGridData);
+                }
+              }
+            } else if (toolIndex < _minTitbitToolIndex) {
+              // マーク
+              final newMark = Mark.values[toolIndex - _minMarkToolIndex];
+              if (dir >= 0) {
+                //offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
+                // 壁マーク
+                if (newMark != tile.getWallMark(dir)) {
+                  final newGridData =
+                      gridData.copyWithTile(column, row, tile.copyWithWallMark(dir, newMark));
+                  _gridDataStreamController.sink.add(newGridData);
+                }
+              } else {
+                // 床マーク
+                if (newMark != tile.landMark) {
+                  final newGridData =
+                      gridData.copyWithTile(column, row, tile.copyWith(landMark: newMark));
+                  _gridDataStreamController.sink.add(newGridData);
+                }
+              }
+            } else {
+              // titbit
+              final index = (toolIndex - _minTitbitToolIndex) ~/ 100;
+              final newTitbit = Titbit.values[(toolIndex - _minTitbitToolIndex) % 100];
+              if (newTitbit != tile.getTitbit(index)) {
+                final newGridData =
+                    gridData.copyWithTile(column, row, tile.copyWithTitbit(index, newTitbit));
+                _gridDataStreamController.sink.add(newGridData);
+              }
+            }
+          },
         );
       },
       columnCount: gridData.columnCount,
