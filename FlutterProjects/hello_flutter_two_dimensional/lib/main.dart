@@ -17,16 +17,6 @@ import 'scope_functions.dart';
 const _squareDimension = 100.0;
 const _scales = [0.25, 0.3535534, 0.5];
 
-Widget _buildLandSquare(LandType landType, double size) {
-  final builders = <Widget Function(double size)>[
-    (size) => Image.asset('assets/images/floor.png', width: size, height: size),
-    (size) => Icon(Icons.broken_image, size: size),
-    (size) => Icon(Icons.water, size: size),
-    (size) => Icon(Icons.air, size: size),
-  ];
-  return builders[landType.index](size);
-}
-
 final _logger = Logger('hello_flutter_two_dimensional');
 
 class _InitData {
@@ -138,6 +128,28 @@ class MyApp extends StatelessWidget {
   }
 }
 
+///
+class _LandSquare extends StatelessWidget {
+  static const _icons = [
+    (Icons.square_outlined, Colors.grey),
+    (Icons.broken_image, Colors.black),
+    (Icons.water, Colors.black),
+    (Icons.air, Colors.black),
+  ];
+
+  final LandType landType;
+  final double size;
+
+  const _LandSquare({super.key, required this.landType, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = _icons[landType.index];
+    return Icon(icon.$1, color: icon.$2, size: size);
+  }
+}
+
+///
 class _WallSquare extends StatelessWidget {
   static const _assets = [
     'assets/images/path.png',
@@ -288,7 +300,6 @@ class _SquareWidget extends HookConsumerWidget {
 
     return GestureDetector(
       onTapUp: (details) {
-        _logger.fine('tap up: ${details.localPosition}');
         if (toolIndex < _minWallToolIndex) {
           // 床
           final newLandType = LandType.values[toolIndex];
@@ -342,11 +353,14 @@ class _SquareWidget extends HookConsumerWidget {
       child: Stack(
         children: [
           // 床
-          _buildLandSquare(tile.landType, size),
+          if (tile.landType == LandType.floor)
+            SizedBox.square(dimension: size)
+          else
+            _LandSquare(landType: tile.landType, size: size),
           // titbits
-          for (int i = 0; i < TileData.titbitCount; ++i)
-            if (i == visibleTitbitLayer && tile.getTitbit(i) != Titbit.none)
-              _TitbitSquare(titbit: tile.getTitbit(i), index: i, size: size),
+          if (visibleTitbitLayer >= 0 && tile.getTitbit(visibleTitbitLayer) != Titbit.none)
+            _TitbitSquare(
+                titbit: tile.getTitbit(visibleTitbitLayer), index: visibleTitbitLayer, size: size),
           // 北、東、南、西
           for (int dir = 0; dir < 4; ++dir)
             _WallSquare(wallType: tile.getWallType(dir), dir: dir, size: size),
@@ -401,7 +415,7 @@ class _GridWidget extends HookConsumerWidget {
       rowBuilder: (int row) {
         return TableSpan(
           extent: FixedTableSpanExtent(size),
-          backgroundDecoration: const TableSpanDecoration(color: Colors.black38),
+          backgroundDecoration: const TableSpanDecoration(color: Colors.white70),
         );
       },
     );
@@ -489,7 +503,7 @@ class EditToolWidget extends HookConsumerWidget {
                   for (int i = 0; i < LandType.values.length; ++i)
                     DropdownMenuItem(
                       value: i,
-                      child: _buildLandSquare(LandType.values[i], 24),
+                      child: _LandSquare(landType: LandType.values[i], size: 24),
                     ),
                 ],
                 onChanged: (value) {
