@@ -189,6 +189,8 @@ class SquareWidget extends HookConsumerWidget {
   final GridData gridData;
   final int column;
   final int row;
+  final int toolIndex;
+  final int visibleTitbitLayer;
 
   const SquareWidget({
     super.key,
@@ -196,14 +198,13 @@ class SquareWidget extends HookConsumerWidget {
     required this.gridData,
     required this.column,
     required this.row,
+    required this.toolIndex,
+    required this.visibleTitbitLayer,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final toolIndex = ref.watch(_editToolIndexProvider);
     final tile = gridData.getTile(column, row);
-    final visibleTitbitLayer = ref.watch(_visibleTitbitLayerProvider);
-
     final markSize = math.min(size * 0.4, 20.0);
 
     Widget buildWallMark(Mark markType, int dir, double size) {
@@ -320,6 +321,8 @@ class MapWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scaleIndex = ref.watch(_scaleIndexProvider);
     final size = _squareDimension * _scales[scaleIndex];
+    final toolIndex = ref.watch(_editToolIndexProvider);
+    final visibleTitbitLayer = ref.watch(_visibleTitbitLayerProvider);
 
     return TableView.builder(
       diagonalDragBehavior: DiagonalDragBehavior.free,
@@ -329,6 +332,8 @@ class MapWidget extends HookConsumerWidget {
           gridData: gridData,
           column: vicinity.column,
           row: vicinity.row,
+          toolIndex: toolIndex,
+          visibleTitbitLayer: visibleTitbitLayer,
         );
       },
       columnCount: gridData.columnCount,
