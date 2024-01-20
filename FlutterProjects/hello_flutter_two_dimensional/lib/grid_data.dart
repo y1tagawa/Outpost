@@ -12,25 +12,163 @@ const _currentVersion = 1;
 /// 単位図形形状
 enum TileShape {
   square,
-  hexagon,
+  hexagon;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory TileShape.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return TileShape.values[index];
+  }
+//</editor-fold>
 }
 
 /// 地形タイプ
-enum LandType { floor, rock, water, air }
+enum LandType {
+  floor,
+  rock,
+  water,
+  air;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory LandType.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return LandType.values[index];
+  }
+//</editor-fold>
+}
 
 /// 地形特徴
 /// 隣に接続可能な特徴や地形があると接続する。
-enum LandFeature { none, river, road, castle, bridge, watergate, gate }
+enum LandFeature {
+  none,
+  river,
+  road,
+  castle,
+  bridge,
+  watergate,
+  gate;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory LandFeature.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return LandFeature.values[index];
+  }
+//</editor-fold>
+}
 
 /// 壁タイプ
-enum WallType { path, wall, door }
+enum WallType {
+  path,
+  wall,
+  door;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory WallType.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return WallType.values[index];
+  }
+//</editor-fold>
+}
+
+extension _WallTypeListHelper on List<WallType> {
+  dynamic toMap() {
+    return List.generate(length, (index) => this[index].toValue());
+  }
+
+  static List<WallType> fromValue(dynamic value) {
+    final list = value as List<dynamic>;
+    return List.generate(list.length, (index) => WallType.fromValue(list[index]));
+  }
+}
 
 /// マーク
-enum Mark { none, mark1, mark2, mark3, mark4, mark5, mark6, mark7, mark8, mark9 }
+enum Mark {
+  none,
+  mark1,
+  mark2,
+  mark3,
+  mark4,
+  mark5,
+  mark6,
+  mark7,
+  mark8,
+  mark9;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory Mark.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return Mark.values[index];
+  }
+//</editor-fold>
+}
+
+extension _MarkListHelper on List<Mark> {
+  dynamic toMap() {
+    return List.generate(length, (index) => this[index].toValue());
+  }
+
+  static List<Mark> fromValue(dynamic value) {
+    final list = value as List<dynamic>;
+    return List.generate(list.length, (index) => Mark.fromValue(list[index]));
+  }
+}
 
 /// 小属性値
 /// タイルごとに0~3の数値に対応する属性値を持たせることができる。遭遇率とかダークゾーンとか。
-enum Titbit { none, v1, v2, v3 }
+enum Titbit {
+  none,
+  v1,
+  v2,
+  v3;
+
+//<editor-fold desc="Data Methods">
+  dynamic toValue() {
+    return index;
+  }
+
+  factory Titbit.fromValue(dynamic value) {
+    final index = value as int;
+    assert(index >= 0 && index < values.length);
+    return Titbit.values[index];
+  }
+//</editor-fold>
+}
+
+extension _TitbitListHelper on List<Titbit> {
+  dynamic toMap() {
+    return List.generate(length, (index) => this[index].toValue());
+  }
+
+  static List<Titbit> fromValue(dynamic value) {
+    final list = value as List<dynamic>;
+    return List.generate(list.length, (index) => Titbit.fromValue(list[index]));
+  }
+}
 
 /// 単位図形データクラス
 @immutable
@@ -105,7 +243,7 @@ class TileData {
   }
 
   /// 小属性値[`index`]を変更したコピー
-  TileData setTitbit(int index, Titbit newValue) {
+  TileData copyWithTitbit(int index, Titbit newValue) {
     assert(index >= 0 && index < titbitCount);
     final newTitbits = [..._titbits];
     newTitbits[index] = newValue;
@@ -136,7 +274,7 @@ class TileData {
 
   @override
   String toString() {
-    return 'UnitData{'
+    return 'TileData{'
         ' landType: $landType,'
         ' landFeature: $landFeature,'
         ' _wallTypes: $_wallTypes,'
@@ -157,36 +295,52 @@ class TileData {
     return TileData(
       landType: landType ?? this.landType,
       landFeature: landFeature ?? this.landFeature,
-      wallTypes: wallTypes ?? this._wallTypes,
+      wallTypes: wallTypes ?? _wallTypes,
       landMark: landMark ?? this.landMark,
-      wallMarks: wallMarks ?? this._wallMarks,
-      titbits: titbits ?? this._titbits,
+      wallMarks: wallMarks ?? _wallMarks,
+      titbits: titbits ?? _titbits,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'landType': this.landType,
-      'landFeature': this.landFeature,
-      'wallTypes': this._wallTypes,
-      'landMark': this.landMark,
-      'wallMarks': this._wallMarks,
-      'titbits': this._titbits,
+      'landType': landType.toValue(),
+      'landFeature': landFeature.toValue(),
+      'wallTypes': _wallTypes.toMap(),
+      'landMark': landMark.toValue(),
+      'wallMarks': _wallMarks.toMap(),
+      'titbits': _titbits.toMap(),
     };
   }
 
   factory TileData.fromMap(Map<String, dynamic> map) {
+    print(map);
     return TileData(
-      landType: map['landType'] as LandType,
-      landFeature: map['landFeatures'] as LandFeature,
-      wallTypes: map['wallTypes'] as List<WallType>,
-      landMark: map['landMark'] as Mark,
-      wallMarks: map['wallMarks'] as List<Mark>,
-      titbits: map['titbits'] as List<Titbit>,
+      landType: LandType.fromValue(map['landType']),
+      landFeature: LandFeature.fromValue(map['landFeature']),
+      wallTypes: _WallTypeListHelper.fromValue(map['wallTypes']),
+      landMark: Mark.fromValue(map['landMark']),
+      wallMarks: _MarkListHelper.fromValue(map['wallMarks']),
+      titbits: _TitbitListHelper.fromValue(map['titbits']),
     );
   }
 
 //</editor-fold>
+}
+
+extension _TileListHelper on List<TileData> {
+  dynamic toMap() {
+    return List.generate(length, (index) => this[index].toMap());
+  }
+
+  static List<TileData> fromValue(dynamic value) {
+    final list = value as List<dynamic>;
+    print(list);
+    return List.generate(
+      list.length,
+      (index) => TileData.fromMap(list[index] as Map<String, dynamic>),
+    );
+  }
 }
 
 /// 格子図データクラス
@@ -316,27 +470,27 @@ class GridData {
       tileShape: tileShape ?? this.tileShape,
       columnCount: columnCount ?? this.columnCount,
       rowCount: rowCount ?? this.rowCount,
-      tiles: tiles ?? this._tiles,
+      tiles: tiles ?? _tiles,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'version': this.version,
-      'tileShale': this.tileShape,
-      'columnCount': this.columnCount,
-      'rowCount': this.rowCount,
-      'tiles': this._tiles,
+      'version': version,
+      'tileShape': tileShape.toValue(),
+      'columnCount': columnCount,
+      'rowCount': rowCount,
+      'tiles': _tiles.toMap(),
     };
   }
 
   factory GridData.fromMap(Map<String, dynamic> map) {
     return GridData(
       version: map['version'] as int,
-      tileShape: map['tileShale'] as TileShape,
+      tileShape: TileShape.fromValue(map['tileShape']),
       columnCount: map['columnCount'] as int,
       rowCount: map['rowCount'] as int,
-      tiles: map['tiles'] as List<TileData>,
+      tiles: _TileListHelper.fromValue(map['tiles']),
     );
   }
 

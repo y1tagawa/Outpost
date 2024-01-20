@@ -345,7 +345,7 @@ class _SquareWidget extends HookConsumerWidget {
           final newTitbit = Titbit.values[(toolIndex - _minTitbitToolIndex) % 100];
           if (newTitbit != tile.getTitbit(index)) {
             final newGridData =
-                gridData.copyWithTile(column, row, tile.setTitbit(index, newTitbit));
+                gridData.copyWithTile(column, row, tile.copyWithTitbit(index, newTitbit));
             _gridDataStreamController.sink.add(newGridData);
           }
         }
@@ -458,12 +458,21 @@ class EditToolWidget extends HookConsumerWidget {
               tooltip: 'new',
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () async {
+                final json = await rootBundle.loadString('assets/test.json');
+                final map = jsonDecode(json) as Map<String, Object?>;
+                final data = GridData.fromMap(map);
+                print(data);
+                _gridDataStreamController.sink.add(data);
+              },
               icon: const Icon(Icons.file_open_outlined),
               tooltip: 'open',
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                final map = gridData.toMap();
+                print(jsonEncode(map));
+              },
               icon: const Icon(Icons.task_outlined),
               tooltip: 'save',
             ),
