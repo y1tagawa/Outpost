@@ -404,7 +404,7 @@ class _GridWidget extends HookConsumerWidget {
                 final newWallType = WallType.values[toolIndex - _minWallToolIndex];
                 if (newWallType != tile.getWallType(dir)) {
                   final newGridData =
-                      gridData.copyWithWallTypeBothSides(column, row, dir, newWallType);
+                      gridData.copyWithWallType(column, row, dir, newWallType, bothSides: true);
                   _gridDataStreamController.sink.add(newGridData);
                 }
               }

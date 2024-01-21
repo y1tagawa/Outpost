@@ -15,11 +15,11 @@ enum TileShape {
   hexagon;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory TileShape.fromValue(dynamic value) {
+  factory TileShape.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return TileShape.values[index];
@@ -35,11 +35,11 @@ enum LandType {
   air;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory LandType.fromValue(dynamic value) {
+  factory LandType.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return LandType.values[index];
@@ -59,11 +59,11 @@ enum LandFeature {
   gate;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory LandFeature.fromValue(dynamic value) {
+  factory LandFeature.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return LandFeature.values[index];
@@ -78,11 +78,11 @@ enum WallType {
   door;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory WallType.fromValue(dynamic value) {
+  factory WallType.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return WallType.values[index];
@@ -91,13 +91,13 @@ enum WallType {
 }
 
 extension _WallTypeListHelper on List<WallType> {
-  dynamic toMap() {
-    return List.generate(length, (index) => this[index].toValue());
+  dynamic toEncodable() {
+    return List.generate(length, (index) => this[index].toEncodable());
   }
 
-  static List<WallType> fromValue(dynamic value) {
+  static List<WallType> fromEncodable(dynamic value) {
     final list = value as List<dynamic>;
-    return List.generate(list.length, (index) => WallType.fromValue(list[index]));
+    return List.generate(list.length, (index) => WallType.fromEncodable(list[index]));
   }
 }
 
@@ -115,11 +115,11 @@ enum Mark {
   mark9;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory Mark.fromValue(dynamic value) {
+  factory Mark.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return Mark.values[index];
@@ -128,13 +128,13 @@ enum Mark {
 }
 
 extension _MarkListHelper on List<Mark> {
-  dynamic toMap() {
-    return List.generate(length, (index) => this[index].toValue());
+  dynamic toEncodable() {
+    return List.generate(length, (index) => this[index].toEncodable());
   }
 
-  static List<Mark> fromValue(dynamic value) {
+  static List<Mark> fromEncodable(dynamic value) {
     final list = value as List<dynamic>;
-    return List.generate(list.length, (index) => Mark.fromValue(list[index]));
+    return List.generate(list.length, (index) => Mark.fromEncodable(list[index]));
   }
 }
 
@@ -147,11 +147,11 @@ enum Titbit {
   v3;
 
 //<editor-fold desc="Data Methods">
-  dynamic toValue() {
+  dynamic toEncodable() {
     return index;
   }
 
-  factory Titbit.fromValue(dynamic value) {
+  factory Titbit.fromEncodable(dynamic value) {
     final index = value as int;
     assert(index >= 0 && index < values.length);
     return Titbit.values[index];
@@ -160,13 +160,13 @@ enum Titbit {
 }
 
 extension _TitbitListHelper on List<Titbit> {
-  dynamic toMap() {
-    return List.generate(length, (index) => this[index].toValue());
+  dynamic toEncodable() {
+    return List.generate(length, (index) => this[index].toEncodable());
   }
 
-  static List<Titbit> fromValue(dynamic value) {
+  static List<Titbit> fromEncodable(dynamic value) {
     final list = value as List<dynamic>;
-    return List.generate(list.length, (index) => Titbit.fromValue(list[index]));
+    return List.generate(list.length, (index) => Titbit.fromEncodable(list[index]));
   }
 }
 
@@ -304,23 +304,23 @@ class TileData {
 
   Map<String, dynamic> toMap() {
     return {
-      'landType': landType.toValue(),
-      'landFeature': landFeature.toValue(),
-      'wallTypes': _wallTypes.toMap(),
-      'landMark': landMark.toValue(),
-      'wallMarks': _wallMarks.toMap(),
-      'titbits': _titbits.toMap(),
+      'landType': landType.toEncodable(),
+      'landFeature': landFeature.toEncodable(),
+      'wallTypes': _wallTypes.toEncodable(),
+      'landMark': landMark.toEncodable(),
+      'wallMarks': _wallMarks.toEncodable(),
+      'titbits': _titbits.toEncodable(),
     };
   }
 
   factory TileData.fromMap(Map<String, dynamic> map) {
     return TileData(
-      landType: LandType.fromValue(map['landType']),
-      landFeature: LandFeature.fromValue(map['landFeature']),
-      wallTypes: _WallTypeListHelper.fromValue(map['wallTypes']),
-      landMark: Mark.fromValue(map['landMark']),
-      wallMarks: _MarkListHelper.fromValue(map['wallMarks']),
-      titbits: _TitbitListHelper.fromValue(map['titbits']),
+      landType: LandType.fromEncodable(map['landType']),
+      landFeature: LandFeature.fromEncodable(map['landFeature']),
+      wallTypes: _WallTypeListHelper.fromEncodable(map['wallTypes']),
+      landMark: Mark.fromEncodable(map['landMark']),
+      wallMarks: _MarkListHelper.fromEncodable(map['wallMarks']),
+      titbits: _TitbitListHelper.fromEncodable(map['titbits']),
     );
   }
 
@@ -332,7 +332,7 @@ extension _TileListHelper on List<TileData> {
     return List.generate(length, (index) => this[index].toMap());
   }
 
-  static List<TileData> fromValue(dynamic value) {
+  static List<TileData> fromMap(dynamic value) {
     final list = value as List<dynamic>;
     return List.generate(
       list.length,
@@ -382,7 +382,13 @@ class GridData {
   }
 
   /// 単位図形[`row`][`column`]の壁タイプ[`dir`]およびその背面を変更したコピー
-  GridData copyWithWallTypeBothSides(int column, int row, int dir, WallType newWallType) {
+  GridData copyWithWallType(
+    int column,
+    int row,
+    int dir,
+    WallType newWallType, {
+    required bool bothSides,
+  }) {
     // todo:6角形
     assert(tileShape == TileShape.square);
 
@@ -392,28 +398,28 @@ class GridData {
     switch (dir) {
       case 0: // 北
         newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(0, newWallType);
-        if (row > 0) {
+        if (bothSides && row > 0) {
           newTiles[(row - 1) * rowCount + column] =
               getTile(column, row - 1).copyWithWallType(2, newWallType);
         }
         break;
       case 1: // 東
         newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(1, newWallType);
-        if (column < columnCount - 1) {
+        if (bothSides && column < columnCount - 1) {
           newTiles[row * rowCount + (column + 1)] =
               getTile(column + 1, row).copyWithWallType(3, newWallType);
         }
         break;
       case 2: // 南
         newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(2, newWallType);
-        if (row < rowCount - 1) {
+        if (bothSides && row < rowCount - 1) {
           newTiles[(row + 1) * rowCount + column] =
               getTile(column, row + 1).copyWithWallType(0, newWallType);
         }
         break;
       default: // 西
         newTiles[row * rowCount + column] = getTile(column, row).copyWithWallType(3, newWallType);
-        if (column > 0) {
+        if (bothSides && column > 0) {
           newTiles[row * rowCount + (column - 1)] =
               getTile(column - 1, row).copyWithWallType(1, newWallType);
         }
@@ -475,7 +481,7 @@ class GridData {
   Map<String, dynamic> toMap() {
     return {
       'version': version,
-      'tileShape': tileShape.toValue(),
+      'tileShape': tileShape.toEncodable(),
       'columnCount': columnCount,
       'rowCount': rowCount,
       'tiles': _tiles.toMap(),
@@ -485,10 +491,10 @@ class GridData {
   factory GridData.fromMap(Map<String, dynamic> map) {
     return GridData(
       version: map['version'] as int,
-      tileShape: TileShape.fromValue(map['tileShape']),
+      tileShape: TileShape.fromEncodable(map['tileShape']),
       columnCount: map['columnCount'] as int,
       rowCount: map['rowCount'] as int,
-      tiles: _TileListHelper.fromValue(map['tiles']),
+      tiles: _TileListHelper.fromMap(map['tiles']),
     );
   }
 
