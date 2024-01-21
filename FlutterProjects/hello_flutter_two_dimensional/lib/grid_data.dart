@@ -314,7 +314,6 @@ class TileData {
   }
 
   factory TileData.fromMap(Map<String, dynamic> map) {
-    print(map);
     return TileData(
       landType: LandType.fromValue(map['landType']),
       landFeature: LandFeature.fromValue(map['landFeature']),
@@ -335,7 +334,6 @@ extension _TileListHelper on List<TileData> {
 
   static List<TileData> fromValue(dynamic value) {
     final list = value as List<dynamic>;
-    print(list);
     return List.generate(
       list.length,
       (index) => TileData.fromMap(list[index] as Map<String, dynamic>),

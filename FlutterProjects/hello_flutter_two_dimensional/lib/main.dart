@@ -493,11 +493,19 @@ class EditToolWidget extends HookConsumerWidget {
             ),
             IconButton(
               onPressed: () async {
-                final json = await rootBundle.loadString('assets/test.json');
-                final map = jsonDecode(json) as Map<String, Object?>;
-                final data = GridData.fromMap(map);
-                print(data);
-                _gridDataStreamController.sink.add(data);
+                final pickerResult = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['json'],
+                );
+                if (pickerResult != null) {
+                  final filePath = pickerResult.paths[0]!;
+                  final file = File(filePath);
+                  _logger.fine('loading $filePath');
+                  final json = await file.readAsString();
+                  final map = jsonDecode(json) as Map<String, Object?>;
+                  final data = GridData.fromMap(map);
+                  _gridDataStreamController.sink.add(data);
+                }
               },
               icon: const Icon(Icons.file_open_outlined),
               tooltip: 'open',
