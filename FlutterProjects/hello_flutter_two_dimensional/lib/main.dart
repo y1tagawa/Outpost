@@ -181,7 +181,7 @@ class _WallSquare extends StatelessWidget {
   }
 }
 
-/// 丸数字アイコン
+/// 丸数字アイコン(床)
 class _MarkSquare extends StatelessWidget {
   static const _assets = [
     'assets/images/mark_none.png',
@@ -218,6 +218,36 @@ class _MarkSquare extends StatelessWidget {
   }
 }
 
+/// 丸数字アイコン(壁)
+class _WallMarkSquare extends StatelessWidget {
+  final Mark mark;
+  final int dir;
+  final double size;
+  final double iconSize;
+
+  const _WallMarkSquare({
+    super.key,
+    required this.mark,
+    required this.dir,
+    required this.size,
+    required this.iconSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final offsets = [
+      Offset(0, size * -0.25),
+      Offset(size * 0.25, 0),
+      Offset(0, size * 0.25),
+      Offset(size * -0.25, 0),
+    ];
+    return Transform.translate(
+      offset: offsets[dir],
+      child: _MarkSquare(mark: mark, size: size, iconSize: iconSize),
+    );
+  }
+}
+
 /// 正方形小属性値アイコン
 class _TitbitSquare extends StatelessWidget {
   static const _alphas = [0x00, 0x30, 0x60, 0xA0];
@@ -247,15 +277,17 @@ class _TitbitSquare extends StatelessWidget {
   }
 }
 
-/// 正方形単位図形ウィジェット
-///
-/// 正方形単位図形を描画する。クリックされたら編集ツールに合わせて描画する。
+/// 正方形単位図形
 class _SquareWidget extends HookConsumerWidget {
   final double size;
   final GridData gridData;
   final int column;
   final int row;
+
+  /// 表示中のtitbitレイヤー。(-1:非表示)
   final int visibleTitbitLayer;
+
+  /// クリックされた位置`dir`(-1:中央 0~3:北東南西)も含め通知する。
   final void Function(int column, int row, int dir)? onClick;
 
   const _SquareWidget({
@@ -272,19 +304,6 @@ class _SquareWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tile = gridData.getTile(column, row);
     final markSize = math.min(size * 0.4, 20.0);
-
-    Widget buildWallMark(Mark mark, int dir, double size) {
-      final offsets = [
-        Offset(0, size * -0.25),
-        Offset(size * 0.25, 0),
-        Offset(0, size * 0.25),
-        Offset(size * -0.25, 0),
-      ];
-      return Transform.translate(
-        offset: offsets[dir],
-        child: _MarkSquare(mark: mark, size: size, iconSize: markSize),
-      );
-    }
 
     int getDir(Offset offset) {
       final angle = math.atan2(offset.dy, offset.dx);
@@ -304,10 +323,10 @@ class _SquareWidget extends HookConsumerWidget {
         if (onClick != null) {
           final offset = details.localPosition - Offset(size * 0.5, size * 0.5);
           final int dir;
-          if (offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
-            dir = getDir(offset);
+          if (offset.dx.abs() < size * 0.25 && offset.dy.abs() < size * 0.25) {
+            dir = -1; // 中央
           } else {
-            dir = -1;
+            dir = getDir(offset); // 四方の何れか
           }
           onClick!(column, row, dir);
         }
@@ -334,15 +353,15 @@ class _SquareWidget extends HookConsumerWidget {
           if (markSize >= 14.0)
             for (int dir = 0; dir < 4; ++dir)
               if (tile.getWallMark(dir) != Mark.none)
-                buildWallMark(tile.getWallMark(dir), dir, size),
+                _WallMarkSquare(
+                    mark: tile.getWallMark(dir), dir: dir, size: size, iconSize: markSize),
         ],
       ),
     );
   }
 }
 
-/// マップウィジェット
-///
+/// 格子図編集
 class _GridWidget extends HookConsumerWidget {
   final GridData gridData;
 
@@ -380,7 +399,6 @@ class _GridWidget extends HookConsumerWidget {
             } else if (toolIndex < _minMarkToolIndex) {
               // 壁
               if (dir >= 0) {
-                // offset.dx.abs() >= size * 0.25 || offset.dy.abs() >= size * 0.25) {
                 final newWallType = WallType.values[toolIndex - _minWallToolIndex];
                 if (newWallType != tile.getWallType(dir)) {
                   final newGridData =
@@ -437,8 +455,7 @@ class _GridWidget extends HookConsumerWidget {
   }
 }
 
-/// 編集ツールウィジェット
-///
+/// 編集ツール
 class EditToolWidget extends HookConsumerWidget {
   final GridData gridData;
 
