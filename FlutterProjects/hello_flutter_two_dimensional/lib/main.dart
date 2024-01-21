@@ -2,8 +2,10 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -501,11 +503,18 @@ class EditToolWidget extends HookConsumerWidget {
               tooltip: 'open',
             ),
             IconButton(
-              onPressed: () {
-                final map = gridData.toMap();
-                //final json = const JsonEncoder.withIndent('  ').convert(map);
-                final json = jsonEncode(map);
-                print(json);
+              onPressed: () async {
+                final filePath = await FilePicker.platform.saveFile(
+                  type: FileType.custom,
+                  allowedExtensions: ['json'],
+                );
+                if (filePath != null) {
+                  final map = gridData.toMap();
+                  //final json = const JsonEncoder.withIndent('  ').convert(map);
+                  final json = jsonEncode(map);
+                  final file = File(filePath);
+                  file.writeAsString(json);
+                }
               },
               icon: const Icon(Icons.task_outlined),
               tooltip: 'save',
