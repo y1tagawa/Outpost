@@ -28,7 +28,6 @@ flutter:
 
   assets:
     - assets/init_data.json
-    - assets/test.json
     - assets/images/floor.png
     - assets/images/rock.png
     - assets/images/wall.png
