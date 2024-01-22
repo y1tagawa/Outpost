@@ -112,7 +112,18 @@ enum Mark {
   mark6,
   mark7,
   mark8,
-  mark9;
+  mark9,
+  mark10,
+  mark11,
+  mark12,
+  mark13,
+  mark14,
+  mark15,
+  mark16,
+  mark17,
+  mark18,
+  mark19,
+  mark20;
 
 //<editor-fold desc="Data Methods">
   dynamic toEncodable() {

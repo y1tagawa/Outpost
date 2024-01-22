@@ -185,28 +185,15 @@ class _WallSquare extends StatelessWidget {
 
 /// 丸数字アイコン(床)
 class _MarkSquare extends StatelessWidget {
-  static const _assets = [
-    'assets/images/mark_none.png',
-    'assets/images/mark1.png',
-    'assets/images/mark2.png',
-    'assets/images/mark3.png',
-    'assets/images/mark4.png',
-    'assets/images/mark5.png',
-    'assets/images/mark6.png',
-    'assets/images/mark7.png',
-    'assets/images/mark8.png',
-    'assets/images/mark9.png',
-  ];
-
   final Mark mark;
   final double size;
-  final double iconSize;
+  final double fontSize;
 
   const _MarkSquare({
     super.key,
     required this.mark,
     required this.size,
-    required this.iconSize,
+    required this.fontSize,
   });
 
   @override
@@ -214,7 +201,10 @@ class _MarkSquare extends StatelessWidget {
     return SizedBox.square(
       dimension: size,
       child: Center(
-        child: Image.asset(_assets[mark.index], width: iconSize, height: iconSize),
+        child: Text(
+          mark.index == 0 ? '\u2205' : String.fromCharCode(0x245F + mark.index),
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(fontSize: fontSize),
+        ),
       ),
     );
   }
@@ -225,14 +215,14 @@ class _WallMarkSquare extends StatelessWidget {
   final Mark mark;
   final int dir;
   final double size;
-  final double iconSize;
+  final double fontSize;
 
   const _WallMarkSquare({
     super.key,
     required this.mark,
     required this.dir,
     required this.size,
-    required this.iconSize,
+    required this.fontSize,
   });
 
   @override
@@ -245,7 +235,7 @@ class _WallMarkSquare extends StatelessWidget {
     ];
     return Transform.translate(
       offset: offsets[dir],
-      child: _MarkSquare(mark: mark, size: size, iconSize: iconSize),
+      child: _MarkSquare(mark: mark, size: size, fontSize: fontSize),
     );
   }
 }
@@ -305,7 +295,7 @@ class _SquareWidget extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tile = gridData.getTile(column, row);
-    final markSize = math.min(size * 0.4, 20.0);
+    final fontSize = math.min(size * 0.6, 20.0);
 
     int getDir(Offset offset) {
       final angle = math.atan2(offset.dy, offset.dx);
@@ -348,15 +338,15 @@ class _SquareWidget extends HookConsumerWidget {
           for (int dir = 0; dir < 4; ++dir)
             _WallSquare(wallType: tile.getWallType(dir), dir: dir, size: size),
           // 床マーク
-          if (markSize >= 14.0)
+          if (fontSize >= 14.0)
             if (tile.landMark != Mark.none)
-              _MarkSquare(mark: tile.landMark, size: size, iconSize: markSize),
+              _MarkSquare(mark: tile.landMark, size: size, fontSize: fontSize),
           // 壁マーク
-          if (markSize >= 14.0)
+          if (fontSize >= 14.0)
             for (int dir = 0; dir < 4; ++dir)
               if (tile.getWallMark(dir) != Mark.none)
                 _WallMarkSquare(
-                    mark: tile.getWallMark(dir), dir: dir, size: size, iconSize: markSize),
+                    mark: tile.getWallMark(dir), dir: dir, size: size, fontSize: fontSize),
         ],
       ),
     );
@@ -605,7 +595,7 @@ class EditToolWidget extends HookConsumerWidget {
                   for (int i = 0; i < Mark.values.length; ++i)
                     DropdownMenuItem(
                       value: i + _minMarkToolIndex,
-                      child: _MarkSquare(mark: Mark.values[i], size: 24, iconSize: 20),
+                      child: _MarkSquare(mark: Mark.values[i], size: 24, fontSize: 24),
                     ),
                 ],
                 onChanged: (value) {
