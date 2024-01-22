@@ -75,7 +75,8 @@ enum LandFeature {
 enum WallType {
   path,
   wall,
-  door;
+  door,
+  lockedDoor;
 
 //<editor-fold desc="Data Methods">
   dynamic toEncodable() {
@@ -150,12 +151,16 @@ extension _MarkListHelper on List<Mark> {
 }
 
 /// 小属性値
-/// タイルごとに0~3の数値に対応する属性値を持たせることができる。遭遇率とかダークゾーンとか。
+/// タイルごとに0~7の数値に対応する属性値を持たせることができる。遭遇率とかダークゾーンとか。
 enum Titbit {
   none,
   v1,
   v2,
-  v3;
+  v3,
+  v4,
+  v5,
+  v6,
+  v7;
 
 //<editor-fold desc="Data Methods">
   dynamic toEncodable() {
@@ -392,7 +397,7 @@ class GridData {
     return copyWith(tiles: newTiles);
   }
 
-  /// 単位図形[`row`][`column`]の壁タイプ[`dir`]およびその背面を変更したコピー
+  /// 単位図形[`row`][`column`]の壁タイプ[`dir`](およびその背面)を変更したコピー
   GridData copyWithWallType(
     int column,
     int row,

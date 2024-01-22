@@ -28,18 +28,7 @@ flutter:
 
   assets:
     - assets/init_data.json
-    - assets/images/floor.png
-    - assets/images/rock.png
-    - assets/images/wall.png
     - assets/images/path.png
+    - assets/images/wall.png
     - assets/images/door.png
-    - assets/images/mark_none.png
-    - assets/images/mark1.png
-    - assets/images/mark2.png
-    - assets/images/mark3.png
-    - assets/images/mark4.png
-    - assets/images/mark5.png
-    - assets/images/mark6.png
-    - assets/images/mark7.png
-    - assets/images/mark8.png
-    - assets/images/mark9.png
+    - assets/images/locked_door.png

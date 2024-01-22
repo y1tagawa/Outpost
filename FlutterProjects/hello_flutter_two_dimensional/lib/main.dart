@@ -157,6 +157,7 @@ class _WallSquare extends StatelessWidget {
     'assets/images/path.png',
     'assets/images/wall.png',
     'assets/images/door.png',
+    'assets/images/locked_door.png',
   ];
 
   final WallType wallType;
@@ -242,30 +243,45 @@ class _WallMarkSquare extends StatelessWidget {
 
 /// 正方形小属性値アイコン
 class _TitbitSquare extends StatelessWidget {
-  static const _alphas = [0x00, 0x30, 0x60, 0xA0];
-  static const _colors = [Colors.red, Colors.green, Colors.blue, Colors.yellow];
+  static const _texts = [
+    '\u2205',
+    '\u002A',
+    '\u2051',
+    '\u2042',
+    '\u271C',
+    '\u2731',
+    '\u2020',
+    '\u2021',
+  ];
+  static const _colors = [Colors.red, Colors.green, Colors.blue];
 
   final Titbit titbit;
   final int index;
   final double size;
+  final double fontSize;
 
   const _TitbitSquare({
     super.key,
     required this.titbit,
     required this.index,
     required this.size,
+    required this.fontSize,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (titbit == Titbit.none) {
-      return SizedBox.square(dimension: size);
-    } else {
-      return ColoredBox(
-        color: _colors[index].withAlpha(_alphas[titbit.index]),
-        child: SizedBox.square(dimension: size),
-      );
-    }
+    return SizedBox.square(
+      dimension: size,
+      child: Center(
+        child: Text(
+          _texts[titbit.index],
+          style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                color: _colors[index],
+                fontSize: fontSize,
+              ),
+        ),
+      ),
+    );
   }
 }
 
@@ -296,6 +312,7 @@ class _SquareWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tile = gridData.getTile(column, row);
     final fontSize = math.min(size * 0.6, 20.0);
+    final titbitFontSize = math.min(size * 0.8, 24.0);
 
     int getDir(Offset offset) {
       final angle = math.atan2(offset.dy, offset.dx);
@@ -333,7 +350,11 @@ class _SquareWidget extends HookConsumerWidget {
           // titbits
           if (visibleTitbitLayer >= 0 && tile.getTitbit(visibleTitbitLayer) != Titbit.none)
             _TitbitSquare(
-                titbit: tile.getTitbit(visibleTitbitLayer), index: visibleTitbitLayer, size: size),
+              titbit: tile.getTitbit(visibleTitbitLayer),
+              index: visibleTitbitLayer,
+              size: size,
+              fontSize: titbitFontSize,
+            ),
           // 北、東、南、西
           for (int dir = 0; dir < 4; ++dir)
             _WallSquare(wallType: tile.getWallType(dir), dir: dir, size: size),
@@ -393,8 +414,13 @@ class _GridWidget extends HookConsumerWidget {
               if (dir >= 0) {
                 final newWallType = WallType.values[toolIndex - _minWallToolIndex];
                 if (newWallType != tile.getWallType(dir)) {
-                  final newGridData =
-                      gridData.copyWithWallType(column, row, dir, newWallType, bothSides: true);
+                  final newGridData = gridData.copyWithWallType(
+                    column,
+                    row,
+                    dir,
+                    newWallType,
+                    bothSides: newWallType != WallType.lockedDoor,
+                  );
                   _gridDataStreamController.sink.add(newGridData);
                 }
               }
@@ -617,13 +643,23 @@ class EditToolWidget extends HookConsumerWidget {
                 // 非表示
                 const DropdownMenuItem(
                   value: -1,
-                  child: _TitbitSquare(titbit: Titbit.none, index: 0, size: 24),
+                  child: _TitbitSquare(
+                    titbit: Titbit.none,
+                    index: 0,
+                    size: 24,
+                    fontSize: 24,
+                  ),
                 ),
                 // 表示レイヤー
                 for (int i = 0; i < TileData.titbitCount; ++i)
                   DropdownMenuItem(
                     value: i,
-                    child: _TitbitSquare(titbit: Titbit.v2, index: i, size: 24),
+                    child: _TitbitSquare(
+                      titbit: Titbit.v2,
+                      index: i,
+                      size: 24,
+                      fontSize: 24,
+                    ),
                   )
               ],
               onChanged: (value) {
@@ -639,7 +675,11 @@ class EditToolWidget extends HookConsumerWidget {
                     DropdownMenuItem(
                       value: j,
                       child: _TitbitSquare(
-                          titbit: Titbit.values[j], index: visibleTitbitLayer, size: 24),
+                        titbit: Titbit.values[j],
+                        index: visibleTitbitLayer,
+                        size: 24,
+                        fontSize: 24,
+                      ),
                     ),
                 ],
                 onChanged: (value) {
