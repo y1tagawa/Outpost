@@ -33,6 +33,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late final DiTreDiController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = DiTreDiController(rotationX: 0.0, rotationY: 0.0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
         figures: [
           Cube3D(2, Vector3(0, 0, 0)),
         ],
+        controller: _controller,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _controller.update(
+            rotationY: _controller.rotationY + 10.0,
+          );
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
