@@ -1,15 +1,14 @@
 import 'package:ditredi/ditredi.dart';
-import 'package:flutter/material.dart' as material show Colors;
-import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:vector_math/vector_math_64.dart';
+//import 'package:vector_math/vector_math_64.dart' as vector_math show Colors;
+import 'package:vector_math/vector_math_64.dart' hide Colors;
 
 final _d3dControllerProvider = ChangeNotifierProvider(
   (ref) => DiTreDiController(
     rotationX: 0.0,
     rotationY: 0.0,
-    //translation: const Offset(0, 0),
   ),
 );
 
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: material.Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -55,9 +54,12 @@ class MyHomePage extends HookConsumerWidget {
         title: Text(title),
       ),
       body: DiTreDi(
+        bounds: Aabb3.minMax(Vector3(-1, -1, 0), Vector3(1, 1, 3)),
         figures: [
-          for (double x = -12.0; x < 12.0; x += 3.0)
-            for (double z = 0.0; z < 20.0; z += 3.0) Cube3D(2, Vector3(x, 0, z)),
+          // Cube3D(2, Vector3(-3, 0, 0)),
+          // Cube3D(2, Vector3(3, 0, 0)),
+          for (double x = -6; x <= 4.0; x += 4.0)
+            for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
         ],
         controller: controller,
       ),
