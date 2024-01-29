@@ -1,9 +1,13 @@
 import 'package:ditredi/ditredi.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_flutter_ditredi/box3d.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 //import 'package:vector_math/vector_math_64.dart' as vector_math show Colors;
 import 'package:vector_math/vector_math_64.dart' hide Colors;
+
+const _tileWidth = 1.0;
+const _wallDepth = _tileWidth * 0.1;
 
 final _d3dControllerProvider = ChangeNotifierProvider(
   (ref) => DiTreDiController(
@@ -53,15 +57,19 @@ class MyHomePage extends HookConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: DiTreDi(
-        bounds: Aabb3.minMax(Vector3(-1, -1, 0), Vector3(1, 1, 3)),
-        figures: [
-          // Cube3D(2, Vector3(-3, 0, 0)),
-          // Cube3D(2, Vector3(3, 0, 0)),
-          for (double x = -6; x <= 4.0; x += 4.0)
-            for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
-        ],
+      body: DiTreDiDraggable(
         controller: controller,
+        child: DiTreDi(
+          bounds: Aabb3.minMax(Vector3(-1, -1, 0), Vector3(1, 1, 3)),
+          figures: [
+            // Cube3D(2, Vector3(-3, 0, 0)),
+            // Cube3D(2, Vector3(3, 0, 0)),
+            // for (double x = -6; x <= 4.0; x += 4.0)
+            //   for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
+            Box3D(Aabb3.minMax(Vector3(0, 0, 0), Vector3(1, 2, 3))),
+          ],
+          controller: controller,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
