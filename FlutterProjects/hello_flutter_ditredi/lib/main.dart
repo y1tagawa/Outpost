@@ -66,7 +66,7 @@ class MyHomePage extends HookConsumerWidget {
             // Cube3D(2, Vector3(3, 0, 0)),
             // for (double x = -6; x <= 4.0; x += 4.0)
             //   for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
-            Box3D(Aabb3.minMax(Vector3(0, 0, 0), Vector3(1, 2, 3))),
+            Box3D(Aabb3.minMax(Vector3(0, 1, 0), Vector3(1, 2, 3))),
           ],
           controller: controller,
         ),

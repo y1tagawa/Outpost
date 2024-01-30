@@ -16,56 +16,28 @@ class Box3D extends Group3D {
 
   static List<Model3D> _getFigures(Aabb3 bounds, Color? color) {
     final p = <Vector3>[
-      // X+
-      Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
-      Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
-      bounds.max,
       Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
-      // X-
-      Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
-      bounds.min,
-      Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
-      Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
-      // Y+
-      Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
-      Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
-      Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
-      bounds.max,
-      // Y-
-      bounds.min,
-      Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
-      Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
       Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
-      // Z+
-      bounds.min,
-      Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
-      Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
-      Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
-      // Z-
-      Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
-      Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
       bounds.max,
       Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
+      Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
+      bounds.min,
+      Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
+      Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
     ];
     return <Model3D>[
-      // X+
-      Face3D.fromVertices(p[0], p[1], p[2], color: color),
-      Face3D.fromVertices(p[0], p[2], p[3], color: color),
-      // X-
-      Face3D.fromVertices(p[4], p[5], p[6], color: color),
-      Face3D.fromVertices(p[4], p[6], p[7], color: color),
-      // Y+
-      Face3D.fromVertices(p[8], p[9], p[10], color: color),
-      Face3D.fromVertices(p[8], p[10], p[11], color: color),
-      // Y-
-      Face3D.fromVertices(p[12], p[13], p[14], color: color),
-      Face3D.fromVertices(p[12], p[14], p[15], color: color),
-      // Z+
-      Face3D.fromVertices(p[16], p[17], p[18], color: color),
-      Face3D.fromVertices(p[16], p[18], p[19], color: color),
-      // Z-
-      Face3D.fromVertices(p[20], p[21], p[22], color: color),
-      Face3D.fromVertices(p[20], p[22], p[23], color: color),
+      Face3D.fromVertices(p[0], p[6], p[4], color: color),
+      Face3D.fromVertices(p[0], p[2], p[6], color: color),
+      Face3D.fromVertices(p[3], p[6], p[2], color: color),
+      Face3D.fromVertices(p[3], p[7], p[6], color: color),
+      Face3D.fromVertices(p[7], p[4], p[6], color: color),
+      Face3D.fromVertices(p[7], p[5], p[4], color: color),
+      Face3D.fromVertices(p[5], p[3], p[1], color: color),
+      Face3D.fromVertices(p[5], p[7], p[3], color: color),
+      Face3D.fromVertices(p[1], p[2], p[0], color: color),
+      Face3D.fromVertices(p[1], p[3], p[2], color: color),
+      Face3D.fromVertices(p[5], p[0], p[4], color: color),
+      Face3D.fromVertices(p[5], p[1], p[0], color: color),
     ];
   }
 
