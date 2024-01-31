@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:ditredi/ditredi.dart';
+import 'package:hello_flutter_ditredi/quad3d.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 /// A 3D cuboid.
@@ -26,18 +27,24 @@ class Box3D extends Group3D {
       Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
     ];
     return <Model3D>[
-      Face3D.fromVertices(p[0], p[6], p[4], color: color),
-      Face3D.fromVertices(p[0], p[2], p[6], color: color),
-      Face3D.fromVertices(p[3], p[6], p[2], color: color),
-      Face3D.fromVertices(p[3], p[7], p[6], color: color),
-      Face3D.fromVertices(p[7], p[4], p[6], color: color),
-      Face3D.fromVertices(p[7], p[5], p[4], color: color),
-      Face3D.fromVertices(p[5], p[3], p[1], color: color),
-      Face3D.fromVertices(p[5], p[7], p[3], color: color),
-      Face3D.fromVertices(p[1], p[2], p[0], color: color),
-      Face3D.fromVertices(p[1], p[3], p[2], color: color),
-      Face3D.fromVertices(p[5], p[0], p[4], color: color),
-      Face3D.fromVertices(p[5], p[1], p[0], color: color),
+      // Face3D.fromVertices(p[0], p[6], p[4], color: color),
+      // Face3D.fromVertices(p[0], p[2], p[6], color: color),
+      // Face3D.fromVertices(p[3], p[6], p[2], color: color),
+      // Face3D.fromVertices(p[3], p[7], p[6], color: color),
+      // Face3D.fromVertices(p[7], p[4], p[6], color: color),
+      // Face3D.fromVertices(p[7], p[5], p[4], color: color),
+      // Face3D.fromVertices(p[5], p[3], p[1], color: color),
+      // Face3D.fromVertices(p[5], p[7], p[3], color: color),
+      // Face3D.fromVertices(p[1], p[2], p[0], color: color),
+      // Face3D.fromVertices(p[1], p[3], p[2], color: color),
+      // Face3D.fromVertices(p[5], p[0], p[4], color: color),
+      // Face3D.fromVertices(p[5], p[1], p[0], color: color),
+      Quad3D.fromVertices(p[0], p[2], p[6], p[4]),
+      Quad3D.fromVertices(p[3], p[7], p[6], p[2]),
+      Quad3D.fromVertices(p[7], p[5], p[4], p[6]),
+      Quad3D.fromVertices(p[5], p[7], p[3], p[1]),
+      Quad3D.fromVertices(p[1], p[3], p[2], p[0]),
+      Quad3D.fromVertices(p[5], p[1], p[0], p[4]),
     ];
   }
 

@@ -1,6 +1,6 @@
 import 'package:ditredi/ditredi.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_flutter_ditredi/box3d.dart';
+import 'package:hello_flutter_ditredi/quad3d.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 //import 'package:vector_math/vector_math_64.dart' as vector_math show Colors;
@@ -66,7 +66,31 @@ class MyHomePage extends HookConsumerWidget {
             // Cube3D(2, Vector3(3, 0, 0)),
             // for (double x = -6; x <= 4.0; x += 4.0)
             //   for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
-            Box3D(Aabb3.minMax(Vector3(0, 1, 0), Vector3(1, 2, 3))),
+
+            //Box3D(Aabb3.minMax(Vector3(0, 1, 0), Vector3(1, 2, 3))),
+
+            Quad3D.fromVertices(
+              Vector3(0, 0, 0),
+              Vector3(1, 0, 0),
+              Vector3(1, 1, 0),
+              Vector3(0, 1, 0),
+              color: Colors.black,
+            ),
+            Line3D(
+              Vector3(0.15, 0, -0.01),
+              Vector3(0.15, 0.85, -0.01),
+              color: Colors.white,
+            ),
+            Line3D(
+              Vector3(0.15, 0.85, -0.01),
+              Vector3(0.85, 0.85, -0.01),
+              color: Colors.white,
+            ),
+            Line3D(
+              Vector3(0.85, 0.85, -0.01),
+              Vector3(0.85, 0, -0.01),
+              color: Colors.white,
+            ),
           ],
           controller: controller,
         ),
