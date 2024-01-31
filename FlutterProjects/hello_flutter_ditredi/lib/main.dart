@@ -1,5 +1,6 @@
 import 'package:ditredi/ditredi.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_flutter_ditredi/polygon3d.dart';
 import 'package:hello_flutter_ditredi/quad3d.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -76,21 +77,16 @@ class MyHomePage extends HookConsumerWidget {
               Vector3(0, 1, 0),
               color: Colors.black,
             ),
-            Line3D(
-              Vector3(0.15, 0, -0.01),
-              Vector3(0.15, 0.85, -0.01),
+            ...Polygon3D(
+              [
+                Vector3(0.2, 0, -0.01),
+                Vector3(0.2, 0.85, -0.01),
+                Vector3(0.8, 0.85, -0.01),
+                Vector3(0.8, 0, -0.01),
+              ],
+              closed: false,
               color: Colors.white,
-            ),
-            Line3D(
-              Vector3(0.15, 0.85, -0.01),
-              Vector3(0.85, 0.85, -0.01),
-              color: Colors.white,
-            ),
-            Line3D(
-              Vector3(0.85, 0.85, -0.01),
-              Vector3(0.85, 0, -0.01),
-              color: Colors.white,
-            ),
+            ).toLines(),
           ],
           controller: controller,
         ),

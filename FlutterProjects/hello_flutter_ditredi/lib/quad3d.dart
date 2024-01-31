@@ -4,7 +4,7 @@ import 'package:ditredi/ditredi.dart';
 import 'package:vector_math/vector_math_64.dart';
 
 class Quad3D extends Group3D {
-  /// Points of the face.
+  /// Points of the quad.
   final Quad quad;
 
   /// Face color. Defaults to [DiTreDiConfig] setting.
