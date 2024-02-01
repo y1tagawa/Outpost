@@ -60,35 +60,38 @@ class MyHomePage extends HookConsumerWidget {
       ),
       body: DiTreDiDraggable(
         controller: controller,
-        child: DiTreDi(
-          bounds: Aabb3.minMax(Vector3(-1, -1, 0), Vector3(1, 1, 3)),
-          figures: [
-            // Cube3D(2, Vector3(-3, 0, 0)),
-            // Cube3D(2, Vector3(3, 0, 0)),
-            // for (double x = -6; x <= 4.0; x += 4.0)
-            //   for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
+        child: ColoredBox(
+          color: Colors.indigo,
+          child: DiTreDi(
+            bounds: Aabb3.minMax(Vector3(-1, -1, 0), Vector3(1, 1, 3)),
+            figures: [
+              // Cube3D(2, Vector3(-3, 0, 0)),
+              // Cube3D(2, Vector3(3, 0, 0)),
+              // for (double x = -6; x <= 4.0; x += 4.0)
+              //   for (double z = 0.0; z < 14.0; z += 4.0) Cube3D(2, Vector3(x, 0, z)),
 
-            //Box3D(Aabb3.minMax(Vector3(0, 1, 0), Vector3(1, 2, 3))),
+              //Box3D(Aabb3.minMax(Vector3(0, 1, 0), Vector3(1, 2, 3))),
 
-            Quad3D.fromVertices(
-              Vector3(0, 0, 0),
-              Vector3(1, 0, 0),
-              Vector3(1, 1, 0),
-              Vector3(0, 1, 0),
-              color: Colors.black,
-            ),
-            ...Polygon3D(
-              [
-                Vector3(0.2, 0, -0.001),
-                Vector3(0.2, 0.85, -0.001),
-                Vector3(0.8, 0.85, -0.001),
-                Vector3(0.8, 0, -0.001),
-              ],
-              closed: false,
-              color: Colors.white,
-            ).toLines(),
-          ],
-          controller: controller,
+              Quad3D.fromVertices(
+                Vector3(0, 0, 0),
+                Vector3(1, 0, 0),
+                Vector3(1, 1, 0),
+                Vector3(0, 1, 0),
+                color: Colors.black,
+              ),
+              ...Polygon3D(
+                [
+                  Vector3(0.2, 0, -0.001),
+                  Vector3(0.2, 0.85, -0.001),
+                  Vector3(0.8, 0.85, -0.001),
+                  Vector3(0.8, 0, -0.001),
+                ],
+                closed: false,
+                color: Colors.white,
+              ).toLines(),
+            ],
+            controller: controller,
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
