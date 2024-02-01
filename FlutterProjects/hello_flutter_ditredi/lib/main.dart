@@ -79,10 +79,10 @@ class MyHomePage extends HookConsumerWidget {
             ),
             ...Polygon3D(
               [
-                Vector3(0.2, 0, -0.01),
-                Vector3(0.2, 0.85, -0.01),
-                Vector3(0.8, 0.85, -0.01),
-                Vector3(0.8, 0, -0.01),
+                Vector3(0.2, 0, -0.001),
+                Vector3(0.2, 0.85, -0.001),
+                Vector3(0.8, 0.85, -0.001),
+                Vector3(0.8, 0, -0.001),
               ],
               closed: false,
               color: Colors.white,
