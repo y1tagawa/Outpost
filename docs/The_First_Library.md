@@ -8,28 +8,58 @@ TBD
 
 ## Vision
 
-現代文明は成長し、地球全体に拡大したが、そのためにいくつかの脆弱性を抱えることとなった。
-- 専門知識が高度になり、後継者育成が困難になった。そのため基礎教育が等閑になり、身近な知識が次世代に伝わらなくなっている。
-- 今まで自然に与えてきた負荷が、ずっと未来まで影響を及ぼす。
+Imagine a child born anywhere in the world.
 
-地球環境が敵対的になる中、子供たちが教育を受ける機会が妨げられている。  
-生きるため、死なないための知識、問い直し、観察し、実験し、改善して未来の世代に伝えてゆく手段を、子供たちに遺すべきである。
+No matter where they live, 
+what language they speak, 
+or what challenges their community faces,
+
+they should always have the opportunity to learn.
+
+Knowledge is never complete.
+
+Every generation inherits knowledge from the previous one,
+questions it,
+improves it,
+and passes it on.
+
+And it alone is not enough.
+
+The First Library exists not merely to preserve information,
+but to preserve humanity's opportunity to learn.
+
+Learning begins with children.
+It continues through teachers,
+families,
+communities,
+and future generations.
+
+Knowledge survives because people continue to create it together.
 
 
 ## Why Now?
 
-紙に書かれた知識は、それだけでは十分ではない。  
-新たな知見を取り入れる終わりない改訂、必要な場所にそれを届ける力、生まれ来る新たな世代にそれを教え、さらに未来を託す教育。
+Modern civilization has achieved unprecedented scientific and technological progress.
 
-それは人の力でかなう限り実践されてきたが、人類の種が続く限り、その責任を担うシステムは今までなかった。
+At the same time,
+it has become increasingly dependent on highly specialized knowledge,
+complex infrastructure,
+and global systems.
 
-しかし長寿命のストレージとデータセンター、編纂者を助け司書の務めを果たしうるAIが今はある。  
-本書では、紙および電子百科事典・司書AI・編集基盤・運営組織を合わせて The First Library と呼ぶ。  
-今こそ私たちは The First Library を創立することができる。
+Educational inequality,
+environmental change,
+natural disasters,
+and social instability threaten the continuity of learning in many communities.
 
+Recent advances in AI,
+digital preservation,
+and long-lived storage technologies offer a unique opportunity.
+
+For the first time,
+humanity may be able to build an institution designed not only to preserve knowledge,
+but to preserve the ability to renew it.
 
 ## The First Library
-
 
 百科事典は、小学生から高校生向けの、基本的・実用的な知識を提供する。  
 実用的とは、身近で実験することができ、あるいは**専門家の監督なしに試みてはならない**ような知識のことである。  
@@ -105,7 +135,7 @@ The First Library 運営組織の活動は多岐にわたる。
 以上を可能にするために文明を維持し、地域社会の安定に貢献する。
 
 必要な資金や労力は膨大なものとなるだろう。  
-それを可能にする労力もまた、カミュのシシュポス的な決意と忍耐が必要となる。
+そして終わりなく報われぬ苦役をやり抜く決意と忍耐が必要となる。
 
 
 ## Future Work
@@ -119,6 +149,16 @@ The First Library は完成を目指さない。
 百科事典は更新され続ける。
 
 文明の存続とは、知識を保存することではない。  
-**どの世代の人々も、自ら学び、新しい知識を書き加える機会を持つことである。**
+
+** Instead, the survival of civilization depends on ensuring that every generation has the opportunity to learn,
+to question,
+to improve,
+and to pass knowledge forward. **
+
+The First Library cannot be built by a single person,
+a single nation,
+or a single generation.
+It can only exist as a shared commitment,
+renewed continuously by those who choose to preserve humanity's opportunity to learn.
 
 [END]
