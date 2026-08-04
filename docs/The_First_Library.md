@@ -17,16 +17,15 @@ or what challenges their community faces,
 they should always have the opportunity to learn.
 
 Knowledge is never complete.
+Knowledge alone is not enough.
 
 Every generation inherits knowledge from the previous one,
 questions it,
 improves it,
 and passes it on.
 
-And it alone is not enough.
-
 The First Library exists not merely to preserve information,
-but to preserve humanity's opportunity to learn.
+but to preserve humanity's capacity to learn.
 
 Learning begins with children.
 It continues through teachers,
@@ -35,6 +34,10 @@ communities,
 and future generations.
 
 Knowledge survives because people continue to create it together.
+
+The First Library is not the destination.
+
+It is the beginning of every generation's learning journey.
 
 
 ## Why Now?
@@ -53,11 +56,12 @@ and social instability threaten the continuity of learning in many communities.
 
 Recent advances in AI,
 digital preservation,
-and long-lived storage technologies offer a unique opportunity.
+and long-lived storage technologies offer a unique possibility.
 
 For the first time,
 humanity may be able to build an institution designed not only to preserve knowledge,
-but to preserve the ability to renew it.
+but to preserve humanity's ability to renew knowledge itself.
+
 
 ## The First Library
 
@@ -135,8 +139,9 @@ The First Library 運営組織の活動は多岐にわたる。
 以上を可能にするために文明を維持し、地域社会の安定に貢献する。
 
 必要な資金や労力は膨大なものとなるだろう。  
-そして終わりなく報われぬ苦役をやり抜く決意と忍耐が必要となる。
-
+The work of maintaining The First Library will demand patience,
+commitment,
+and the willingness to continue across generations.
 
 ## Future Work
 
@@ -150,15 +155,16 @@ The First Library は完成を目指さない。
 
 文明の存続とは、知識を保存することではない。  
 
-** Instead, the survival of civilization depends on ensuring that every generation has the opportunity to learn,
+**Instead,**
+the survival of civilization depends on ensuring that every generation has the opportunity to learn,
 to question,
 to improve,
-and to pass knowledge forward. **
+and to pass knowledge forward.
 
 The First Library cannot be built by a single person,
 a single nation,
 or a single generation.
 It can only exist as a shared commitment,
-renewed continuously by those who choose to preserve humanity's opportunity to learn.
+renewed by every generation that chooses to preserve humanity's opportunity to learn.
 
 [END]
