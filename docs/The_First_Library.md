@@ -75,106 +75,120 @@ but to preserve humanity's ability to renew knowledge itself.
 
 ## The First Library
 
-百科事典は、小学生から高校生向けの、基本的・実用的な知識を提供する。  
-実用的とは、身近で実験することができ、あるいは**専門家の監督なしに試みてはならない**ような知識のことである。  
-試験科目だけでなく、日常の衛生・応急手当・野外活動から医学・農学・工学・自然科学など広い分野をカバーする。  
-各国語版があり、丈夫な紙に印刷され、平易な言葉で書かれ、多くの図や写真が含まれている。
+The encyclopedia provides fundamental and practical knowledge for students from elementary school through high school.
 
-音声で応答可能な司書AIデバイスが付属し、対話的に学習を支援する。
+Practical knowledge refers to knowledge that can be explored through everyday observation and experimentation, as well as knowledge that **should never be practiced without professional supervision**.
 
-平時には各地の小中学校に配布され、日常的に教材として使われる。  
-しかし災害の時にサバイバルの助けとなり、万一、世界規模の大災害には、文明の継承を支えることもあるだろう。
+It covers not only traditional academic subjects, but also a wide range of fields, including daily hygiene, first aid, outdoor activities, medicine, agriculture, engineering, and the natural sciences.
 
-一方で、知識は更新される。環境は変わり、言語も変わる。
-文明が存続する限り、百科事典は改訂され、必要な場所に届けられなければならない。
+It is available in multiple languages, printed on durable paper, written in accessible language, and enriched with illustrations and photographs.
 
-The First Library は世界中の子どもたちが学ぶ最初の図書館であり、
-将来どのような危機が訪れても、人類が知識を失わないための公共基盤であり、
-それを世代を超えて維持する人々が作るシステムである。
+A voice-enabled AI librarian device accompanies the encyclopedia and provides interactive learning support.
+
+Under normal circumstances, The First Library is distributed to elementary and middle schools and used as part of everyday education.
+
+During disasters, it may provide practical guidance for survival.
+
+In the event of a global catastrophe, it may also help preserve the continuity of civilization.
+
+Knowledge changes. Environments change. Languages change.
+
+As long as civilization endures, the encyclopedia must continue to be revised and delivered to the communities that need it.
+
+The First Library is the first library for children around the world.
+
+It is a public infrastructure designed to prevent humanity from losing knowledge, regardless of the challenges the future may bring.
+
+It is also a system created and sustained by people who are committed to maintaining it across generations.
 
 
 ## Architecture
 
-司書AIデバイスには三つの型があり、それぞれに異なる性能を要求する。
+The AI librarian device consists of three models, each designed to fulfill different requirements.
 
 ### Explorer
 
-生徒、教師、家庭、図書館利用者、地域住民による日常的な利用を想定し、各地の小学校に常設される。
-  - 書き換え可能ストレージに記録した百科事典を内蔵する。
-  - 軽量の司書AIを搭載する。
-    - 利用者の質問に答えて百科事典を検索し、ページを示すほか、音声で読み上げたり、内蔵ディスプレイに表示することができる。
-    - 内蔵または接続したカメラ画像を認識する。動植物や生痕跡の同定、危険度評価や、また地形からキャンプ適地、地下水源、危険地を推測することなどができる。
-    - 各国語の認識、相互翻訳ができる。
-    - 利用者に対しては良い教師でなければならない。人間の教師が育てる生徒の自立心をスポイルしてはならない。観察・仮説・実験をゲーミファイするべきである。
-  - 外部センサーを接続できる。
-  - 交換可能な電源を持つ。
-  - ネットワーク更新できる。
-  - 低い技術水準からでも再構築できる通信方式を策定・公開し、そのインターフェースを内蔵する。
-  - 設計寿命10～20年。
+The Explorer model is intended for everyday use by students, teachers, families, library visitors, and local communities. It is permanently installed in elementary schools.
+
+* Contains the encyclopedia on rewritable storage.
+* Includes a lightweight AI librarian.
+  * Answers users' questions by searching the encyclopedia, identifying relevant pages, reading content aloud, and displaying information on the built-in display.
+  * Recognizes images captured by integrated or connected cameras. It can identify plants, animals, and traces of living organisms, assess potential hazards, and infer suitable campsites, groundwater sources, and dangerous terrain.
+  * Supports multilingual recognition and translation.
+  * Functions as an effective teacher. It should not undermine the independence of learners nurtured by human educators. Instead, it should encourage learning through the gamification of observation, hypothesis, and experimentation.
+* Supports external sensors.
+* Uses a replaceable power source.
+* Supports network-based updates.
+* Incorporates an interface based on communication protocols that can be reconstructed even in societies with limited technological capabilities. These protocols should be publicly documented.
+* Designed for an operational lifespan of 10 to 20 years.
 
 ### Archive
 
-ほぼExplorer型と同様であるが、より単純化され、保存性、堅牢性に優れる。
-  - 百科事典は書き換え不能ストレージに変更。
-  - 外部ポートは廃止。筐体は起動ボタン以外に一切の開口部を持たない。
-  - ネットワーク更新は廃止。
-  - 設計寿命は、不活性ガスを充填した金属缶内に密閉された状態で100年以上。作動期間は20年。
-  - 危機的状況に備え、学校・図書館・自治体施設などに保管され、百科事典の大改訂ごとに新品に交換する。
-    保管に際しては紙の百科事典とともに封入すること。
+The Archive model shares many characteristics with the Explorer model but is further simplified to maximize durability and long-term preservation.
+
+* The encyclopedia is stored on non-rewritable media.
+* External ports are eliminated. The enclosure contains no openings other than the power button.
+* Network updates are disabled.
+* Designed to remain preserved for more than 100 years when sealed inside an inert-gas-filled metal container. Its expected operational lifespan is 20 years.
+* Stored in schools, libraries, and public facilities to prepare for severe emergencies. Replaced whenever a major revision of the encyclopedia is released.
+* Must be stored together with printed editions of the encyclopedia.
 
 ### Core
 
-Coreは知識を保存するためではなく、百科事典を継続的に改善するための編集基盤である。
-拠点に置かれるデータセンターに、世界各地の知識を収集し、編纂委員会による百科事典の記事選定・翻訳・検証をAIが助ける。  
-基本的な知識として子供たちのための百科事典には含まれないかもしれないが、その裏付けとなる専門的知識のリポジトリである。
+Core is not intended to preserve knowledge itself.
 
-***
+Instead, it serves as the editorial infrastructure responsible for continuously improving the encyclopedia.
 
-これらはコンセプトであり、実現には未来の技術が必要であろう。
-また技術の発展に伴い、さらなる最適化や、生産性の向上が求められる。
-特に低消費電力化・低環境フットプリント化が望まれるが、それはデータセンターのアップデートにも役立つだろう。
+Located within distributed data centers, Core collects knowledge from around the world and assists editorial committees in selecting, translating, and verifying encyclopedia content through AI.
 
-ハードウェアのスペックは公開され、百科事典だけでなく、誰もが好きなコンテンツを未来の世代に残すために複製しても良い。
+Many of these specialized resources may never appear in the children's encyclopedia itself, yet they remain essential as the underlying repository of knowledge that supports it.
+
+---
+
+These concepts may require technologies that do not yet exist.
+
+As technology advances, further optimization and improvements in manufacturing efficiency will become necessary.
+
+In particular, lower energy consumption and a smaller environmental footprint are highly desirable. Progress in these areas may also contribute to the modernization of the data centers that support the project.
+
+Hardware specifications should be publicly available.
+
+Not only the encyclopedia itself, but the hardware platform should also be openly reproducible so that anyone can preserve their own knowledge and cultural materials for future generations.
 
 
 ## Governance
 
-The First Library 運営組織の活動は多岐にわたる。
-- 互いに離れた世界各地に拠点を置き、知識の収集・百科事典の改定・配布に努める。
-  拠点にはデータセンターを置き、インターネット(またはその更新物)で連携する。
-- 百科事典が原因で発生した問題への法的対応。
-- 司書AIデバイスの改良。
-- 後継者育成。
+The activities of the organization responsible for The First Library are diverse.
 
-以上を可能にするために文明を維持し、地域社会の安定に貢献する。
+* Establish geographically distributed centers dedicated to collecting knowledge and maintaining, revising, and distributing the encyclopedia. These centers should operate data centers connected through the Internet or its future successors.
+* Address legal issues arising from the use of the encyclopedia.
+* Improve and refine AI librarian devices.
+* Educate and train future generations of contributors.
 
-必要な資金や労力は膨大なものとなるだろう。  
-The work of maintaining The First Library will demand patience,
-commitment,
-and the willingness to continue across generations.
+The organization must also contribute to maintaining civilization itself by supporting stable and resilient local communities.
+
+The resources required to sustain this effort will be enormous.
+
+The work of maintaining The First Library will demand patience, commitment, and the willingness to continue across generations.
+
 
 ## Future Work
 
-(将来この計画を担う人々へ委ねる)
+(To be entrusted to the people who will carry this project forward.)
 
 
 ## Conclusion
 
-The First Library は完成を目指さない。
-百科事典は更新され続ける。
+The First Library does not seek completion.
 
-文明の存続とは、知識を保存することではない。  
+The encyclopedia will continue to evolve.
 
-**Instead,**
-the survival of civilization depends on ensuring that every generation has the opportunity to learn,
-to question,
-to improve,
-and to pass knowledge forward.
+The survival of civilization does not depend on preserving knowledge alone.
 
-The First Library cannot be built by a single person,
-a single nation,
-or a single generation.
-It can only exist as a shared commitment,
-renewed by every generation that chooses to preserve humanity's opportunity to learn.
+**Instead,** the survival of civilization depends on ensuring that every generation has the opportunity to learn, to question, to improve, and to pass knowledge forward.
+
+The First Library cannot be built by a single person, a single nation, or a single generation.
+
+It can only exist as a shared commitment, renewed by every generation that chooses to preserve humanity's opportunity to learn.
 
 [END]
