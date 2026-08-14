@@ -4,7 +4,13 @@ Concept White Paper Version 0.1
 
 ## Abstract
 
-TBD
+The First Library is not a backup of civilization.
+
+It is a system for continuously rebuilding civilization's ability to learn.
+
+近年成熟しつつある多くの単位技術が、知識――明日の子供たちにとっては過去の知識――だけでなく、常に文明人である方法を、未来の世代に遺す機会をもたらした。
+
+私たちはその機会を生かすことができるだろうか。
 
 ## Vision
 
@@ -45,9 +51,8 @@ It is the beginning of every generation's learning journey.
 Modern civilization has achieved unprecedented scientific and technological progress.
 
 At the same time,
-it has become increasingly dependent on highly specialized knowledge,
-complex infrastructure,
-and global systems.
+it has become increasingly dependent on highly specialized knowledge, 
+complex infrastructure, and global systems.
 
 Educational inequality,
 environmental change,
