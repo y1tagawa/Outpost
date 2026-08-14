@@ -8,9 +8,14 @@ The First Library is not a backup of civilization.
 
 It is a system for continuously rebuilding civilization's ability to learn.
 
-近年成熟しつつある多くの単位技術が、知識――明日の子供たちにとっては過去の知識――だけでなく、常に文明人である方法を、未来の世代に遺す機会をもたらした。
+Recent advances in AI, digital preservation, and long-lived storage technologies may allow us to preserve not only knowledge, but also the practices that enable human societies to learn, adapt, and renew themselves.
 
-私たちはその機会を生かすことができるだろうか。
+The opportunity now exists.
+
+The question is simple:
+
+Can we preserve the opportunity to learn for future generations?
+
 
 ## Vision
 
