@@ -14,7 +14,7 @@ The opportunity now exists.
 
 The question is simple:
 
-Can we preserve the opportunity to learn for future generations?
+**Can we preserve the opportunity to learn for future generations?**
 
 
 ## Vision
