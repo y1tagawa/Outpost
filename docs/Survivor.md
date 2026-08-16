@@ -49,6 +49,7 @@ Everyday Exploration
 ARによる学習
 ゲーミフィケーション
 
+
 ## The First Night
 
 私は、この章がSurvivorの中心になると思います。
@@ -106,7 +107,10 @@ Survivorは、Explorerから派生したモデルです。
 
 学校の知識を、子供のポケットへ移植したものです。
 
+
 ## Future Work
 
 (To be entrusted to the children who will someday become explorers, teachers, and guardians.)
 
+
+## Conclusion

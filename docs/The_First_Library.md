@@ -143,6 +143,8 @@ Located within distributed data centers, Core collects knowledge from around the
 
 Many of these specialized resources may never appear in the children's encyclopedia itself, yet they remain essential as the underlying repository of knowledge that supports it.
 
+Core is designed for cross-generational hardware migration. It must possess the architectural flexibility to compile its own training algorithms down to vintage semiconductor nodes (e.g., reproducible via local legacy foundries) before modern GPU hardware reaches its end-of-life.
+
 ---
 
 These concepts may require technologies that do not yet exist.
